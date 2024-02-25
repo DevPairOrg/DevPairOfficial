@@ -26,8 +26,6 @@ class User(db.Model, UserMixin):
     link_portfolio = db.Column(db.String, nullable=True)
     link_leetcode = db.Column(db.String, nullable=True)
 
-    messages = db.relationship('Message', back_populates='user', cascade="all, delete-orphan")
-
     following = db.relationship(
         'Follow',
         foreign_keys='Follow.follower_id',
