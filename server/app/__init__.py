@@ -17,6 +17,7 @@ from .seeds import seed_commands
 from .config import Config
 from .socket import socketio
 
+
 # app = Flask(__name__, static_folder='../client/dist', static_url_path='/')
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), '../../client/dist'), static_url_path='/')
 
