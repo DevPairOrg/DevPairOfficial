@@ -13,10 +13,10 @@ from .api.video_routes import video_routes
 from .api.code_testing_routes import code_testing_routes
 from .api.follow_routes import follow_routes
 from .api.message_routes import message_routes
+from .api.gemini_routes import gemini_routes
 from .seeds import seed_commands
 from .config import Config
 from .socket import socketio
-
 
 # app = Flask(__name__, static_folder='../client/dist', static_url_path='/')
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), '../../client/dist'), static_url_path='/')
@@ -41,6 +41,7 @@ app.register_blueprint(video_routes, url_prefix='/api/video')
 app.register_blueprint(code_testing_routes, url_prefix='/api/problem')
 app.register_blueprint(follow_routes, url_prefix='/api/follows')
 app.register_blueprint(message_routes, url_prefix='/api/messages')
+app.register_blueprint(gemini_routes, url_prefix='/api/gemini')
 db.init_app(app)
 Migrate(app, db)
 
