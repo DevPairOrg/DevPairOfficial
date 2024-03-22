@@ -106,22 +106,11 @@ function UserPage() {
     }
   };
 
-  const handleGeminiData = async() => {
-    const res = await fetch('/api/gemini/');
-    if(res.ok) {
-      const data = await res.json()
-      console.log("RES", data)
-    } else {
-      console.log("FETCH FAILED")
-    }
-  }
-
   const isCurrentUserProfile =
     userId && sessionUser && +sessionUser.id === +userId;
 
   return (
     <>
-      <button onClick={handleGeminiData}>GET DATA</button>
       {isCurrentUserProfile ? (
         <>
           <main id="user-profile-main">
