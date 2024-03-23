@@ -16,14 +16,86 @@ def getRandLeetCodeResponse():
     """
     print('🙃🙃🙃 Currently generating a problem...')
 
-    # UPDATED PROMPT
+    # NEW PROMPT - WIP
+#     convo.send_message(
+#         """
+#             When submitting coding problems for solutions and tests, please follow this structured format carefully to ensure clarity and consistency:
+
+#             Coding Question Prompt: Present the coding problem in a clear and concise manner. Include any necessary constraints or important details. The question should resemble typical challenges found in coding interviews or on platforms like LeetCode.
+
+#             Test Cases: Provide exactly three test cases for the problem. Detail the inputs and the expected output for each case as follows:
+
+#             INPUT: List all inputs required to test the solution. For multiple parameters, separate them with commas.
+#             OUTPUT: Give the expected output for the provided inputs, succinctly and without additional commentary.
+#             Python Unit Testing Instructions:
+
+#             Write a unit test class utilizing the unittest framework.
+#             Each test case should have its own method within the class, named descriptively to reflect its purpose.
+#             Utilize assertions to compare the output of your solution to the expected output.
+#             Include the necessary boilerplate to allow for the direct execution of the tests.
+#             JavaScript Testing Instructions:
+
+#             Outline your test cases as an array of objects, each specifying the input(s) and the expected output.
+#             Use a loop to iterate over each test case, applying the solution function to the input(s) and employing console.assert to verify the output against the expected result.
+#             Important Notes:
+
+#             Avoid using markdown formatting, such as bold text or code blocks indicated by triple backticks, in your response.
+#             Do not place quotation marks around the coding question prompt.
+#             Ensure the test sections for both Python and JavaScript are properly formatted to be directly usable in their respective environments.
+#             Example Format:
+
+#             QUESTION PROMPT:
+#             Describe your coding problem here, including any relevant constraints or details.
+
+#             TEST CASES:
+
+#             INPUT: [First input], [Second input if necessary]
+#             OUTPUT: [Expected output]
+#             INPUT: [First input], [Second input if necessary]
+#             OUTPUT: [Expected output]
+#             INPUT: [First input], [Second input if necessary]
+#             OUTPUT: [Expected output]
+#             PYTHON UNIT TESTING:
+
+#             import unittest
+
+#             class SolutionTest(unittest.TestCase):
+#             def test_case_1(self):
+#                 # Logic for test case 1
+#                 self.assertEqual(actual_result, expected_result)
+
+#             def test_case_2(self):
+#                 # Logic for test case 2
+#                 self.assertEqual(actual_result, expected_result)
+
+#             def test_case_3(self):
+#                 # Logic for test case 3
+#                 self.assertEqual(actual_result, expected_result)
+
+#             if __name__ == '__main__':
+# #             unittest.main()
+
+#             JAVASCRIPT UNIT TESTING:
+#             const testCases = [
+#                 {input: [First input], expected: [Expected output]},
+#                 {input: [Second input], expected: [Expected output]},
+#                 {input: [Third input], expected: [Expected output]}
+#             ];
+
+#             testCases.forEach(({input, expected}, index) => {
+#                 console.assert(solution(...input) === expected, Test case ${index + 1} failed);
+#             });
+#         """
+#     )
+
+    # WORKING PROMPT WITH CONSISTENT STRUCTURE - TESTING ONE MORE (ABOVE PROMPT)
     convo.send_message(
         """
             When requesting solutions and tests for coding problems, please adhere to the following structured format:
 
             IMPORTANT: EXPLICITLY DO NOT DO THE FOLLOWING a-b
-                a. DO NOT INCLUDE ANY SORT OF MARKDOWN FOR THE RESPONSE SUCH AS MAKING THINGS **BOLD**
-                b. DO NOT INCLUDE BACKTICKS TO INDICATE A BLOCK OF CODE
+                a. DO NOT INCLUDE ANY SORT OF MARKDOWN FOR THE RESPONSE SUCH AS MAKING THINGS (i.e. **BOLD**)
+                b. DO NOT INCLUDE THREE BACKTICKS AT THE BEGINNING OF THE PYTHON/JAVASCRIPT UNIT TEST AND TO THE END OF IT TO INDICATE A BLOCK OF CODE
                 c. DO NOT INCLUDE QUOTATATIONS AROUND THE QUESTION PROMPT
 
             1. Provide a clear and concise coding question prompt, including any specific constraints or important details. The question should ideally reflect typical coding challenges or algorithmic problems, preferrably from leetcode.

@@ -13,13 +13,14 @@ interface TestResult {
 }
 
 interface Props {
-  problemPrompt: string;
-  problemTestCases: string;
-  problemUnitTest: string;
+  prompt: string;
+  testCases: string;
+  pythonUnitTest: string;
+  jsUnitTest: string;
 }
 
 function IDE(props: Props) {
-  const { problemPrompt, problemTestCases, problemUnitTest } = props;
+  const { prompt, testCases, pythonUnitTest, jsUnitTest } = props;
 
   const [value, setValue] = useState<string>("# Your Python Code Here");
   const [userResults, setUserResults] = useState<boolean[]>([]);
@@ -62,7 +63,7 @@ function IDE(props: Props) {
       body: JSON.stringify({
         code: value,
         language: language,
-        problemUnitTest: problemUnitTest,
+        problemUnitTest: language === "python" ? pythonUnitTest : jsUnitTest,
       }),
     });
 
@@ -87,8 +88,8 @@ function IDE(props: Props) {
   return (
     <>
       <div id="ide-container">
-        <h1>Problem Prompt: {problemPrompt && problemPrompt}</h1>
-        <pre>{problemTestCases && problemTestCases}</pre>
+        <h1>Problem: {prompt && prompt}</h1>
+        <pre>{testCases && testCases}</pre>
         <div
           style={{
             display: "flex",

@@ -14,11 +14,13 @@ import { useAppSelector } from "../../hooks";
 import RemoteAndLocalVolumeComponent from "../../AgoraManager/volumeControl";
 import shareScreenPlaceholder from "../../assets/images/share-screen-holder.webp";
 import IDE from "../CodeMirror";
+import { python } from "@codemirror/lang-python";
 
 interface parsedData {
   problemPrompt: string;
-  unitTest: string;
   testCases: string;
+  pythonUnitTest: string;
+  jsUnitTest: string;
 }
 
 function ScreenShare(props: { channelName: string }) {
@@ -93,36 +95,71 @@ function ScreenShare(props: { channelName: string }) {
   };
 
   function parseCode(code: string) {
-    // const lines = code.split("\n");
-    const lines = code.split("\n").map((line) => line.replace(/```/g, ""));
+    const lines = code.split("\n");
     let problemPrompt = "";
     let testCases = "";
-    let unitTest = "";
-    let unitTestLine = -1; // Initialize to -1 to signal missing header
+    let pythonUnitTest = "";
+    let jsUnitTest = "";
+    let isPythonSection = false;
+    let isJsSection = false;
+    let isTestCaseSection = false;
 
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
+      const line = lines[i].trim();
 
-      // TEST CASES
+      // Problem Prompt
+      if (line.startsWith("QUESTION PROMPT:")) {
+        problemPrompt = lines[i + 1].trim();
+      }
+
+      // Start of Test Cases Section
       if (line === "TEST CASES:") {
-        testCases = lines.slice(i, i + 7).join("\n");
+        isTestCaseSection = true;
+        continue;
       }
 
-      // UNIT TEST - FOR TESTING USER SOLUTIONS
-      if (line === "UNIT TESTING:") {
-        unitTestLine = i + 1; // Point to the line after the header
-        unitTest = lines.slice(i + 1).join("\n");
-        problemPrompt = lines.slice(1, 2).join("\n");
-        break;
+      // End of Test Cases Section and start of Python Unit Testing
+      if (line === "PYTHON UNIT TESTING:") {
+        isTestCaseSection = false;
+        isPythonSection = true;
+        continue; // Skip the heading line
+      }
+
+      // Handling for JavaScript Unit Testing section
+      if (line === "JAVASCRIPT UNIT TESTING:") {
+        isJsSection = true;
+        isPythonSection = false; // Ensure Python section is disabled
+        continue; // Skip the heading line
+      }
+
+      // Accumulate Test Cases
+      if (isTestCaseSection) {
+        testCases += lines[i] + "\n";
+      }
+
+      // Accumulate Python Unit Test
+      if (isPythonSection) {
+        pythonUnitTest += lines[i] + "\n";
+      }
+
+      // Accumulate JavaScript Unit Test
+      if (isJsSection) {
+        jsUnitTest += lines[i] + "\n";
       }
     }
 
-    if (unitTestLine === -1) {
-      // Handle missing header
-      problemPrompt = lines.join("\n"); // Assign entire code as prompt
-    }
-    console.log("🥶🥵🥶🥵🥶unitTest from function", unitTest);
-    return { problemPrompt, unitTest, testCases };
+    // Trim the final strings to remove unnecessary new lines
+    problemPrompt = problemPrompt.trim();
+    testCases = testCases.trim();
+    pythonUnitTest = pythonUnitTest.trim();
+    jsUnitTest = jsUnitTest.trim();
+
+    console.log("prompt\n", problemPrompt);
+    console.log("test cases\n", testCases);
+    console.log("python unit test\n", pythonUnitTest);
+    console.log("js unit test\n", jsUnitTest);
+
+    return { problemPrompt, testCases, pythonUnitTest, jsUnitTest };
   }
 
   // If User starts screen share with the button, it will trigger an event asking them what screen they will share and render it
@@ -159,9 +196,10 @@ function ScreenShare(props: { channelName: string }) {
         <>
           <div id="ide-main-container">
             <IDE
-              problemPrompt={parsedResponse?.problemPrompt}
-              problemTestCases={parsedResponse?.testCases}
-              problemUnitTest={parsedResponse?.unitTest}
+              prompt={parsedResponse?.problemPrompt}
+              testCases={parsedResponse?.testCases}
+              pythonUnitTest={parsedResponse?.pythonUnitTest}
+              jsUnitTest={parsedResponse?.jsUnitTest}
             />
           </div>
         </>
