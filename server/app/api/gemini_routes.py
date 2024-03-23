@@ -97,20 +97,23 @@ def getRandLeetCodeResponse():
                 a. DO NOT INCLUDE ANY SORT OF MARKDOWN FOR THE RESPONSE SUCH AS MAKING THINGS (i.e. **BOLD**)
                 b. DO NOT INCLUDE THREE BACKTICKS AT THE BEGINNING OF THE PYTHON/JAVASCRIPT UNIT TEST AND TO THE END OF IT TO INDICATE A BLOCK OF CODE
                 c. DO NOT INCLUDE QUOTATATIONS AROUND THE QUESTION PROMPT
+                d. DO NOT INCLUDE THE FOLLOWING ANYWHERE IN THE RESPONSE: ```javascript OR ```python
 
             1. Provide a clear and concise coding question prompt, including any specific constraints or important details. The question should ideally reflect typical coding challenges or algorithmic problems, preferrably from leetcode.
 
-            2. List exactly three test cases for the problem. For each test case, include:
+            2. Provide an empty function with a name relevant to the problem for the user to have ready and within that function include the comments that 'your code goes here'. If it's a python function, add the keyword 'pass' instead of a return and if it's a javascript function, keep it empty with just the comment.
+
+            3. List exactly three test cases for the problem. For each test case, include:
             - INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas.
             - OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration.
 
-            3. For Python, create a unit test class using the `unittest` framework. This class should:
+            4. For Python, create a unit test class using the `unittest` framework. This class should:
             - Include a method for each test case, descriptively named to reflect the test’s intent.
             - Use assertions to compare the solution's output to the expected output.
             - Conclude with the standard boilerplate allowing direct execution of the tests.
             -
 
-            4. For JavaScript, outline a simple testing setup using console assertions. This setup should:
+            5. For JavaScript, outline a simple testing setup using console assertions. This setup should:
             - Define test cases as an array of objects, each with input and expected output.
             - Iterate over test cases, executing the solution function with each input and using `console.assert` to compare the result to the expected output.
 
@@ -125,6 +128,15 @@ def getRandLeetCodeResponse():
 
             QUESTION PROMPT:
             "Describe the coding problem here, including constraints or relevant details."
+
+            EMPTY FUNCTION:
+            def nameOfFunction(input parameters):
+                # Your code goes here
+                pass
+
+            function nameOfFunction(input parameters) {
+                // Your code goes here
+            }
 
             TEST CASES:
             - INPUT: [First input], [Second input if necessary]

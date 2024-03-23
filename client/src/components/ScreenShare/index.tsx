@@ -97,12 +97,15 @@ function ScreenShare(props: { channelName: string }) {
   function parseCode(code: string) {
     const lines = code.split("\n");
     let problemPrompt = "";
+    let emptyFunctionPython = "";
+    let emptyFunctionJs = "";
     let testCases = "";
     let pythonUnitTest = "";
     let jsUnitTest = "";
     let isPythonSection = false;
     let isJsSection = false;
     let isTestCaseSection = false;
+    let isEmptyFunctionSection = false;
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i].trim();
@@ -110,6 +113,12 @@ function ScreenShare(props: { channelName: string }) {
       // Problem Prompt
       if (line.startsWith("QUESTION PROMPT:")) {
         problemPrompt = lines[i + 1].trim();
+      }
+
+      // Start of Empty Functions Section
+      if (line === "EMPTY FUNCTION:") {
+        isEmptyFunctionSection = true;
+        continue;
       }
 
       // Start of Test Cases Section
@@ -130,6 +139,17 @@ function ScreenShare(props: { channelName: string }) {
         isJsSection = true;
         isPythonSection = false; // Ensure Python section is disabled
         continue; // Skip the heading line
+      }
+
+      // Accumulate Empty Functions
+      if (isEmptyFunctionSection) {
+        if (line.includes("def")) {
+          // Python function
+          emptyFunctionPython += lines[i] + "\n";
+        } else if (line.includes("function")) {
+          // JavaScript function
+          emptyFunctionJs += lines[i] + "\n";
+        }
       }
 
       // Accumulate Test Cases
@@ -155,11 +175,20 @@ function ScreenShare(props: { channelName: string }) {
     jsUnitTest = jsUnitTest.trim();
 
     console.log("prompt\n", problemPrompt);
+    console.log("Empty Python Function\n", emptyFunctionPython);
+    console.log("Empty JavaScript Function\n", emptyFunctionJs);
     console.log("test cases\n", testCases);
     console.log("python unit test\n", pythonUnitTest);
     console.log("js unit test\n", jsUnitTest);
 
-    return { problemPrompt, testCases, pythonUnitTest, jsUnitTest };
+    return {
+      problemPrompt,
+      emptyFunctionPython,
+      emptyFunctionJs,
+      testCases,
+      pythonUnitTest,
+      jsUnitTest,
+    };
   }
 
   // If User starts screen share with the button, it will trigger an event asking them what screen they will share and render it
