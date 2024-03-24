@@ -8,7 +8,6 @@ def seed_friend_requests():
         {'sender_id': 1, 'receiver_id': 2, 'status': FriendshipStatus.PENDING},
         {'sender_id': 1, 'receiver_id': 3, 'status': FriendshipStatus.PENDING},  
         {'sender_id': 4, 'receiver_id': 1, 'status': FriendshipStatus.PENDING},
-        {'sender_id': 5, 'receiver_id': 1, 'status': FriendshipStatus.ACCEPTED}
     ]
 
     # Iterate over requests and create FriendRequest objects

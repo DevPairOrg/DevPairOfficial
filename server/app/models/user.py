@@ -75,8 +75,8 @@ class User(db.Model, UserMixin):
             data['friends'] = [friend.to_dict(include_relationships=False) for friend in self.friends]
         
         if include_friend_requests:
-            data['sentRequests'] = {request.id: request.receiver.to_dict(include_relationships=False) for request in self.sent_friend_requests if request.status == FriendshipStatus.PENDING}
-            data['receivedRequests'] = {request.id: request.sender.to_dict(include_relationships=False) for request in self.received_friend_requests if request.status == FriendshipStatus.PENDING}
+            data['sentRequests'] = {request.id: request.receiver.to_dict(include_relationships=False) for request in self.sent_friend_requests}
+            data['receivedRequests'] = {request.id: request.sender.to_dict(include_relationships=False) for request in self.received_friend_requests}
 
 
         return data
