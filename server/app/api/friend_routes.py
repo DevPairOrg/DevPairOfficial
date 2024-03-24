@@ -100,9 +100,9 @@ def send_friend_request(receiver_id):
     db.session.add(new_request)
     db.session.commit()
 
-    return {"success": "Friend request successfully sent!"}, 201
+    return {new_request.id: new_request.to_dict()}, 201
 
-@friend_routes.route('/request/accept/<int:request_id>', methods=["PUT"])
+@friend_routes.route('/request/<int:request_id>/accept', methods=["PUT"])
 @login_required
 def accept_friend_request(request_id):
     """
@@ -149,11 +149,36 @@ def accept_friend_request(request_id):
     friend_request.receiver.friends.append(friend_request.sender)
 
     db.session.commit()
-    return {"Friend": friend_request.sender.to_dict()}, 200
+    return {friend_request.id: friend_request.sender.to_dict(include_relationships=False)}, 200
 
-@friend_routes.route('/request/cancel/<int:request_id>', methods=['DELETE'])
+@friend_routes.route('/request/<int:request_id>', methods=['DELETE'])
 @login_required
 def cancel_sent_request(request_id):
+
+    """
+    @route DELETE /request/<int:request_id>
+
+    @summary Cancels a sent friend request.
+
+    @description Cancels a pending friend request sent by the logged-in user with the specified ID.
+
+    @param {int:request_id} ID of the friend request to cancel.
+
+    @returns {object} A dictionary with a success message:
+        - success (str): A message confirming successful request deletion.
+
+    @throws:
+        400 (Bad Request): 
+            - If the user tries to cancel a request they haven't sent.
+            - If the request has already been accepted, rejected, or canceled.
+        404 (Not Found): If the friend request with the provided ID is not found.
+        500 (Internal Server Error): If an unexpected error occurs during database operations.
+
+    Example Response:
+    {
+    "success": "Request successfully deleted."
+    }
+    """
 
     friend_request = FriendRequest.query.get(request_id)
 
@@ -167,3 +192,4 @@ def cancel_sent_request(request_id):
     db.session.delete(friend_request)
     db.session.commit()
     return {"success": "Request successfully deleted."}, 200
+
