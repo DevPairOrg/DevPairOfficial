@@ -31,7 +31,7 @@ function IDE(props: Props) {
     emptyFunctionJs,
   } = props;
 
-  const [value, setValue] = useState<string>("# Your Python Code Here");
+  const [value, setValue] = useState<string>(emptyFunctionPython);
   const [userResults, setUserResults] = useState<boolean[]>([]);
   const [language, setLanguage] = useState<string>("python");
 
@@ -45,6 +45,7 @@ function IDE(props: Props) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
       },
       body: JSON.stringify({
         code: value,

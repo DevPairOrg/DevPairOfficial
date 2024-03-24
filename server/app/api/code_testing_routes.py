@@ -111,39 +111,39 @@ def unit_test():
         'test_output': test_result
     })
 
-def run_python_tests(path):
-    """
-    Run User Solutions in Python
-    """
-    test_output = subprocess.check_output(['python', path], stderr=subprocess.STDOUT)
-    return test_output.decode('utf-8')
+# def run_python_tests(path):
+#     """
+#     Run User Solutions in Python
+#     """
+#     test_output = subprocess.check_output(['python', path], stderr=subprocess.STDOUT)
+#     return test_output.decode('utf-8')
 
-def run_javascript_tests(code, unit_test, test_cases):
-    """
-    Run User Solutions in JavaScript
-    """
-    # Prepare the full test code by combining the user code with the test script
-    full_test_code = code + '\n' + unit_test.strip() + '\n'
-    test_results = []
+# def run_javascript_tests(code, unit_test, test_cases):
+#     """
+#     Run User Solutions in JavaScript
+#     """
+#     # Prepare the full test code by combining the user code with the test script
+#     full_test_code = code + '\n' + unit_test.strip() + '\n'
+#     test_results = []
 
-    # Write the combined code and test script to the JavaScript test file
-    with open(userJavascriptTestPath, 'w') as file:
-        file.write(full_test_code)
+#     # Write the combined code and test script to the JavaScript test file
+#     with open(userJavascriptTestPath, 'w') as file:
+#         file.write(full_test_code)
 
-    # Iterate over each test case and execute the test
-    for case in test_cases:
-        args = ['node', userJavascriptTestPath] + case
-        try:
-            completed_process = subprocess.run(args, capture_output=True, text=True, check=True)
-            output = completed_process.stdout.strip()
-            # Determine pass or fail based on the output and append the result
-            test_results.append({'passOrFail': True if output == 'true' else False})
-        except subprocess.CalledProcessError as e:
-            # In case of a subprocess error, capture the error output
-            error_message = e.stderr.strip()
-            test_results.append({'case': case, 'error': error_message, 'success': False})
-        except Exception as e:
-            # Handle any other exceptions and record the error
-            test_results.append({'case': case, 'error': str(e), 'success': False})
+#     # Iterate over each test case and execute the test
+#     for case in test_cases:
+#         args = ['node', userJavascriptTestPath] + case
+#         try:
+#             completed_process = subprocess.run(args, capture_output=True, text=True, check=True)
+#             output = completed_process.stdout.strip()
+#             # Determine pass or fail based on the output and append the result
+#             test_results.append({'passOrFail': True if output == 'true' else False})
+#         except subprocess.CalledProcessError as e:
+#             # In case of a subprocess error, capture the error output
+#             error_message = e.stderr.strip()
+#             test_results.append({'case': case, 'error': error_message, 'success': False})
+#         except Exception as e:
+#             # Handle any other exceptions and record the error
+#             test_results.append({'case': case, 'error': str(e), 'success': False})
 
-    return test_results
+#     return test_results

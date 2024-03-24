@@ -101,21 +101,34 @@ def getRandLeetCodeResponse():
 
             1. Provide a clear and concise coding question prompt, including any specific constraints or important details. The question should ideally reflect typical coding challenges or algorithmic problems, preferrably from leetcode.
 
-            2. Provide an empty function with a name relevant to the problem for the user to have ready and within that function include the comments that 'your code goes here'. There should be a python function and a javascript function. If it's a python function, add the keyword 'pass' instead of a return and if it's a javascript function, keep it empty with just the comment.
+            2. Provide empty functions with a name relevant to the problem for the user to have ready and within that function include the comments that 'your code goes here'.
+                - There should be a python function and a javascript function.
+                    - If it's a python function, add the keyword 'pass' instead of a return
+                    - If it's a javascript function, keep it empty with just the comment and do not use an arrow function. Also, do not use python comment syntax for javascript such as the three quotations.
 
             3. List exactly three test cases for the problem. For each test case, include:
-            - INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas.
+            - INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas. If there is a target, explicitly state that as a target. For example, in 'twoSum' problem it intakes parameters of nums=[], target=#
             - OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration.
 
             4. For Python, create a unit test class using the `unittest` framework. This class should:
-            - Include a method for each test case, descriptively named to reflect the test’s intent.
+            - Include a method for each test case, descriptively named to reflect the test's intent.
             - Use assertions to compare the solution's output to the expected output.
             - Conclude with the standard boilerplate allowing direct execution of the tests.
-            -
 
             5. For JavaScript, outline a simple testing setup using console assertions. This setup should:
             - Define test cases as an array of objects, each with input and expected output.
             - Iterate over test cases, executing the solution function with each input and using `console.assert` to compare the result to the expected output.
+            - If the result should be a boolean, make sure its lowercase 'true' or 'false'
+            - Make sure to be consistent with the input, if the input is an array, do not spread the values into the function parameter, instead keep it as an array.
+            - When developing solutions that involve functions returning arrays, it's crucial to ensure that the unit tests accurately verify the results. The output of these functions often needs to be compared with an expected array of values, which requires more than a simple reference equality check. This document provides guidelines on how to set up unit tests for these scenarios, particularly focusing on JavaScript.
+                - Since arrays are compared by reference in JavaScript, directly comparing two arrays with === will not suffice for checking equality of their contents.
+                - Implement a method to compare arrays by value and order. This involves iterating over each element of the arrays and comparing them individually. Ensure that the lengths of both arrays are also equal as part of the comparison.
+                - Assertion Example:
+                testCases.forEach(({input, expected}, index) => {
+                    const result = functionName(input); // functionName is your function
+                    const arraysAreEqual = expected.every((value, index) => value === result[index]) && expected.length === result.length;
+                    console.assert(arraysAreEqual, `Test case ${index + 1} failed with output ${result}`);
+                });
 
             Ensure both testing sections are correctly formatted for their respective languages.
 
@@ -174,7 +187,9 @@ def getRandLeetCodeResponse():
             ];
 
             testCases.forEach(({input, expected}, index) => {
-                console.assert(solution(...input) === expected, `Test case ${index + 1} failed`);
+                const result = nameOfFunction(input);
+                console.assert(nameOfFunction(input) === expected, `Test case ${index + 1} failed`);
+                console.log(`Test case ${index + 1}`, expected === result);
             });
         """
     )
