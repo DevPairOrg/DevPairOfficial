@@ -14,41 +14,38 @@ export function parseCode(code: string) {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
 
-    // Problem Prompt
     if (line.startsWith("QUESTION PROMPT:")) {
       problemPrompt = lines[i + 1].trim();
     }
 
-    // Start of Empty Functions Section
-    if (line === "EMPTY FUNCTION:") {
+    if (line === "EMPTY FUNCTION:" || line === "EMPTY FUNCTIONS:") {
       isEmptyFunctionSection = true;
       continue;
     }
 
-    // Start of Test Cases Section
     if (line === "TEST CASES:") {
       isTestCaseSection = true;
       continue;
     }
 
-    // End of Test Cases Section and start of Python Unit Testing
     if (line === "PYTHON UNIT TESTING:") {
       isTestCaseSection = false;
       isPythonSection = true;
       continue; // Skip the heading line
     }
 
-    // Handling for JavaScript Unit Testing section
     if (line === "JAVASCRIPT UNIT TESTING:") {
       isJsSection = true;
       isPythonSection = false; // Ensure Python section is disabled
       continue; // Skip the heading line
     }
 
-    // Adjust the Accumulate Empty Functions section
+    // Section: Handle if conditionals above depending on if it's true or false
+    console.log("🥵🥵🥵outside empty functions");
     if (isEmptyFunctionSection) {
-      if (line.startsWith("def") && !emptyFunctionPython) {
-        // Start capturing the Python function
+      console.log("😨😨😨in the empty function section");
+      if (line.startsWith("def") && emptyFunctionPython === "") {
+        console.log("🙄🙄🙄line in python function", line);
         emptyFunctionPython += line + "\n"; // Add the current line
         let j = i + 1;
         while (
@@ -59,8 +56,8 @@ export function parseCode(code: string) {
           j++;
         }
         i = j - 1; // Skip the processed lines
-      } else if (line.startsWith("function") && !emptyFunctionJs) {
-        // Start capturing the JavaScript function
+      } else if (line.startsWith("function") && emptyFunctionJs === "") {
+        console.log("😎😎😎line in js function", line);
         emptyFunctionJs += line + "\n"; // Add the current line
         let j = i + 1;
         while (j < lines.length && lines[j].trim() !== "}") {

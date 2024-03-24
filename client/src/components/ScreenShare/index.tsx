@@ -97,7 +97,14 @@ function ScreenShare(props: { channelName: string }) {
     }
   };
 
+  const handleParse = () => {
+    console.log("🤡🤡🤡gemini problem", geminiProblem);
+    const parsedResponse = parseCode(geminiProblem);
 
+    console.log(parsedResponse);
+
+    return;
+  };
 
   // If User starts screen share with the button, it will trigger an event asking them what screen they will share and render it
   const renderContent = () => {
@@ -131,6 +138,7 @@ function ScreenShare(props: { channelName: string }) {
     } else if (generatedProblem === true) {
       return (
         <>
+          <button onClick={handleParse}>PARSE AGAIN</button>
           <div id="ide-main-container">
             <IDE
               prompt={parsedResponse?.problemPrompt}

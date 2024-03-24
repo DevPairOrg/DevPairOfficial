@@ -1,23 +1,25 @@
-function twoSum(nums, target) {
+function maxSubArray(nums) {
     // Your code goes here
-  const map = {};
-    for (let i = 0; i < nums.length; i++) {
-        const complement = target - nums[i];
-        if (map.hasOwnProperty(complement)) {
-            return [map[complement], i];
-        }
-        map[nums[i]] = i;
+  let maxSum = nums[0];
+    let currentSum = nums[0];
+    
+    for (let i = 1; i < nums.length; i++) {
+        currentSum = Math.max(nums[i], currentSum + nums[i]);
+        maxSum = Math.max(maxSum, currentSum);
     }
+    
+    return maxSum;
 }
 
 
 const testCases = [
-    {input: {nums: [2, 7, 11, 15], target: 9}, expected: [0, 1]},
-    {input: {nums: [3, 2, 4], target: 6}, expected: [1, 2]},
-    {input: {nums: [3, 3], target: 6}, expected: [0, 1]}
+    {input: [-2,1,-3,4,-1,2,1,-5,4], expected: 6},
+    {input: [1], expected: 1},
+    {input: [5,4,-1,7,8], expected: 23}
 ];
 
 testCases.forEach(({input, expected}, index) => {
-    console.assert(twoSum(input.nums, input.target).toString() === expected.toString(), `Test case ${index + 1} failed`);
-    console.log(`Test case ${index + 1}`, twoSum(input.nums, input.target), expected);
+    const result = maxSubArray(input);
+    console.assert(maxSubArray(input) === expected, `Test case ${index + 1} failed`);
+    console.log(`Test case ${index + 1}`, expected === result);
 });
