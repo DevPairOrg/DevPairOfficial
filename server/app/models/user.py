@@ -2,6 +2,7 @@ from .db import db, environment, SCHEMA, add_prefix_for_prod
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 import uuid
+from .friends import FriendshipStatus
 
 
 class User(db.Model, UserMixin):
@@ -74,8 +75,8 @@ class User(db.Model, UserMixin):
             data['friends'] = [friend.to_dict(include_relationships=False) for friend in self.friends]
         
         if include_friend_requests:
-            data['sentRequests'] = {request.id: request.receiver.to_dict(include_relationships=False) for request in self.sent_friend_requests}
-            data['receivedRequests'] = {request.id: request.sender.to_dict(include_relationships=False) for request in self.received_friend_requests}
+            data['sentRequests'] = {request.id: request.receiver.to_dict(include_relationships=False) for request in self.sent_friend_requests if request.status == FriendshipStatus.PENDING}
+            data['receivedRequests'] = {request.id: request.sender.to_dict(include_relationships=False) for request in self.received_friend_requests if request.status == FriendshipStatus.PENDING}
 
 
         return data

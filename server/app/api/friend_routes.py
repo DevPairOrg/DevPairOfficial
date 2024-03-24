@@ -106,7 +106,7 @@ def send_friend_request(receiver_id):
 @login_required
 def accept_friend_request(request_id):
     """
-    @route PUT /request/accept/<int:request_id>
+    @route PUT /request/<int:request_id>/accept
 
     @summary Accepts a pending friend request.
 
@@ -193,3 +193,45 @@ def cancel_sent_request(request_id):
     db.session.commit()
     return {"success": "Request successfully deleted."}, 200
 
+@friend_routes.route('/request/<int:request_id>/reject', methods=['DELETE'])
+@login_required
+def reject_friend_request(request_id):
+
+    """
+    @route DELETE /request/<int:request_id>/reject
+
+    @summary Rejects a received friend request.
+
+    @description Rejects a pending friend request received by the logged-in user with the specified ID,
+    removing it from both users' friend request lists.
+
+    @param {int:request_id} ID of the friend request to reject.
+
+    @returns {object} A dictionary with a success message:
+        - success (str): A message confirming successful request rejection.
+
+    @throws:
+        400 (Bad Request): 
+            - If the user tries to reject a request they haven't received.
+            - If the request has already been accepted, rejected, or canceled.
+        404 (Not Found): If the friend request with the provided ID is not found.
+        500 (Internal Server Error): If an unexpected error occurs during database operations.
+
+    Example Response:
+    {
+    "success": "Request successfully rejected."
+    }
+    """
+
+    friend_request = FriendRequest.query.get(request_id)
+
+    if not friend_request:
+        return {"error": "Friend request not found."}, 404
+    if friend_request.receiver != current_user:
+        return {"error": "You can only reject requests sent to you."}, 400
+    if friend_request.status != FriendshipStatus.PENDING:
+        return {"error": "This friend request has already been accepted or rejected."}, 400
+
+    db.session.delete(friend_request)
+    db.session.commit()
+    return {"success": "Request successfully rejected."}, 200
