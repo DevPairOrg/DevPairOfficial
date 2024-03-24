@@ -5,41 +5,6 @@ from .auth_routes import validation_errors_to_error_messages
 
 friend_routes = Blueprint('friends', __name__)
 
-@friend_routes.route('/<int:UserId>')
-def get_user_friends(UserId):
-
-    """
-    @route GET /api/friends/<int:UserId>
-
-    @summary Retrieves a user's friends (accepted) and pending friend requests.
-
-    @description Returns a dictionary containing friend data for current friends and pending requests (sent and received).
-
-    @param {int:UserId} ID of the user to retrieve connections for.
-
-    @returns {object} Friend list, sent & received friend requests (pending).
-
-    @throws {404} User not found.
-
-    Example Response:
-    {
-    "Friends": {...},
-    "Sent": {...},
-    "Received": {...},
-    }
-    """
-    user = User.query.get(UserId)
-
-
-    if not user:
-        return {"error": "User not found"}, 404
-    
-    friends = {friend.id: friend.to_dict() for friend in user.friends.all()}
-    sent_requests = {friend.receiver.id: friend.receiver.to_dict() for friend in user.sent_friend_requests if friend.status == FriendshipStatus.PENDING}
-    received_requests = {friend.sender.id: friend.sender.to_dict() for friend in user.received_friend_requests if friend.status == FriendshipStatus.PENDING}
-
-    return {"Friends": friends, "Sent": sent_requests, "Received": received_requests}
-
 @friend_routes.route('/request/<int:receiver_id>', methods=["POST"])
 @login_required
 def send_friend_request(receiver_id):
@@ -139,15 +104,12 @@ def accept_friend_request(request_id):
         return {"error": "Friend request not found."}, 404
     if friend_request.receiver != current_user:
         return {"error": "You can only accept requests you have received."}, 400
-    if friend_request.status != FriendshipStatus.PENDING:
-        return {"error": "You have already responded to this friend request."}, 400
     
-    # Update friend request status
-    friend_request.status = FriendshipStatus.ACCEPTED
     # Add users to each others friend lists
     friend_request.sender.friends.append(friend_request.receiver)
     friend_request.receiver.friends.append(friend_request.sender)
 
+    db.session.delete(friend_request)
     db.session.commit()
     return {friend_request.id: friend_request.sender.to_dict(include_relationships=False)}, 200
 
@@ -229,9 +191,48 @@ def reject_friend_request(request_id):
         return {"error": "Friend request not found."}, 404
     if friend_request.receiver != current_user:
         return {"error": "You can only reject requests sent to you."}, 400
-    if friend_request.status != FriendshipStatus.PENDING:
-        return {"error": "This friend request has already been accepted or rejected."}, 400
 
     db.session.delete(friend_request)
     db.session.commit()
     return {"success": "Request successfully rejected."}, 200
+
+@friend_routes.route('/<int:friend_id>', methods=['DELETE'])
+@login_required
+def unfriend(friend_id):
+    """
+    @route DELETE /<int:friend_id>
+
+    @summary Unfriends another user.
+
+    @description Removes the friendship between the logged-in user and the user with the specified ID.
+    This action deletes both the friend association and any pending friend requests (sent or received)
+    between the two users.
+
+    @param {int:friend_id} ID of the user to unfriend.
+
+    @returns {object} A dictionary with a success message:
+        - success (str): A message confirming successful unfriending.
+
+    @throws:
+        400 (Bad Request): If the user tries to unfriend themself.
+        404 (Not Found): If the user with the provided ID is not found.
+        500 (Internal Server Error): If an unexpected error occurs during database operations.
+
+    Example Response:
+    {
+    "success": "Successfully unfriended user."
+    }
+    """
+    if friend_id == current_user.id:
+        return {"error": "You cannot unfriend yourself."}, 400
+
+    friend = User.query.get(friend_id)
+    if not friend:
+        return {"error": "User not found."}, 404
+    
+    # Delete friend association (remove from each other's friend lists)
+    current_user.friends.remove(friend)
+    friend.friends.remove(current_user)
+
+    db.session.commit()
+    return {"success": "Successfully unfriended user."}, 200
