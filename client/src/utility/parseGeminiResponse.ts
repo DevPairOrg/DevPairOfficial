@@ -41,11 +41,9 @@ export function parseCode(code: string) {
     }
 
     // Section: Handle if conditionals above depending on if it's true or false
-    console.log("🥵🥵🥵outside empty functions");
     if (isEmptyFunctionSection) {
       console.log("😨😨😨in the empty function section");
       if (line.startsWith("def") && emptyFunctionPython === "") {
-        console.log("🙄🙄🙄line in python function", line);
         emptyFunctionPython += line + "\n"; // Add the current line
         let j = i + 1;
         while (
@@ -57,7 +55,6 @@ export function parseCode(code: string) {
         }
         i = j - 1; // Skip the processed lines
       } else if (line.startsWith("function") && emptyFunctionJs === "") {
-        console.log("😎😎😎line in js function", line);
         emptyFunctionJs += line + "\n"; // Add the current line
         let j = i + 1;
         while (j < lines.length && lines[j].trim() !== "}") {
