@@ -15,12 +15,15 @@ import RemoteAndLocalVolumeComponent from "../../AgoraManager/volumeControl";
 import shareScreenPlaceholder from "../../assets/images/share-screen-holder.webp";
 import IDE from "../CodeMirror";
 import { python } from "@codemirror/lang-python";
+import { parseCode } from "../../utility/parseGeminiResponse";
 
 interface parsedData {
   problemPrompt: string;
   testCases: string;
   pythonUnitTest: string;
   jsUnitTest: string;
+  emptyFunctionPython: string;
+  emptyFunctionJs: string;
 }
 
 function ScreenShare(props: { channelName: string }) {
@@ -94,102 +97,7 @@ function ScreenShare(props: { channelName: string }) {
     }
   };
 
-  function parseCode(code: string) {
-    const lines = code.split("\n");
-    let problemPrompt = "";
-    let emptyFunctionPython = "";
-    let emptyFunctionJs = "";
-    let testCases = "";
-    let pythonUnitTest = "";
-    let jsUnitTest = "";
-    let isPythonSection = false;
-    let isJsSection = false;
-    let isTestCaseSection = false;
-    let isEmptyFunctionSection = false;
 
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-
-      // Problem Prompt
-      if (line.startsWith("QUESTION PROMPT:")) {
-        problemPrompt = lines[i + 1].trim();
-      }
-
-      // Start of Empty Functions Section
-      if (line === "EMPTY FUNCTION:") {
-        isEmptyFunctionSection = true;
-        continue;
-      }
-
-      // Start of Test Cases Section
-      if (line === "TEST CASES:") {
-        isTestCaseSection = true;
-        continue;
-      }
-
-      // End of Test Cases Section and start of Python Unit Testing
-      if (line === "PYTHON UNIT TESTING:") {
-        isTestCaseSection = false;
-        isPythonSection = true;
-        continue; // Skip the heading line
-      }
-
-      // Handling for JavaScript Unit Testing section
-      if (line === "JAVASCRIPT UNIT TESTING:") {
-        isJsSection = true;
-        isPythonSection = false; // Ensure Python section is disabled
-        continue; // Skip the heading line
-      }
-
-      // Accumulate Empty Functions
-      if (isEmptyFunctionSection) {
-        if (line.includes("def")) {
-          // Python function
-          emptyFunctionPython += lines[i] + "\n";
-        } else if (line.includes("function")) {
-          // JavaScript function
-          emptyFunctionJs += lines[i] + "\n";
-        }
-      }
-
-      // Accumulate Test Cases
-      if (isTestCaseSection) {
-        testCases += lines[i] + "\n";
-      }
-
-      // Accumulate Python Unit Test
-      if (isPythonSection) {
-        pythonUnitTest += lines[i] + "\n";
-      }
-
-      // Accumulate JavaScript Unit Test
-      if (isJsSection) {
-        jsUnitTest += lines[i] + "\n";
-      }
-    }
-
-    // Trim the final strings to remove unnecessary new lines
-    problemPrompt = problemPrompt.trim();
-    testCases = testCases.trim();
-    pythonUnitTest = pythonUnitTest.trim();
-    jsUnitTest = jsUnitTest.trim();
-
-    console.log("prompt\n", problemPrompt);
-    console.log("Empty Python Function\n", emptyFunctionPython);
-    console.log("Empty JavaScript Function\n", emptyFunctionJs);
-    console.log("test cases\n", testCases);
-    console.log("python unit test\n", pythonUnitTest);
-    console.log("js unit test\n", jsUnitTest);
-
-    return {
-      problemPrompt,
-      emptyFunctionPython,
-      emptyFunctionJs,
-      testCases,
-      pythonUnitTest,
-      jsUnitTest,
-    };
-  }
 
   // If User starts screen share with the button, it will trigger an event asking them what screen they will share and render it
   const renderContent = () => {
@@ -229,6 +137,8 @@ function ScreenShare(props: { channelName: string }) {
               testCases={parsedResponse?.testCases}
               pythonUnitTest={parsedResponse?.pythonUnitTest}
               jsUnitTest={parsedResponse?.jsUnitTest}
+              emptyFunctionPython={parsedResponse?.emptyFunctionPython}
+              emptyFunctionJs={parsedResponse?.emptyFunctionJs}
             />
           </div>
         </>

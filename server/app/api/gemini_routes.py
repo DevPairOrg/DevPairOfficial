@@ -101,7 +101,7 @@ def getRandLeetCodeResponse():
 
             1. Provide a clear and concise coding question prompt, including any specific constraints or important details. The question should ideally reflect typical coding challenges or algorithmic problems, preferrably from leetcode.
 
-            2. Provide an empty function with a name relevant to the problem for the user to have ready and within that function include the comments that 'your code goes here'. If it's a python function, add the keyword 'pass' instead of a return and if it's a javascript function, keep it empty with just the comment.
+            2. Provide an empty function with a name relevant to the problem for the user to have ready and within that function include the comments that 'your code goes here'. There should be a python function and a javascript function. If it's a python function, add the keyword 'pass' instead of a return and if it's a javascript function, keep it empty with just the comment.
 
             3. List exactly three test cases for the problem. For each test case, include:
             - INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas.
