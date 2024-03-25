@@ -23,7 +23,6 @@ function RemoteAndLocalVolumeComponent(props: {
     }
     // console.log("newvolume", newVolume);
     agoraContext.localMicrophoneTrack?.setVolume(newVolume);
-    console.log("AGORA MIC", agoraContext.localMicrophoneTrack)
     setChecked(!checked);
   };
 

@@ -53,11 +53,13 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
     }, [localCameraTrack])
 
 
-    useEffect(() => {
-        if(pairInfo) {
-            setIsFollowed(user?.following.find(pair => +pair.followed_id === +pairInfo.id) ? true : false)
-        }
-    }, [pairInfo])
+    //! NEEDED TO COMMENT OUT THIS UseEffect() BECAUSE IT WAS BREAKING WHEN TRYING TO PAIR WITH TWO PEOPLE AFTER MODEL FRIENDREQUEST RE-WORK WAS IMPLEMENTED
+    // useEffect(() => {
+    //     if(pairInfo) {
+    //         setIsFollowed(user?.following.find(pair => +pair.followed_id === +pairInfo.id) ? true : false)
+    //     }
+    // }, [pairInfo])
+    //! //! NEEDED TO COMMENT OUT THIS UseEffect() BECAUSE IT WAS BREAKING WHEN TRYING TO PAIR WITH TWO PEOPLE AFTER MODEL FRIENDREQUEST RE-WORK WAS IMPLEMENTED
 
     usePublish([localMicrophoneTrack, localCameraTrack]);
 
