@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
 from io import StringIO
 import subprocess, sys, asyncio, pathlib, os, unittest, json
-from deno_vm import VM
+# from deno_vm import VM
 
 code_testing_routes = Blueprint('problem', __name__)
 

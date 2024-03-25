@@ -12,7 +12,7 @@ export function parseCode(code: string) {
   let isEmptyFunctionSection = false;
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
+    const line = lines[i].trim().replace(/\*/g, '').replace(/`/g, '');
 
     if (line.startsWith("QUESTION PROMPT:")) {
       problemPrompt = lines[i + 1].trim();
