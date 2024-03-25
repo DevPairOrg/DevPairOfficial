@@ -47,25 +47,37 @@ def send_friend_request(receiver_id):
     }
     """
 
-    # Validate and retrieve the receiver user
-    receiver = User.query.get(receiver_id)
-    if not receiver:
-        return {"error": "User not found"}, 404
+        # Validate receiver ID
+    if not isinstance(receiver_id, int):
+        return {"error": "Invalid receiver ID"}, 400
     
-    # Check for existing friend request 
-    existing_request = FriendRequest.query.filter(
-    (FriendRequest.sender == current_user) & (FriendRequest.receiver == receiver) |
-    (FriendRequest.sender == receiver) & (FriendRequest.receiver == current_user)
-    ).first()
-    if existing_request:
-        return {"error": "Friend Request already exists"}, 409
-    
-    # Create new friend request
-    new_request = FriendRequest(sender=current_user, receiver=receiver)
-    db.session.add(new_request)
-    db.session.commit()
+    try:
+        # Validate and retrieve the receiver user
+        receiver = User.query.get(receiver_id)
+        if not receiver:
+            return {"error": "User not found"}, 404
+        
+        # Check for existing friendship
+        if current_user.is_friends(receiver):
+            return {"error": "Already friends"}, 400
+        
+        # Check for existing friend request 
+        existing_request = FriendRequest.query.filter(
+            (FriendRequest.sender_id == current_user.id & FriendRequest.receiver_id == receiver_id) |
+            (FriendRequest.sender_id == receiver_id & FriendRequest.receiver_id == current_user.id)
+        ).first()
 
-    return {new_request.id: new_request.to_dict()}, 201
+        if existing_request:
+            return {"error": "Friend Request already exists"}, 400
+        
+        # Create new friend request
+        new_request = FriendRequest(sender=current_user, receiver=receiver)
+        db.session.add(new_request)
+        db.session.commit()
+
+        return {new_request.id: new_request.to_dict()}, 201
+    except:
+        return {"error": "Internal Server Error"}, 500
 
 @friend_routes.route('/request/<int:request_id>/accept', methods=["PUT"])
 @login_required

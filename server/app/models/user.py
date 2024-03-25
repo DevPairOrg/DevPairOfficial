@@ -80,3 +80,16 @@ class User(db.Model, UserMixin):
 
 
         return data
+    
+    def is_friends(self, other_user):
+        """
+        Checks if the current user is friends with another user.
+
+        Args:
+            other_user (User): The user to check friendship with.
+
+        Returns:
+            bool: True if friends, False otherwise.
+        """
+
+        return other_user in self.friends
