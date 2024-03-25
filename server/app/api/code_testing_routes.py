@@ -16,6 +16,7 @@ def unit_test():
     code = request_data.get('code')
     language = request_data.get('language')
     problem_unit_test = request_data.get('problemUnitTest')
+    test_result = {}
 
     print('😚😉😎🙂☺🙂🤗😋', '\n', problem_unit_test)
 
@@ -29,6 +30,9 @@ def unit_test():
     # Combine user code and unit tests into one file
     full_code = code + "\n\n" + problem_unit_test
 
+    # Determine the test file based on language
+    testing_language = 'python' if language == 'python' else 'node'
+
     try:
         with open(file_path, write_mode) as file:
             file.write(full_code)
@@ -37,18 +41,29 @@ def unit_test():
 
     # Execute the tests
     try:
-        if language == 'python':
-            test_output = subprocess.check_output(['python', file_path], stderr=subprocess.STDOUT)
-            test_result = test_output.decode('utf-8')
-        elif language == 'javascript':
-            test_output = subprocess.check_output(['node', file_path], stderr=subprocess.STDOUT)
-            test_result = test_output.decode('utf-8')
-        else:
-            return jsonify({'error': f"Testing for language '{language}' not implemented"}), 400
+        test_output = subprocess.check_output([testing_language, file_path], stderr=subprocess.STDOUT).decode('utf-8')
+        for line in test_output.split('\n'):
+            parts = line.split()  # Split the line into parts by whitespace
+            if len(parts) >= 3:
+                # Handle 'Assertion failed' similarly in Python and JavaScript
+                if parts[0] == 'Assertion' and parts[1] == 'failed:':
+                    # Construct the key without 'Assertion failed:'
+                    key = " ".join(parts[2:-1])
+                else:
+                    key = " ".join(parts[:-1])
+
+                result = parts[-1].lower() == 'true'
+                test_result[key.strip()] = result
+            elif line.strip():  # Check if the line is not just empty or whitespace
+                print(f"Warning: Line does not conform to expected format and will be skipped: '{line}'")
+
+        print('😋😋😋😋😋😋😋😋 test_result: ', test_result)
+
     except subprocess.CalledProcessError as e:
-        test_result = e.output.decode('utf-8')
+        # Handle process errors, for example, when the test script itself fails
+        test_result = {'error': e.output.decode('utf-8')}
 
     return jsonify({
         'message': 'Unit test results',
-        'test_output': test_result
+        'testResults': test_result
     })
