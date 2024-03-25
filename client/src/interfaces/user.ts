@@ -15,8 +15,12 @@ export interface User {
     portfolio: string;
     leetcode: string;
 
-    following: FollowingObject[];
-    followers: FollowingObject[];
+    following: FollowingObject[];  //! No Longer Needed
+    followers: FollowingObject[];  //! No Longer Needed
+
+    friends: User[]
+    sentRequests: {requestId: User} // User = user that the request is going to
+    receivedRequests: {requestId: User} // User = user that sent YOU a request
 
     errors: string;
 }
