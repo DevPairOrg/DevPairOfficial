@@ -12,12 +12,18 @@ function RemoteAndLocalVolumeComponent(props: {
   const remoteUsers = useRemoteUsers();
   const { screenSharing, setScreenSharing } = props;
   const [checked, setChecked] = useState<boolean>(true);
-  const pairInfo = useAppSelector((state) => state.pairedUser.user);
+  const pairInfo = useAppSelector((state) => state.chatRoom.user);
 
   const handleLocalAudioToggle = () => {
     const newVolume = checked === false ? 100 : 0;
+    if(checked === true) {
+      agoraContext.localMicrophoneTrack?.setMuted(true)
+    } else {
+      agoraContext.localMicrophoneTrack?.setMuted(false)
+    }
     // console.log("newvolume", newVolume);
     agoraContext.localMicrophoneTrack?.setVolume(newVolume);
+    console.log("AGORA MIC", agoraContext.localMicrophoneTrack)
     setChecked(!checked);
   };
 

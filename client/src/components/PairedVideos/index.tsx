@@ -23,7 +23,7 @@ import { pairFollow, pairUnfollow } from '../../store/session';
 
 function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void }) {
     const user = useAppSelector((state) => state.session.user);
-    const pairInfo = useAppSelector((state) => state.pairedUser.user);
+    const pairInfo = useAppSelector((state) => state.chatRoom.user);
     const { channelName, leaveRoomHandler } = props;
     const [myCameraTrack, setMyCameraTrack] = useState<ICameraVideoTrack | undefined>(undefined)
     const { isLoading: isLoadingMic, localMicrophoneTrack } = useLocalMicrophoneTrack();
@@ -140,4 +140,3 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
 }
 
 export default PairedVideos;
-
