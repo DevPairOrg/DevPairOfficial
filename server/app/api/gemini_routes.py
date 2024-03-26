@@ -7,9 +7,175 @@ gemini_routes = Blueprint('gemini', __name__)
 # initialize gemini chatbot
 convo = initGlobalGeminiConvo()
 
+@gemini_routes.route('/')
+def getLeetCodeResponseBits():
+    """
+    This route breaks down the prompt into small bits for gemini 1.0 to consume and produce accurate responses; also to prevent recitation errors
+    """
+    print('🥱🥱🥱 Generating Problem, please wait.')
+
+
+    convo.send_message(
+        """
+            IMPORTANT: Please adhere to the following structure when requesting solutions and tests for coding problems.
+
+            For the entire structured response STRICTLY DO NOT include any markdowns such as:
+            (i.e. **BOLD**)
+            (i.e. ```javascript)
+            (i.e. ```python)
+
+            1. Pull a coding question from leetcode in the following format and do not assign types to the function parameters. Use just variable names:
+
+            PROBLEM NAME:
+            "Name of Problem"
+
+            QUESTION PROMPT:
+            "Describe the coding problem here, including constraints or relevant details."
+        """
+    )
+
+    name_and_prompt = convo.last.text
+
+    convo.send_message(
+        f"""
+            IMPORTANT:
+            - Please adhere to the following structure when requesting solutions and tests for coding problems.
+            - Keep it relevant to our conversation, {name_and_prompt}
+
+            For the entire structured response STRICTLY DO NOT include any markdowns such as:
+            (i.e. **BOLD**)
+            (i.e. ```javascript)
+            (i.e. ```python)
+
+            1. Empty Functions:
+            Provide empty functions with names relevant to the problem.
+            Include comments within the functions stating "Your code goes here."
+            Include two separate functions -- one for python and one for javascript.
+            Python: Use pass instead of a return statement within the empty function.
+            JavaScript: Keep the function empty with just the comment and avoid using arrow functions. Do not use Python comment syntax for JavaScript (triple quotes).
+            Parameters for both functions should not have a type assigned to them.
+
+            Follow this Example Format:
+
+            EMPTY FUNCTION:
+            def nameOfFunction(input parameters):
+                # Your code goes here
+                pass
+
+            function nameOfFunction(input parameters) {{
+                // Your code goes here
+            }}
+        """
+    )
+
+    default_function_names = convo.last.text
+
+    convo.send_message(
+        f"""
+            IMPORTANT:
+            - Please adhere to the following structure when requesting solutions and tests for coding problems.
+            - Keep it relevant to our conversation, {name_and_prompt}
+
+            For the entire structured response STRICTLY DO NOT include any markdowns such as:
+            (i.e. **BOLD**)
+            (i.e. ```javascript)
+            (i.e. ```python)
+
+            1. Test Cases:
+            List no more than three test cases that are provided on leetcode.
+            For each test case, include:
+            INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas. If there's a target, explicitly state it (e.g., "target=#").
+            OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt.
+
+            Follow the follwing example format:
+            TEST CASES:
+            - INPUT: [First input], [Second input if necessary]
+            - OUTPUT: [Expected output]
+            - INPUT: [First input], [Second input if necessary]
+            - OUTPUT: [Expected output]
+            - INPUT: [First input], [Second input if necessary]
+            - OUTPUT: [Expected output]
+        """
+    )
+
+    test_cases = convo.last.text
+
+    convo.send_message(
+        f"""
+            Important: Create unit tests in python and javascript based on the instructions provided below. The tests should all be relevant to the problem {name_and_prompt} which you gave me in our previous conversation and test specifically for the {test_cases}
+
+            1. Python Unit Testing:
+            Create a unit test class using the unittest framework.
+            Include a method for each test case, descriptively named to reflect the test's intent.
+            Use assertions to compare the solution's output to the expected output.
+            Conclude with the standard boilerplate allowing direct execution of the tests.
+
+            2. JavaScript Unit Testing:
+            Define test cases as an array of objects, each with input and expected output.
+            Iterate over test cases, executing the solution function with each input and using console.assert to compare the result to the expected output.
+            Make sure to be consistent with input formatting (e.g., keep arrays as arrays, don't spread them).
+
+            For solutions returning arrays:
+            Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.
+            Use this method within console.assert to verify the expected array structure and content.
+
+            Remember:
+            Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
+            Maintain proper formatting for test case inputs and outputs.
+
+            Follow the following example format:
+
+            PYTHON UNIT TESTING:
+            import unittest
+
+            class SolutionTest(unittest.TestCase):
+                def test_case_1(self):
+                    # Test case 1 logic here
+                    self.assertEqual(actual_result, expected_result)
+
+                def test_case_2(self):
+                    # Test case 2 logic here
+                    self.assertEqual(actual_result, expected_result)
+
+                def test_case_3(self):
+                    # Test case 3 logic here
+                    self.assertEqual(actual_result, expected_result)
+
+            if __name__ == '__main__':
+                unittest.main()
+
+            (do not include this line: these test cases should be pulled from leetcode)
+            JAVASCRIPT UNIT TESTING:
+            const testCases = [
+                {{input: [First input], expected: [Expected output]}},
+                {{input: [Second input], expected: [Expected output]}},
+                {{input: [Third input], expected: [Expected output]}}
+            ];
+
+            (do not include this line: this test function below is explicitly an example for array comparisons for test cases. otherwise use a standard test case. if dealing with subarrays, implement a proper method for comparing the the subarray results to the expected results)
+            testCases.forEach(({{ input, expected }}, index) => {{
+                const result = nameOfFunction(input.nums, input.target);
+                console.assert(arraysEqual(result, expected), `Test case ${{index + 1}} failed`);
+                console.log(`Test case ${{index + 1}}`, JSON.stringify(expected) === JSON.stringify(result));
+            }});
+
+            function arraysEqual(a, b) {{
+                return a.length === b.length && a.every((value, index) => value === b[index]);
+            }}
+        """
+    )
+
+    unit_tests = convo.last.text
+
+    print('😁😁😁 name & prompt', name_and_prompt)
+    print('😁😁😁 default fn names', default_function_names)
+    print('😁😁😁 test cases', test_cases)
+    print('😁😁😁 unit tests', unit_tests)
+    return {'geminiResponse': 'still testing bro'}
+
 
 # TEST ROUTE
-@gemini_routes.route('/')
+@gemini_routes.route('/recitation')
 def getRandLeetCodeResponse():
     """
     Generate Random LeetCode Prompt Response
@@ -28,7 +194,6 @@ def getRandLeetCodeResponse():
 
             1. Coding Question Prompt:
             Pull a random question prompt strictly from leetcode.
-            Do not pull the same question prompt that was generated prior.
             Do not assign types to the function parameters. Use just variable names.
 
             2. Empty Functions:
@@ -40,7 +205,7 @@ def getRandLeetCodeResponse():
             Parameters for both functions should not have a type assigned to them.
 
             3. Test Cases:
-            List a maximum amount of three test cases that are given from leetcode.
+            List no more than three test cases that are provided on leetcode.
             For each test case, include:
             INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas. If there's a target, explicitly state it (e.g., "target=#").
             OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt.
@@ -64,7 +229,10 @@ def getRandLeetCodeResponse():
             Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
             Maintain proper formatting for test case inputs and outputs.
 
-            Your response should be this in this structure very concisely.
+            Your response should be this in this structure very concisely:
+
+            PROBLEM NAME:
+            "Name of Problem"
 
             QUESTION PROMPT:
             "Describe the coding problem here, including constraints or relevant details."
@@ -105,18 +273,12 @@ def getRandLeetCodeResponse():
             if __name__ == '__main__':
                 unittest.main()
 
+            (do not include this line: these test cases should be pulled from leetcode)
             JAVASCRIPT UNIT TESTING:
             const testCases = [
                 {input: [First input], expected: [Expected output]},
                 {input: [Second input], expected: [Expected output]},
                 {input: [Third input], expected: [Expected output]}
-            ];
-
-            (do not include this line: before producing these test cases with inputs and outputs, make sure you test them beforehand with your database or leetcode test cases to ensure that they the inputs give the correct expected output)
-            const testCases = [
-                { input: { nums: [2, 7, 11, 15], target: 9 }, expected: [0, 1] },
-                { input: { nums: [3, 2, 4], target: 6 }, expected: [1, 2] },
-                { input: { nums: [3, 3], target: 6 }, expected: [0, 1] },
             ];
 
             (do not include this line: this test function below is explicitly an example for array comparisons for test cases. otherwise use a standard test case. if dealing with subarrays, implement a proper method for comparing the the subarray results to the expected results)
@@ -132,6 +294,12 @@ def getRandLeetCodeResponse():
         """
     )
 
+    # THIS IS WORKING WITHOUT RECITATION ERROR - UNLIKE THE ABOVE ONE
+    #
+    #
+    #
+    #
+    #
     # WORKING PROMPT WITH CONSISTENT STRUCTURE - TESTING ONE MORE (ABOVE PROMPT)
     # convo.send_message(
     #     """

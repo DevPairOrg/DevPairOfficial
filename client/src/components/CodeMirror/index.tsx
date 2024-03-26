@@ -6,6 +6,7 @@ import { dracula } from "@uiw/codemirror-theme-dracula";
 import "./index.css";
 
 interface Props {
+  name: string;
   prompt: string;
   testCases: string;
   pythonUnitTest: string;
@@ -16,6 +17,7 @@ interface Props {
 
 function IDE(props: Props) {
   const {
+    name,
     prompt,
     testCases,
     pythonUnitTest,
@@ -93,7 +95,8 @@ function IDE(props: Props) {
     <>
       <div id="ide-container">
         <div>
-          <div>Problem: {prompt && prompt}</div>
+          <div>Problem Name: {name && name}</div>
+          <div>Prompt: {prompt && prompt}</div>
           <pre>{testCases && testCases}</pre>
         </div>
         <div>

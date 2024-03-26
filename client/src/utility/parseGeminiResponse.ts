@@ -1,5 +1,6 @@
 export function parseCode(code: string) {
   const lines = code.split("\n");
+  let problemName = "";
   let problemPrompt = "";
   let emptyFunctionPython = "";
   let emptyFunctionJs = "";
@@ -11,6 +12,7 @@ export function parseCode(code: string) {
   let isJsSection = false;
   let isTestCaseSection = false;
   let isEmptyFunctionSection = false;
+  let isProblemName = false;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
@@ -18,14 +20,21 @@ export function parseCode(code: string) {
       .replace(/\*|`/g, "")
       .replace(/```javascript|```python|```/g, "");
 
+    if (line.startsWith("PROBLEM NAME:")) {
+      isProblemName = true;
+      continue;
+    }
+
     if (line.startsWith("QUESTION PROMPT:")) {
       isProblemPromptSection = true;
+      isProblemName = false;
       continue;
     }
 
     if (line === "EMPTY FUNCTION:" || line === "EMPTY FUNCTIONS:") {
       isEmptyFunctionSection = true;
       isProblemPromptSection = false;
+      isProblemName = false;
       continue;
     }
 
@@ -33,6 +42,7 @@ export function parseCode(code: string) {
       isTestCaseSection = true;
       isEmptyFunctionSection = false;
       isProblemPromptSection = false;
+      isProblemName = false;
       continue;
     }
 
@@ -41,6 +51,7 @@ export function parseCode(code: string) {
       isPythonSection = true;
       isJsSection = false;
       isProblemPromptSection = false;
+      isProblemName = false;
       continue; // Skip the heading line
     }
 
@@ -49,10 +60,15 @@ export function parseCode(code: string) {
       isPythonSection = false; // Ensure Python section is disabled
       isTestCaseSection = false;
       isProblemPromptSection = false;
+      isProblemName = false;
       continue; // Skip the heading line
     }
 
     // Section: Handle if conditionals above depending on if it's true or false
+
+    if (isProblemName) {
+      problemName += line;
+    }
 
     if (isProblemPromptSection) {
       problemPrompt += lines[i].trim() + "\n";
@@ -116,6 +132,7 @@ export function parseCode(code: string) {
   pythonUnitTest = pythonUnitTest.trim();
   jsUnitTest = jsUnitTest.trim();
 
+  console.log("name\n", problemName);
   console.log("prompt\n", problemPrompt);
   console.log("Empty Python Function\n", emptyFunctionPython);
   console.log("Empty JavaScript Function\n", emptyFunctionJs);
@@ -124,6 +141,7 @@ export function parseCode(code: string) {
   console.log("js unit test\n", jsUnitTest);
 
   return {
+    problemName,
     problemPrompt,
     emptyFunctionPython,
     emptyFunctionJs,

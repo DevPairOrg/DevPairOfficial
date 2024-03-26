@@ -14,10 +14,10 @@ import { useAppSelector } from "../../hooks";
 import RemoteAndLocalVolumeComponent from "../../AgoraManager/volumeControl";
 import shareScreenPlaceholder from "../../assets/images/share-screen-holder.webp";
 import IDE from "../CodeMirror";
-import { python } from "@codemirror/lang-python";
 import { parseCode } from "../../utility/parseGeminiResponse";
 
 interface parsedData {
+  problemName: string;
   problemPrompt: string;
   testCases: string;
   pythonUnitTest: string;
@@ -146,6 +146,7 @@ function ScreenShare(props: { channelName: string }) {
           </button>
           <div id="ide-main-container">
             <IDE
+              name={parsedResponse?.problemName}
               prompt={parsedResponse?.problemPrompt}
               testCases={parsedResponse?.testCases}
               pythonUnitTest={parsedResponse?.pythonUnitTest}
