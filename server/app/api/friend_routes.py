@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.models import User, db, FriendRequest, FriendshipStatus
 from .auth_routes import validation_errors_to_error_messages
+from sqlalchemy.exc import IntegrityError
 
 friend_routes = Blueprint('friends', __name__)
 
@@ -47,7 +48,7 @@ def send_friend_request(receiver_id):
     }
     """
 
-        # Validate receiver ID
+    # Validate receiver ID
     if not isinstance(receiver_id, int):
         return {"error": "Invalid receiver ID"}, 400
     
@@ -76,7 +77,11 @@ def send_friend_request(receiver_id):
         db.session.commit()
 
         return {new_request.id: new_request.to_dict()}, 201
+    except IntegrityError as e:
+        db.session.rollback()
+        return {"error": "Failed to send friend request: {}".format(str(e))}, 500
     except:
+        db.session.rollback()
         return {"error": "Internal Server Error"}, 500
 
 @friend_routes.route('/request/<int:request_id>/accept', methods=["PUT"])
@@ -109,6 +114,10 @@ def accept_friend_request(request_id):
     }
     }
     """
+    # Validate request ID
+    if not isinstance(request_id, int):
+        return {"error": "Invalid request ID"}, 400
+
 
     friend_request = FriendRequest.query.get(request_id)
 
@@ -117,13 +126,18 @@ def accept_friend_request(request_id):
     if friend_request.receiver != current_user:
         return {"error": "You can only accept requests you have received."}, 400
     
-    # Add users to each others friend lists
-    friend_request.sender.friends.append(friend_request.receiver)
-    friend_request.receiver.friends.append(friend_request.sender)
+    try:
+        # Add users to each others friend lists
+        friend_request.sender.friends.append(friend_request.receiver)
+        friend_request.receiver.friends.append(friend_request.sender)
 
-    db.session.delete(friend_request)
-    db.session.commit()
-    return {friend_request.id: friend_request.sender.to_dict(include_relationships=False)}, 200
+        db.session.delete(friend_request)
+        db.session.commit()
+        return {friend_request.id: friend_request.sender.to_dict(include_relationships=False)}, 200
+    except IntegrityError as e:
+        # undo any changes to db before the error
+        db.session.rollback()
+        return {"error": "Failed to establish friendship" + str(e)}, 500
 
 @friend_routes.route('/request/<int:request_id>', methods=['DELETE'])
 @login_required
@@ -154,14 +168,16 @@ def cancel_sent_request(request_id):
     }
     """
 
+    # Validate request ID
+    if not isinstance(request_id, int):
+        return {"error": "Invalid request ID"}, 400
+
     friend_request = FriendRequest.query.get(request_id)
 
     if not friend_request:
         return {"error": "Friend request not found."}, 404
     if friend_request.sender != current_user:
         return {"error": "You can only cancel requests you have sent."}, 400
-    if friend_request.status != FriendshipStatus.PENDING:
-        return {"error": "This friend request has already been accepted or rejected."}, 400
     
     db.session.delete(friend_request)
     db.session.commit()
