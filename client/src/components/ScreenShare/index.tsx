@@ -138,7 +138,12 @@ function ScreenShare(props: { channelName: string }) {
     } else if (generatedProblem === true) {
       return (
         <>
-          <button onClick={handleParse}>PARSE AGAIN</button>
+          <button onClick={handleParse} style={{ color: "black" }}>
+            PARSE AGAIN
+          </button>
+          <button onClick={handleGeminiRequest} style={{ color: "black" }}>
+            REGENERATE PROBLEM
+          </button>
           <div id="ide-main-container">
             <IDE
               prompt={parsedResponse?.problemPrompt}

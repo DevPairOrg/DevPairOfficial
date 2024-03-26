@@ -1,16 +1,9 @@
-import { useState, useCallback, MouseEventHandler } from "react";
+import { useState, useCallback, MouseEventHandler, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
 import { dracula } from "@uiw/codemirror-theme-dracula";
-import { FetchRoutes, fetchTestResults } from "../../utility/fetchTestResults";
 import "./index.css";
-
-interface TestResult {
-  passOrFail?: boolean;
-  success?: boolean;
-  error?: string;
-}
 
 interface Props {
   prompt: string;
@@ -41,24 +34,48 @@ function IDE(props: Props) {
   }, []);
 
   const handleSubmission = async () => {
-    const response = await fetch("/api/problem/test", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        code: value,
-        language: language,
-        problemUnitTest: language === "python" ? pythonUnitTest : jsUnitTest,
-      }),
-    });
+    try {
+      const response = await fetch("/api/problem/test", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          code: value,
+          language: language,
+          problemUnitTest: language === "python" ? pythonUnitTest : jsUnitTest,
+        }),
+      });
 
-    if (response.ok) {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       console.log("response from backend", data);
+
+      if (data.testResults && typeof data.testResults === "object") {
+        const testResultsArray = Object.values(data.testResults);
+
+        // Ensure all elements are boolean before setting the state
+        const areAllBooleans = testResultsArray.every(
+          (result) => typeof result === "boolean"
+        );
+        if (areAllBooleans) {
+          setUserResults(testResultsArray as boolean[]);
+        } else {
+          console.error("Not all test results are booleans.");
+        }
+      }
+    } catch (error) {
+      console.error("An error occurred:", error);
     }
   };
+
+  useEffect(() => {
+    console.log("userResults", userResults);
+  });
 
   // Python or Javascript User Options
   const handlePythonButton: MouseEventHandler<HTMLButtonElement> = (e) => {

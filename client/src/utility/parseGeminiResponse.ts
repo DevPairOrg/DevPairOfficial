@@ -6,43 +6,59 @@ export function parseCode(code: string) {
   let testCases = "";
   let pythonUnitTest = "";
   let jsUnitTest = "";
+  let isProblemPromptSection = false;
   let isPythonSection = false;
   let isJsSection = false;
   let isTestCaseSection = false;
   let isEmptyFunctionSection = false;
 
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim().replace(/\*/g, '').replace(/`/g, '');
+    const line = lines[i]
+      .trim()
+      .replace(/\*|`/g, "")
+      .replace(/```javascript|```python|```/g, "");
 
     if (line.startsWith("QUESTION PROMPT:")) {
-      problemPrompt = lines[i + 1].trim();
+      isProblemPromptSection = true;
+      continue;
     }
 
     if (line === "EMPTY FUNCTION:" || line === "EMPTY FUNCTIONS:") {
       isEmptyFunctionSection = true;
+      isProblemPromptSection = false;
       continue;
     }
 
     if (line === "TEST CASES:") {
       isTestCaseSection = true;
+      isEmptyFunctionSection = false;
+      isProblemPromptSection = false;
       continue;
     }
 
     if (line === "PYTHON UNIT TESTING:") {
       isTestCaseSection = false;
       isPythonSection = true;
+      isJsSection = false;
+      isProblemPromptSection = false;
       continue; // Skip the heading line
     }
 
     if (line === "JAVASCRIPT UNIT TESTING:") {
       isJsSection = true;
       isPythonSection = false; // Ensure Python section is disabled
+      isTestCaseSection = false;
+      isProblemPromptSection = false;
       continue; // Skip the heading line
     }
 
     // Section: Handle if conditionals above depending on if it's true or false
+
+    if (isProblemPromptSection) {
+      problemPrompt += lines[i].trim() + "\n";
+    }
+
     if (isEmptyFunctionSection) {
-      console.log("😨😨😨in the empty function section");
       if (line.startsWith("def") && emptyFunctionPython === "") {
         emptyFunctionPython += line + "\n"; // Add the current line
         let j = i + 1;

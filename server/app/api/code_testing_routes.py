@@ -42,6 +42,7 @@ def unit_test():
     # Execute the tests
     try:
         test_output = subprocess.check_output([testing_language, file_path], stderr=subprocess.STDOUT).decode('utf-8')
+        print('🐔 Test Output', test_output)
         for line in test_output.split('\n'):
             parts = line.split()  # Split the line into parts by whitespace
             if len(parts) >= 3:
