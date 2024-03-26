@@ -1,4 +1,4 @@
-export function parseCode(code: string) {
+export function parseCode(code) {
   const lines = code.split("\n");
   let problemName = "";
   let problemPrompt = "";
@@ -7,124 +7,91 @@ export function parseCode(code: string) {
   let testCases = "";
   let pythonUnitTest = "";
   let jsUnitTest = "";
-  let isProblemPromptSection = false;
-  let isPythonSection = false;
-  let isJsSection = false;
-  let isTestCaseSection = false;
-  let isEmptyFunctionSection = false;
-  let isProblemName = false;
 
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i]
-      .trim()
-      .replace(/\*|`/g, "")
-      .replace(/```javascript|```python|```/g, "");
+  let inCodeBlock = false;
+  let currentLanguage = "";
 
+  const processedLines = lines.map((line: string) => {
+    const trimmedLine = line.trim();
+    if (trimmedLine.startsWith("```")) {
+      inCodeBlock = !inCodeBlock; // Toggle on entering or exiting a code block
+      if (!inCodeBlock) {
+        // We're exiting a code block, so clear the current language
+        currentLanguage = "";
+      }
+      // Remove the code block markers, including the language identifier
+      return "";
+    }
+    // Within a code block, we want to keep the content as is, but for processing, we might ignore it
+    if (inCodeBlock) {
+      // Optional: Process the line as code, if needed, depending on currentLanguage
+      // For now, we're just keeping the line intact without modification
+      return line;
+    }
+    // Return non-code block lines trimmed
+    return trimmedLine;
+  });
+
+  // This handles the switch cases when iterating to the next line.
+  // Example: once it hits 'PROBLEM NAME:'
+  // 1. it sets currentSection = 'problemName'
+  // 2. exits iteration to go to the next
+  // 3. next iteration will now have a valid case based on 'currentSection' = 'problemName'
+  // 4. case handles processes the line within the current iteration
+  // 5. it continues to do this until reaching another section specified
+  let currentSection = "";
+
+  processedLines.forEach((line: string, i: number) => {
     if (line.startsWith("PROBLEM NAME:")) {
-      isProblemName = true;
-      continue;
+      currentSection = "problemName";
+      return;
+    } else if (line.startsWith("QUESTION PROMPT:")) {
+      currentSection = "problemPrompt";
+      return;
+    } else if (
+      line.startsWith("EMPTY FUNCTION:") ||
+      line.startsWith("EMPTY FUNCTIONS:")
+    ) {
+      currentSection = "emptyFunction";
+      return;
+    } else if (line.startsWith("TEST CASES:")) {
+      currentSection = "testCases";
+      return;
+    } else if (line.startsWith("PYTHON UNIT TESTING:")) {
+      currentSection = "pythonUnitTest";
+      return;
+    } else if (line.startsWith("JAVASCRIPT UNIT TESTING:")) {
+      currentSection = "jsUnitTest";
+      return;
     }
 
-    if (line.startsWith("QUESTION PROMPT:")) {
-      isProblemPromptSection = true;
-      isProblemName = false;
-      continue;
-    }
-
-    if (line === "EMPTY FUNCTION:" || line === "EMPTY FUNCTIONS:") {
-      isEmptyFunctionSection = true;
-      isProblemPromptSection = false;
-      isProblemName = false;
-      continue;
-    }
-
-    if (line === "TEST CASES:") {
-      isTestCaseSection = true;
-      isEmptyFunctionSection = false;
-      isProblemPromptSection = false;
-      isProblemName = false;
-      continue;
-    }
-
-    if (line === "PYTHON UNIT TESTING:") {
-      isTestCaseSection = false;
-      isPythonSection = true;
-      isJsSection = false;
-      isProblemPromptSection = false;
-      isProblemName = false;
-      continue; // Skip the heading line
-    }
-
-    if (line === "JAVASCRIPT UNIT TESTING:") {
-      isJsSection = true;
-      isPythonSection = false; // Ensure Python section is disabled
-      isTestCaseSection = false;
-      isProblemPromptSection = false;
-      isProblemName = false;
-      continue; // Skip the heading line
-    }
-
-    // Section: Handle if conditionals above depending on if it's true or false
-
-    if (isProblemName) {
-      problemName += line;
-    }
-
-    if (isProblemPromptSection) {
-      problemPrompt += lines[i].trim() + "\n";
-    }
-
-    if (isEmptyFunctionSection) {
-      if (line.startsWith("def") && emptyFunctionPython === "") {
-        emptyFunctionPython += line + "\n"; // Add the current line
-        let j = i + 1;
-        while (
-          j < lines.length &&
-          (lines[j].startsWith("    ") || lines[j].trim() === "")
-        ) {
-          emptyFunctionPython += lines[j] + "\n";
-          j++;
+    switch (currentSection) {
+      case "problemName":
+        problemName += line + "\n";
+        break;
+      case "problemPrompt":
+        problemPrompt += line + "\n";
+        break;
+      case "emptyFunction":
+        if (line.startsWith("def") && emptyFunctionPython === "") {
+          emptyFunctionPython = captureFunctionBlock(lines, i, "Python");
+        } else if (line.startsWith("function") && emptyFunctionJs === "") {
+          emptyFunctionJs = captureFunctionBlock(lines, i, "JavaScript");
         }
-        i = j - 1; // Skip the processed lines
-      } else if (line.startsWith("function") && emptyFunctionJs === "") {
-        emptyFunctionJs += line + "\n"; // Add the current line
-        let j = i + 1;
-        while (j < lines.length && lines[j].trim() !== "}") {
-          emptyFunctionJs += lines[j] + "\n";
-          j++;
-        }
-        if (j < lines.length && lines[j].trim() === "}") {
-          emptyFunctionJs += lines[j] + "\n"; // Include the closing bracket
-        }
-        i = j; // Skip the processed lines
-      }
-      // Logic to transition out of isEmptyFunctionSection
-      if (
-        emptyFunctionPython &&
-        (line.includes("TEST CASES:") ||
-          line.includes("PYTHON UNIT TESTING:") ||
-          line.includes("JAVASCRIPT UNIT TESTING:"))
-      ) {
-        // Set to false if we've captured the Python function and are transitioning to another section
-        isEmptyFunctionSection = false;
-      }
+        break;
+      case "testCases":
+        testCases += line + "\n";
+        break;
+      case "pythonUnitTest":
+        pythonUnitTest += line + "\n";
+        break;
+      case "jsUnitTest":
+        jsUnitTest += line + "\n";
+        break;
+      default:
+        break;
     }
-
-    // Accumulate Test Cases
-    if (isTestCaseSection) {
-      testCases += lines[i] + "\n";
-    }
-
-    // Accumulate Python Unit Test
-    if (isPythonSection) {
-      pythonUnitTest += lines[i] + "\n";
-    }
-
-    // Accumulate JavaScript Unit Test
-    if (isJsSection) {
-      jsUnitTest += lines[i] + "\n";
-    }
-  }
+  });
 
   // Trim the final strings to remove unnecessary new lines
   problemPrompt = problemPrompt.trim();
@@ -132,13 +99,13 @@ export function parseCode(code: string) {
   pythonUnitTest = pythonUnitTest.trim();
   jsUnitTest = jsUnitTest.trim();
 
-  console.log("name\n", problemName);
-  console.log("prompt\n", problemPrompt);
-  console.log("Empty Python Function\n", emptyFunctionPython);
-  console.log("Empty JavaScript Function\n", emptyFunctionJs);
-  console.log("test cases\n", testCases);
-  console.log("python unit test\n", pythonUnitTest);
-  console.log("js unit test\n", jsUnitTest);
+  console.log("Problem Name:", problemName);
+  console.log("Problem Prompt:", problemPrompt);
+  console.log("Empty Python Function:\n", emptyFunctionPython);
+  console.log("Empty JavaScript Function:\n", emptyFunctionJs);
+  console.log("Test Cases:\n", testCases);
+  console.log("Python Unit Test:\n", pythonUnitTest);
+  console.log("JavaScript Unit Test:\n", jsUnitTest);
 
   return {
     problemName,
@@ -149,4 +116,27 @@ export function parseCode(code: string) {
     pythonUnitTest,
     jsUnitTest,
   };
+}
+
+// Function to capture the function block for Python or JavaScript
+function captureFunctionBlock(lines, startIndex, language) {
+  let functionBlock = "";
+  for (let i = startIndex; i < lines.length; i++) {
+    functionBlock += lines[i] + "\n";
+    if (language === "Python" && lines[i].startsWith("def")) {
+      // Capture until an unindented line or the end of lines
+      let j = i + 1;
+      while (
+        j < lines.length &&
+        (lines[j].startsWith("    ") || lines[j].trim() === "")
+      ) {
+        functionBlock += lines[j] + "\n";
+        j++;
+      }
+      break; // End of Python function block
+    } else if (language === "JavaScript" && lines[i].trim() === "}") {
+      break; // End of JavaScript function block
+    }
+  }
+  return functionBlock.trim();
 }

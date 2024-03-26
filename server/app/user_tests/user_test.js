@@ -1,17 +1,24 @@
-function searchInsert(nums, target) {
+function isPalindrome(x) {
     // Your code goes here
-  return 'abc'
+   if (x < 0) return false;
+    let reverse = 0, y = x;
+    while (y > 0) {
+        const lastDigit = y % 10;
+        reverse = (reverse * 10) + lastDigit;
+        y = Math.floor(y / 10);
+    }
+    return x === reverse;
 }
 
 
 const testCases = [
-    {input: {nums: [1,3,5,6], target: 5}, expected: 2},
-    {input: {nums: [1,3,5,6], target: 2}, expected: 1},
-    {input: {nums: [1,3,5,6], target: 7}, expected: 4},
+    { input: 121, expected: true },
+    { input: -121, expected: false },
+    { input: 10, expected: false }
 ];
 
-testCases.forEach(({input, expected}, index) => {
-    const result = searchInsert(input.nums, input.target);
+testCases.forEach(({ input, expected }, index) => {
+    const result = isPalindrome(input);
     console.assert(result === expected, `Test case ${index + 1} failed`);
     console.log(`Test case ${index + 1}`, result === expected);
 });

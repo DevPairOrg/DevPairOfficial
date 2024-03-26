@@ -27,10 +27,10 @@ def getLeetCodeResponseBits():
             1. Pull a coding question from leetcode in the following format and do not assign types to the function parameters. Use just variable names:
 
             PROBLEM NAME:
-            "Name of Problem"
+            Name of Problem
 
             QUESTION PROMPT:
-            "Describe the coding problem here, including constraints or relevant details."
+            Describe the coding problem here, including constraints or relevant details.
         """
     )
 
@@ -102,7 +102,12 @@ def getLeetCodeResponseBits():
 
     convo.send_message(
         f"""
-            Important: Create unit tests in python and javascript based on the instructions provided below. The tests should all be relevant to the problem {name_and_prompt} which you gave me in our previous conversation and test specifically for the {test_cases}
+            Important: Create unit tests in python and javascript based on the instructions provided below. The tests should all be relevant to the problem {name_and_prompt} which you gave me in our previous conversation and test specifically for the {test_cases}.
+
+            For the entire structured response STRICTLY DO NOT include any markdowns such as:
+            (i.e. **BOLD**)
+            (i.e. ```javascript)
+            (i.e. ```python)
 
             1. Python Unit Testing:
             Create a unit test class using the unittest framework.
@@ -126,23 +131,30 @@ def getLeetCodeResponseBits():
             Follow the following example format:
 
             PYTHON UNIT TESTING:
-            import unittest
-
-            class SolutionTest(unittest.TestCase):
-                def test_case_1(self):
-                    # Test case 1 logic here
-                    self.assertEqual(actual_result, expected_result)
-
-                def test_case_2(self):
-                    # Test case 2 logic here
-                    self.assertEqual(actual_result, expected_result)
-
-                def test_case_3(self):
-                    # Test case 3 logic here
-                    self.assertEqual(actual_result, expected_result)
+            class SolutionTest:
+                @staticmethod
+                def run_test_case(input, expected):
+                    result = nameOfFunction(input)
+                    return result == expected
+                    
+            def run_all_tests():
+                test_suite = SolutionTest()
+                test_results = []
+                test_cases = [
+                    {{input: [First input], expected: [Expected output]}},
+                    {{input: [Second input], expected: [Expected output]}},
+                    {{input: [Third input], expected: [Expected output]}}
+                ]
+                for i, test_case in enumerate(test_cases, start=1):
+                    input, expected = test_case['input'], test_case['expected']
+                    result = test_suite.run_test_case(input, expected)
+                    test_results.append((f"Test case {{i}}", result))
+                return test_results
 
             if __name__ == '__main__':
-                unittest.main()
+                results = run_all_tests()
+                for test_case, result in results:
+                    print(f"{{test_case}}: {{True if result else False}}")
 
             (do not include this line: these test cases should be pulled from leetcode)
             JAVASCRIPT UNIT TESTING:
@@ -171,10 +183,10 @@ def getLeetCodeResponseBits():
     print('😁😁😁 default fn names', default_function_names)
     print('😁😁😁 test cases', test_cases)
     print('😁😁😁 unit tests', unit_tests)
-    return {'geminiResponse': 'still testing bro'}
+    return {'geminiResponse': name_and_prompt + '\n' + default_function_names + '\n' + test_cases + '\n' + unit_tests}
 
 
-# TEST ROUTE
+# OLD - DONT USE - PROMPT IS TOO LONG FOR GEMINI-PRO / GEMINI 1.0 TO ACCURATELY PRODUCE CONSISTENT RESPONSES WITH CORRECT TEST CASES & W/O RECITATION ERRORS
 @gemini_routes.route('/recitation')
 def getRandLeetCodeResponse():
     """
