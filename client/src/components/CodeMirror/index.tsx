@@ -3,30 +3,21 @@ import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import { python } from "@codemirror/lang-python";
 import { dracula } from "@uiw/codemirror-theme-dracula";
+import { parsedData } from "../../interfaces/gemini";
 import "./index.css";
 
-interface Props {
-  name: string;
-  prompt: string;
-  testCases: string;
-  pythonUnitTest: string;
-  jsUnitTest: string;
-  emptyFunctionPython: string;
-  emptyFunctionJs: string;
-}
-
-function IDE(props: Props) {
+function IDE(props: parsedData) {
   const {
-    name,
-    prompt,
+    problemName,
+    problemPrompt,
     testCases,
     pythonUnitTest,
     jsUnitTest,
-    emptyFunctionPython,
-    emptyFunctionJs,
+    defaultPythonFn,
+    defaultJsFn,
   } = props;
 
-  const [value, setValue] = useState<string>(emptyFunctionPython);
+  const [value, setValue] = useState<string | undefined>(defaultPythonFn);
   const [userResults, setUserResults] = useState<boolean[]>([]);
   const [language, setLanguage] = useState<string>("python");
 
@@ -83,20 +74,20 @@ function IDE(props: Props) {
   const handlePythonButton: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
     setLanguage("python");
-    setValue(emptyFunctionPython);
+    setValue(defaultPythonFn);
   };
   const handleJavascriptButton: MouseEventHandler<HTMLButtonElement> = (e) => {
     e.preventDefault();
     setLanguage("javascript");
-    setValue(emptyFunctionJs);
+    setValue(defaultJsFn);
   };
 
   return (
     <>
       <div id="ide-container">
         <div>
-          <div>Problem Name: {name && name}</div>
-          <div>Prompt: {prompt && prompt}</div>
+          <div>Problem Name: {problemName && problemName}</div>
+          <div>Prompt: {problemPrompt && problemPrompt}</div>
           <pre>{testCases && testCases}</pre>
         </div>
         <div>

@@ -15,16 +15,7 @@ import RemoteAndLocalVolumeComponent from "../../AgoraManager/volumeControl";
 import shareScreenPlaceholder from "../../assets/images/share-screen-holder.webp";
 import IDE from "../CodeMirror";
 import { parseCode } from "../../utility/parseGeminiResponse";
-
-interface parsedData {
-  problemName: string;
-  problemPrompt: string;
-  testCases: string;
-  pythonUnitTest: string;
-  jsUnitTest: string;
-  emptyFunctionPython: string;
-  emptyFunctionJs: string;
-}
+import { parsedData } from "../../interfaces/gemini";
 
 function ScreenShare(props: { channelName: string }) {
   const { channelName } = props;
@@ -88,6 +79,7 @@ function ScreenShare(props: { channelName: string }) {
 
     if (res.ok) {
       const data = await res.json();
+      console.log("🤡🤡🤡gemini problem", data);
       setGeminiProblem(data.geminiResponse);
       setGeneratedProblem(true);
       const parsedData = parseCode(data.geminiResponse);
@@ -146,13 +138,13 @@ function ScreenShare(props: { channelName: string }) {
           </button>
           <div id="ide-main-container">
             <IDE
-              name={parsedResponse?.problemName}
-              prompt={parsedResponse?.problemPrompt}
+              problemName={parsedResponse?.problemName}
+              problemPrompt={parsedResponse?.problemPrompt}
               testCases={parsedResponse?.testCases}
               pythonUnitTest={parsedResponse?.pythonUnitTest}
               jsUnitTest={parsedResponse?.jsUnitTest}
-              emptyFunctionPython={parsedResponse?.emptyFunctionPython}
-              emptyFunctionJs={parsedResponse?.emptyFunctionJs}
+              defaultPythonFn={parsedResponse?.defaultPythonFn}
+              defaultJsFn={parsedResponse?.defaultJsFn}
             />
           </div>
         </>

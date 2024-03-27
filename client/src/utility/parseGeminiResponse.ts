@@ -1,35 +1,49 @@
-export function parseCode(code) {
+export function parseCode(code: string) {
   const lines = code.split("\n");
   let problemName = "";
   let problemPrompt = "";
-  let emptyFunctionPython = "";
-  let emptyFunctionJs = "";
+  let defaultPythonFn = "";
+  let defaultJsFn = "";
   let testCases = "";
   let pythonUnitTest = "";
   let jsUnitTest = "";
 
-  let inCodeBlock = false;
-  let currentLanguage = "";
+  // let inCodeBlock = false;
+  // let currentLanguage = "";
+  let preserveIndentation = false;
+
+  // This method is to properly remove any backticks "```" or "```javascript" or "```python" since the regex method did not work consistently
+  // const processedLines = lines.map((line: string) => {
+  //   const trimmedLine = line.trim();
+  //   if (trimmedLine.startsWith("```")) {
+  //     inCodeBlock = !inCodeBlock;
+  //     if (!inCodeBlock) {
+  //       currentLanguage = "";
+  //     }
+  //     return "";
+  //   }
+  //   if (inCodeBlock) {
+  //     return line;
+  //   }
+  //   return trimmedLine;
+  // });
 
   const processedLines = lines.map((line: string) => {
-    const trimmedLine = line.trim();
-    if (trimmedLine.startsWith("```")) {
-      inCodeBlock = !inCodeBlock; // Toggle on entering or exiting a code block
-      if (!inCodeBlock) {
-        // We're exiting a code block, so clear the current language
-        currentLanguage = "";
-      }
-      // Remove the code block markers, including the language identifier
-      return "";
+    if (
+      line.trim().startsWith("PYTHON UNIT TESTING:") ||
+      line.trim().startsWith("JAVASCRIPT UNIT TESTING:") ||
+      line.trim().startsWith("```")
+    ) {
+      preserveIndentation = true;
     }
-    // Within a code block, we want to keep the content as is, but for processing, we might ignore it
-    if (inCodeBlock) {
-      // Optional: Process the line as code, if needed, depending on currentLanguage
-      // For now, we're just keeping the line intact without modification
+
+    if (preserveIndentation) {
+      // If we're preserving indentation, return the line unmodified
       return line;
+    } else {
+      // Otherwise, trim the line to remove leading and trailing whitespace
+      return line.trim();
     }
-    // Return non-code block lines trimmed
-    return trimmedLine;
   });
 
   // This handles the switch cases when iterating to the next line.
@@ -73,10 +87,10 @@ export function parseCode(code) {
         problemPrompt += line + "\n";
         break;
       case "emptyFunction":
-        if (line.startsWith("def") && emptyFunctionPython === "") {
-          emptyFunctionPython = captureFunctionBlock(lines, i, "Python");
-        } else if (line.startsWith("function") && emptyFunctionJs === "") {
-          emptyFunctionJs = captureFunctionBlock(lines, i, "JavaScript");
+        if (line.startsWith("def") && defaultPythonFn === "") {
+          defaultPythonFn = captureFunctionBlock(lines, i);
+        } else if (line.startsWith("function") && defaultJsFn === "") {
+          defaultJsFn = captureFunctionBlock(lines, i);
         }
         break;
       case "testCases":
@@ -96,13 +110,13 @@ export function parseCode(code) {
   // Trim the final strings to remove unnecessary new lines
   problemPrompt = problemPrompt.trim();
   testCases = testCases.trim();
-  pythonUnitTest = pythonUnitTest.trim();
-  jsUnitTest = jsUnitTest.trim();
+  pythonUnitTest = pythonUnitTest;
+  jsUnitTest = jsUnitTest;
 
-  console.log("Problem Name:", problemName);
-  console.log("Problem Prompt:", problemPrompt);
-  console.log("Empty Python Function:\n", emptyFunctionPython);
-  console.log("Empty JavaScript Function:\n", emptyFunctionJs);
+  console.log("Problem Name:\n", problemName);
+  console.log("Problem Prompt:\n", problemPrompt);
+  console.log("Empty Python Function:\n", defaultPythonFn);
+  console.log("Empty JavaScript Function:\n", defaultJsFn);
   console.log("Test Cases:\n", testCases);
   console.log("Python Unit Test:\n", pythonUnitTest);
   console.log("JavaScript Unit Test:\n", jsUnitTest);
@@ -110,8 +124,8 @@ export function parseCode(code) {
   return {
     problemName,
     problemPrompt,
-    emptyFunctionPython,
-    emptyFunctionJs,
+    defaultPythonFn,
+    defaultJsFn,
     testCases,
     pythonUnitTest,
     jsUnitTest,
@@ -119,12 +133,15 @@ export function parseCode(code) {
 }
 
 // Function to capture the function block for Python or JavaScript
-function captureFunctionBlock(lines, startIndex, language) {
+function captureFunctionBlock(lines: string[], startIndex: number) {
   let functionBlock = "";
+
   for (let i = startIndex; i < lines.length; i++) {
+    // Append the lines
     functionBlock += lines[i] + "\n";
-    if (language === "Python" && lines[i].startsWith("def")) {
-      // Capture until an unindented line or the end of lines
+
+    // Break out of loop and return the functionBlock as soon as it finds an unindented line or the end of lines for python or a closing bracket for javascript
+    if (lines[i].startsWith("def")) {
       let j = i + 1;
       while (
         j < lines.length &&
@@ -133,9 +150,9 @@ function captureFunctionBlock(lines, startIndex, language) {
         functionBlock += lines[j] + "\n";
         j++;
       }
-      break; // End of Python function block
-    } else if (language === "JavaScript" && lines[i].trim() === "}") {
-      break; // End of JavaScript function block
+      break;
+    } else if (lines[i].trim() === "}") {
+      break;
     }
   }
   return functionBlock.trim();

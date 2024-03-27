@@ -102,23 +102,20 @@ def getLeetCodeResponseBits():
 
     convo.send_message(
         f"""
-            Important: Create unit tests in python and javascript based on the instructions provided below. The tests should all be relevant to the problem {name_and_prompt} which you gave me in our previous conversation and test specifically for the {test_cases}.
+            Important: Create a test in python based on the instructions provided below. The tests should all be relevant to the problem {name_and_prompt} response which you gave me in our previous conversation and test specifically for these {test_cases} you gave me.
 
             For the entire structured response STRICTLY DO NOT include any markdowns such as:
             (i.e. **BOLD**)
             (i.e. ```javascript)
             (i.e. ```python)
+            (i.e. ##)
+            (i.e. ###)
 
-            1. Python Unit Testing:
-            Create a unit test class using the unittest framework.
-            Include a method for each test case, descriptively named to reflect the test's intent.
-            Use assertions to compare the solution's output to the expected output.
-            Conclude with the standard boilerplate allowing direct execution of the tests.
-
-            2. JavaScript Unit Testing:
-            Define test cases as an array of objects, each with input and expected output.
-            Iterate over test cases, executing the solution function with each input and using console.assert to compare the result to the expected output.
-            Make sure to be consistent with input formatting (e.g., keep arrays as arrays, don't spread them).
+            1. Python Testing:
+            Do not use unittest
+            Define test cases as an list of objects, each with input and expected output (these keys should be inside quotations).
+            Iterate over test cases, executing the solution function with each input and using expression to compare the result to the expected output in order to return a boolean.
+            Make sure to be consistent with input formatting (e.g., keep lists as lists, don't spread them).
 
             For solutions returning arrays:
             Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.
@@ -136,14 +133,14 @@ def getLeetCodeResponseBits():
                 def run_test_case(input, expected):
                     result = nameOfFunction(input)
                     return result == expected
-                    
+
             def run_all_tests():
                 test_suite = SolutionTest()
                 test_results = []
                 test_cases = [
-                    {{input: [First input], expected: [Expected output]}},
-                    {{input: [Second input], expected: [Expected output]}},
-                    {{input: [Third input], expected: [Expected output]}}
+                    {{'input': [First input], 'expected': [Expected output]}},
+                    {{'input': [Second input], 'expected': [Expected output]}},
+                    {{'input': [Third input], 'expected': [Expected output]}}
                 ]
                 for i, test_case in enumerate(test_cases, start=1):
                     input, expected = test_case['input'], test_case['expected']
@@ -155,6 +152,36 @@ def getLeetCodeResponseBits():
                 results = run_all_tests()
                 for test_case, result in results:
                     print(f"{{test_case}}: {{True if result else False}}")
+        """
+    )
+
+    python_test = convo.last.text
+
+    convo.send_message(
+        f"""
+            Important: Create a unit test in javascript based on the instructions provided below. The tests should all be relevant to the problem {name_and_prompt} response which you gave me in our previous conversation and test specifically for these {test_cases} you gave me.
+
+            For the entire structured response STRICTLY DO NOT include any markdowns such as:
+            (i.e. **BOLD**)
+            (i.e. ```javascript)
+            (i.e. ```python)
+            (i.e. ##)
+            (i.e. ###)
+
+            1. JavaScript Unit Testing:
+            Define test cases as an array of objects, each with input and expected output.
+            Iterate over test cases, executing the solution function with each input and using console.assert to compare the result to the expected output.
+            Make sure to be consistent with input formatting (e.g., keep arrays as arrays, don't spread them).
+
+            For solutions returning arrays:
+            Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.
+            Use this method within console.assert to verify the expected array structure and content.
+
+            Remember:
+            Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
+            Maintain proper formatting for test case inputs and outputs.
+
+            Follow the following example format:
 
             (do not include this line: these test cases should be pulled from leetcode)
             JAVASCRIPT UNIT TESTING:
@@ -177,134 +204,134 @@ def getLeetCodeResponseBits():
         """
     )
 
-    unit_tests = convo.last.text
+    javascript_test = convo.last.text
 
     print('😁😁😁 name & prompt', name_and_prompt)
     print('😁😁😁 default fn names', default_function_names)
     print('😁😁😁 test cases', test_cases)
-    print('😁😁😁 unit tests', unit_tests)
-    return {'geminiResponse': name_and_prompt + '\n' + default_function_names + '\n' + test_cases + '\n' + unit_tests}
+    print('😁😁😁 unit tests', python_test)
+    return {'geminiResponse': name_and_prompt + '\n' + default_function_names + '\n' + test_cases + '\n' + python_test + '\n' + javascript_test}
 
 
 # OLD - DONT USE - PROMPT IS TOO LONG FOR GEMINI-PRO / GEMINI 1.0 TO ACCURATELY PRODUCE CONSISTENT RESPONSES WITH CORRECT TEST CASES & W/O RECITATION ERRORS
-@gemini_routes.route('/recitation')
-def getRandLeetCodeResponse():
-    """
-    Generate Random LeetCode Prompt Response
-    """
-    print('🙃🙃🙃 Currently generating a problem...')
+# @gemini_routes.route('/recitation')
+# def getRandLeetCodeResponse():
+#     """
+#     Generate Random LeetCode Prompt Response
+#     """
+#     print('🙃🙃🙃 Currently generating a problem...')
 
-    # PROMPT WIP
-    convo.send_message(
-        """
-            IMPORTANT: Please adhere to the following structure when requesting solutions and tests for coding problems.
+#     # PROMPT WIP
+#     convo.send_message(
+#         """
+#             IMPORTANT: Please adhere to the following structure when requesting solutions and tests for coding problems.
 
-            For the entire structured response STRICTLY DO NOT include any markdowns such as:
-            (i.e. **BOLD**)
-            (i.e. ```javascript)
-            (i.e. ```python)
+#             For the entire structured response STRICTLY DO NOT include any markdowns such as:
+#             (i.e. **BOLD**)
+#             (i.e. ```javascript)
+#             (i.e. ```python)
 
-            1. Coding Question Prompt:
-            Pull a random question prompt strictly from leetcode.
-            Do not assign types to the function parameters. Use just variable names.
+#             1. Coding Question Prompt:
+#             Pull a random question prompt strictly from leetcode.
+#             Do not assign types to the function parameters. Use just variable names.
 
-            2. Empty Functions:
-            Provide empty functions with names relevant to the problem.
-            Include comments within the functions stating "Your code goes here."
-            Include two separate functions -- one for python and one for javascript.
-            Python: Use pass instead of a return statement within the empty function.
-            JavaScript: Keep the function empty with just the comment and avoid using arrow functions. Do not use Python comment syntax for JavaScript (triple quotes).
-            Parameters for both functions should not have a type assigned to them.
+#             2. Empty Functions:
+#             Provide empty functions with names relevant to the problem.
+#             Include comments within the functions stating "Your code goes here."
+#             Include two separate functions -- one for python and one for javascript.
+#             Python: Use pass instead of a return statement within the empty function.
+#             JavaScript: Keep the function empty with just the comment and avoid using arrow functions. Do not use Python comment syntax for JavaScript (triple quotes).
+#             Parameters for both functions should not have a type assigned to them.
 
-            3. Test Cases:
-            List no more than three test cases that are provided on leetcode.
-            For each test case, include:
-            INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas. If there's a target, explicitly state it (e.g., "target=#").
-            OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt.
+#             3. Test Cases:
+#             List no more than three test cases that are provided on leetcode.
+#             For each test case, include:
+#             INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas. If there's a target, explicitly state it (e.g., "target=#").
+#             OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt.
 
-            4. Python Unit Testing:
-            Create a unit test class using the unittest framework.
-            Include a method for each test case, descriptively named to reflect the test's intent.
-            Use assertions to compare the solution's output to the expected output.
-            Conclude with the standard boilerplate allowing direct execution of the tests.
+#             4. Python Unit Testing:
+#             Create a unit test class using the unittest framework.
+#             Include a method for each test case, descriptively named to reflect the test's intent.
+#             Use assertions to compare the solution's output to the expected output.
+#             Conclude with the standard boilerplate allowing direct execution of the tests.
 
-            5. JavaScript Unit Testing:
-            Define test cases as an array of objects, each with input and expected output.
-            Iterate over test cases, executing the solution function with each input and using console.assert to compare the result to the expected output.
-            Make sure to be consistent with input formatting (e.g., keep arrays as arrays, don't spread them).
+#             5. JavaScript Unit Testing:
+#             Define test cases as an array of objects, each with input and expected output.
+#             Iterate over test cases, executing the solution function with each input and using console.assert to compare the result to the expected output.
+#             Make sure to be consistent with input formatting (e.g., keep arrays as arrays, don't spread them).
 
-            For solutions returning arrays:
-            Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.
-            Use this method within console.assert to verify the expected array structure and content.
+#             For solutions returning arrays:
+#             Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.
+#             Use this method within console.assert to verify the expected array structure and content.
 
-            Remember:
-            Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
-            Maintain proper formatting for test case inputs and outputs.
+#             Remember:
+#             Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
+#             Maintain proper formatting for test case inputs and outputs.
 
-            Your response should be this in this structure very concisely:
+#             Your response should be this in this structure very concisely:
 
-            PROBLEM NAME:
-            "Name of Problem"
+#             PROBLEM NAME:
+#             "Name of Problem"
 
-            QUESTION PROMPT:
-            "Describe the coding problem here, including constraints or relevant details."
+#             QUESTION PROMPT:
+#             "Describe the coding problem here, including constraints or relevant details."
 
-            EMPTY FUNCTION:
-            def nameOfFunction(input parameters):
-                # Your code goes here
-                pass
+#             EMPTY FUNCTION:
+#             def nameOfFunction(input parameters):
+#                 # Your code goes here
+#                 pass
 
-            function nameOfFunction(input parameters) {
-                // Your code goes here
-            }
+#             function nameOfFunction(input parameters) {
+#                 // Your code goes here
+#             }
 
-            TEST CASES:
-            - INPUT: [First input], [Second input if necessary]
-            - OUTPUT: [Expected output]
-            - INPUT: [First input], [Second input if necessary]
-            - OUTPUT: [Expected output]
-            - INPUT: [First input], [Second input if necessary]
-            - OUTPUT: [Expected output]
+#             TEST CASES:
+#             - INPUT: [First input], [Second input if necessary]
+#             - OUTPUT: [Expected output]
+#             - INPUT: [First input], [Second input if necessary]
+#             - OUTPUT: [Expected output]
+#             - INPUT: [First input], [Second input if necessary]
+#             - OUTPUT: [Expected output]
 
-            PYTHON UNIT TESTING:
-            import unittest
+#             PYTHON UNIT TESTING:
+#             import unittest
 
-            class SolutionTest(unittest.TestCase):
-                def test_case_1(self):
-                    # Test case 1 logic here
-                    self.assertEqual(actual_result, expected_result)
+#             class SolutionTest(unittest.TestCase):
+#                 def test_case_1(self):
+#                     # Test case 1 logic here
+#                     self.assertEqual(actual_result, expected_result)
 
-                def test_case_2(self):
-                    # Test case 2 logic here
-                    self.assertEqual(actual_result, expected_result)
+#                 def test_case_2(self):
+#                     # Test case 2 logic here
+#                     self.assertEqual(actual_result, expected_result)
 
-                def test_case_3(self):
-                    # Test case 3 logic here
-                    self.assertEqual(actual_result, expected_result)
+#                 def test_case_3(self):
+#                     # Test case 3 logic here
+#                     self.assertEqual(actual_result, expected_result)
 
-            if __name__ == '__main__':
-                unittest.main()
+#             if __name__ == '__main__':
+#                 unittest.main()
 
-            (do not include this line: these test cases should be pulled from leetcode)
-            JAVASCRIPT UNIT TESTING:
-            const testCases = [
-                {input: [First input], expected: [Expected output]},
-                {input: [Second input], expected: [Expected output]},
-                {input: [Third input], expected: [Expected output]}
-            ];
+#             (do not include this line: these test cases should be pulled from leetcode)
+#             JAVASCRIPT UNIT TESTING:
+#             const testCases = [
+#                 {input: [First input], expected: [Expected output]},
+#                 {input: [Second input], expected: [Expected output]},
+#                 {input: [Third input], expected: [Expected output]}
+#             ];
 
-            (do not include this line: this test function below is explicitly an example for array comparisons for test cases. otherwise use a standard test case. if dealing with subarrays, implement a proper method for comparing the the subarray results to the expected results)
-            testCases.forEach(({ input, expected }, index) => {
-                const result = nameOfFunction(input.nums, input.target);
-                console.assert(arraysEqual(result, expected), `Test case ${index + 1} failed`);
-                console.log(`Test case ${index + 1}`, JSON.stringify(expected) === JSON.stringify(result));
-            });
+#             (do not include this line: this test function below is explicitly an example for array comparisons for test cases. otherwise use a standard test case. if dealing with subarrays, implement a proper method for comparing the the subarray results to the expected results)
+#             testCases.forEach(({ input, expected }, index) => {
+#                 const result = nameOfFunction(input.nums, input.target);
+#                 console.assert(arraysEqual(result, expected), `Test case ${index + 1} failed`);
+#                 console.log(`Test case ${index + 1}`, JSON.stringify(expected) === JSON.stringify(result));
+#             });
 
-            function arraysEqual(a, b) {
-                return a.length === b.length && a.every((value, index) => value === b[index]);
-            }
-        """
-    )
+#             function arraysEqual(a, b) {
+#                 return a.length === b.length && a.every((value, index) => value === b[index]);
+#             }
+#         """
+#     )
 
     # THIS IS WORKING WITHOUT RECITATION ERROR - UNLIKE THE ABOVE ONE
     #
@@ -419,5 +446,5 @@ def getRandLeetCodeResponse():
     #     """
     # )
 
-    print(convo.last.text)
-    return {'geminiResponse': convo.last.text}
+    # print(convo.last.text)
+    # return {'geminiResponse': convo.last.text}

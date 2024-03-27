@@ -1,33 +1,40 @@
-def twoSum(nums, target):
-    # Your code goes here
-    num_map = {}
-    for i, num in enumerate(nums):
-        complement = target - num
-        if complement in num_map:
-            return [num_map[complement], i]
-        num_map[num] =
+def reverse(x):
+  neg = False
+  if x < 0:
+    neg = True
+    x = abs(x)  # Convert to positive for digit reversal
 
+  rev = 0
+  while x > 0:
+    pop = x % 10
+    rev = rev * 10 + pop
+    x //= 10
+    if rev < -2**31 or rev > 2**31 - 1:
+      return 0
 
+  return -rev if neg else rev
 
-```python
-import unittest
+class SolutionTest:
+    @staticmethod
+    def run_test_case(input, expected):
+        result = reverse(input)
+        return result == expected
 
-class SolutionTest(unittest.TestCase):
-    def test_case_1(self):
-        input = [2,7,11,15], 9
-        expected = [0,1]
-        self.assertEqual(twoSum(*input), expected)
-    
-    def test_case_2(self):
-        input = [3,2,4], 6
-        expected = [1,2]
-        self.assertEqual(twoSum(*input), expected)
+def run_all_tests():
+    test_suite = SolutionTest()
+    test_results = []
+    test_cases = [
+        {'input': 123, 'expected': 321},
+        {'input': -123, 'expected': -321},
+        {'input': 120, 'expected': 21}
+    ]
+    for i, test_case in enumerate(test_cases, start=1):
+        input, expected = test_case['input'], test_case['expected']
+        result = test_suite.run_test_case(input, expected)
+        test_results.append((f"Test case {i}", result))
+    return test_results
 
-    def test_case_3(self):
-        input = [3,3], 6
-        expected = [0,1]
-        self.assertEqual(twoSum(*input), expected)
-
-if __name__ == "__main__":
-    unittest.main()
-```
+if __name__ == '__main__':
+    results = run_all_tests()
+    for test_case, result in results:
+        print(f"{test_case}: {True if result else False}")
