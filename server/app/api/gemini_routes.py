@@ -1,7 +1,6 @@
 from flask import Blueprint, request
 from ..gemini import initGlobalGeminiConvo
-from app.models import db
-from . import user_routes
+from app.models import User, db
 
 gemini_routes = Blueprint('gemini', __name__)
 
@@ -15,16 +14,16 @@ def addQuestionPromptToUserModel():
         if not user_id or not prompt:
             return {"error": "Request body is missing"}, 500
 
-        user_info = user_routes.user(user_id) # grab session user
-        if not user_info:
+        user = User.query.get(user_id) # grab user from model
+        if not user:
             return {"error": "User not found"}, 404
 
         parsed_question_name = prompt.split('\n')[1] # get question name from gemini response
 
-        user_info.completedLeetcodeProblems += (parsed_question_name + ', ')
+        user.completed_leetcode_problems += (parsed_question_name + ', ')
         db.session.commit()
 
-        return {'message': f'Successfully added {parsed_question_name} to user {user_id}', "user": user_info}
+        return {'message': f'Successfully added {parsed_question_name} to user {user_id}'}
 
     except Exception as e:
         print("ERROR --------------->", e)
