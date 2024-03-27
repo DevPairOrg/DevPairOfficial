@@ -4,7 +4,7 @@ import { useSocket } from "../../hooks/socket";
 import {
   clearChatMessages,
   receiveChatMessage,
-} from "../../store/pairedChatLog";
+} from "../../store/chatRoom";
 import { PairedChatMessage } from "../../interfaces/socket";
 import "./index.css";
 
@@ -15,7 +15,7 @@ interface PairedChatProps {
 
 const PairedChat: React.FC<PairedChatProps> = ({ channelName }) => {
   const { socket } = useSocket();
-  const messagesStore = useAppSelector((state) => state.pairedChatLog.messages);
+  const messagesStore = useAppSelector((state) => state.chatRoom.messages);
   const [messages, setMessages] = useState<PairedChatMessage[]>([]);
   const [chatInput, setChatInput] = useState<string>("");
   const dispatch = useAppDispatch();

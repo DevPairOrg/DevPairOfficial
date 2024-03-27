@@ -2,7 +2,7 @@
 import { useEffect } from 'react';
 import { useSocket } from './socket';
 import { useAppDispatch, useAppSelector } from '.';
-import { receiveUser } from '../store/pairedUser';
+import { receiveUser } from '../store/chatRoom';
 import { JoinedEventData } from '../interfaces/socket';
 
 export const useSocketEvents = (

@@ -7,7 +7,7 @@ import { fetchRTCToken } from "../../utility/fetchRTCToken";
 import PairedChat from "../PairedChat";
 import PairedVideos from "../PairedVideos";
 import { useAppDispatch } from "../../hooks";
-import { clearUser, receiveUser } from "../../store/pairedUser";
+import { clearUser, receiveUser } from "../../store/chatRoom";
 import CatImage from "/src/assets/images/devpair-loading-screen.png";
 import "./index.css";
 import Footer from "../Footer";

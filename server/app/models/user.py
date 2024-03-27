@@ -28,18 +28,20 @@ class User(db.Model, UserMixin):
 
     messages = db.relationship('Message', back_populates='user', cascade="all, delete-orphan")
 
-    following = db.relationship(
-        'Follow',
-        foreign_keys='Follow.follower_id',
-        back_populates='followed',
-        lazy='dynamic'
-    )
+    # Define a relationship to store sent friend requests (one-to-many)
+    sent_friend_requests = db.relationship('FriendRequest', foreign_keys='FriendRequest.sender_id', backref='sender')
 
-    followers = db.relationship(
-        'Follow',
-        foreign_keys='Follow.followed_id',
-        back_populates='follower',
-        lazy='dynamic'
+    # Define a relationship to store received friend requests (one-to-many)
+    received_friend_requests = db.relationship('FriendRequest', foreign_keys='FriendRequest.receiver_id', backref='receiver')
+
+    # Define a many-to-many relationship with the User model itself (friends)
+    friends = db.relationship(
+        'User',  # Target model (User)
+        secondary='friends_association',  # Association table
+        primaryjoin='User.id == friends_association.c.user_id',  # Join condition for user_id
+        secondaryjoin='User.id == friends_association.c.friend_id',  # Join condition for friend_id
+        backref=db.backref('friend_of', lazy='dynamic'),  # Back reference for accessing friends of a user (utilize the friend_of key for accessing associations not initiated by user)
+        lazy='dynamic'  # Lazy loading for better performance
     )
 
     @property
@@ -53,7 +55,7 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    def to_dict(self, include_relationships=True, include_user=True):
+    def to_dict(self, include_relationships=True, include_friend_requests=False):
         data = {
             'id': self.id,
             'username': self.username,
@@ -69,7 +71,11 @@ class User(db.Model, UserMixin):
         }
 
         if include_relationships:
-            data['following'] = [follow.to_dict(include_user=include_user) for follow in self.following]
-            data['followers'] = [follow.to_dict(include_user=include_user) for follow in self.followers]
+            data['friends'] = [friend.to_dict(include_relationships=False) for friend in self.friends]
+        
+        if include_friend_requests:
+            data['sentRequests'] = {request.id: request.receiver.to_dict(include_relationships=False) for request in self.sent_friend_requests}
+            data['receivedRequests'] = {request.id: request.sender.to_dict(include_relationships=False) for request in self.received_friend_requests}
+
 
         return data

@@ -28,7 +28,7 @@ function ScreenShare(props: { channelName: string }) {
   const agoraEngine = useRTCClient();
 
   useRemoteVideoTracks(remoteUsers);
-  const pairInfo = useAppSelector((state) => state.pairedUser.user);
+  const pairInfo = useAppSelector((state) => state.chatRoom.user);
   // console.log(remoteUsers);
 
   useEffect(() => {
