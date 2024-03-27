@@ -37,7 +37,7 @@ const VideoCall: React.FC = () => {
       });
 
       socket.on("user_left", (_data) => {
-        dispatch(clearUser())
+        dispatch(clearUser());
       });
     }
 
@@ -88,7 +88,7 @@ const VideoCall: React.FC = () => {
       socket.emit("leave_room", { room: channelName });
       setJoined(false);
       setChannelName("");
-      dispatch(clearUser())
+      dispatch(clearUser());
       config.channelName = "";
       setLoading(false);
     }
@@ -111,6 +111,7 @@ const VideoCall: React.FC = () => {
           </AgoraRTCProvider>
         </main>
       ) : (
+        // This is the waiting lobby before a user clicks 'Pair Up!'
         <>
           <main id="video-main-wrapper">
             <div className="not-joined-wrapper">

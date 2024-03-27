@@ -12,6 +12,7 @@ from .api.auth_routes import auth_routes
 from .api.video_routes import video_routes
 from .api.code_testing_routes import code_testing_routes
 from .api.message_routes import message_routes
+from .api.gemini_routes import gemini_routes
 from .api.friend_routes import friend_routes
 from .seeds import seed_commands
 from .config import Config
@@ -39,6 +40,7 @@ app.register_blueprint(auth_routes, url_prefix='/api/auth')
 app.register_blueprint(video_routes, url_prefix='/api/video')
 app.register_blueprint(code_testing_routes, url_prefix='/api/problem')
 app.register_blueprint(message_routes, url_prefix='/api/messages')
+app.register_blueprint(gemini_routes, url_prefix='/api/gemini')
 app.register_blueprint(friend_routes, url_prefix='/api/friends')
 db.init_app(app)
 Migrate(app, db)
