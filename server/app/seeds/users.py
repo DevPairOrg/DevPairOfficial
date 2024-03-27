@@ -39,7 +39,8 @@ def seed_users():
             link_github='https://github.com',
             link_linkedin='https://linkedin.com',
             link_portfolio='#',
-            link_leetcode='https://leetcode.com'
+            link_leetcode='https://leetcode.com',
+            completed_leetcode_problems=''
         )
 
         db.session.add(user)

@@ -1,7 +1,7 @@
 """empty message
 
 Revision ID: aa4b16f7c0b1
-Revises: 
+Revises:
 Create Date: 2024-03-25 17:09:22.505581
 
 """
@@ -31,6 +31,7 @@ def upgrade():
     sa.Column('link_linkedin', sa.String(), nullable=True),
     sa.Column('link_portfolio', sa.String(), nullable=True),
     sa.Column('link_leetcode', sa.String(), nullable=True),
+    sa.Column('completed_leetcode_problems', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('email'),
     sa.UniqueConstraint('screen_uid'),

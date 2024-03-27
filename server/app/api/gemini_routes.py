@@ -1,11 +1,36 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from ..gemini import initGlobalGeminiConvo
+from app.models import db
+from . import user_routes
 
 gemini_routes = Blueprint('gemini', __name__)
 
 
-# initialize gemini chatbot
-convo = initGlobalGeminiConvo()
+@gemini_routes.route('/add', methods=['POST'])
+def addQuestionPromptToUserModel():
+    try:
+        user_id = request.json.get('userId')
+        prompt = request.json.get('prompt')
+
+        if not user_id or not prompt:
+            return {"error": "Request body is missing"}, 500
+
+        user_info = user_routes.user(user_id) # grab session user
+        if not user_info:
+            return {"error": "User not found"}, 404
+
+        parsed_question_name = prompt.split('\n')[1] # get question name from gemini response
+
+        user_info.completedLeetcodeProblems += (parsed_question_name + ', ')
+        db.session.commit()
+
+        return {'message': f'Successfully added {parsed_question_name} to user {user_id}', "user": user_info}
+
+    except Exception as e:
+        print("ERROR --------------->", e)
+        return {"error": "Failed to add prompt to user"}, 500
+
+
 
 @gemini_routes.route('/')
 def getLeetCodeResponseBits():
@@ -14,6 +39,8 @@ def getLeetCodeResponseBits():
     """
     print('🥱🥱🥱 Generating Problem, please wait.')
 
+    # reset chatbot conversation to avoid recitation error (RECITATION ERROR: occurs when using repetitve prompts. API docs does not provide any solution around this.)
+    convo = initGlobalGeminiConvo()
 
     convo.send_message(
         """
@@ -211,4 +238,4 @@ def getLeetCodeResponseBits():
     print('😁😁😁 test cases', test_cases)
     print('😁😁😁 python tests', python_test)
     print('😁😁😁 javascript tests', javascript_test)
-    return {'geminiResponse': name_and_prompt + '\n' + default_function_names + '\n' + test_cases + '\n' + python_test + '\n' + javascript_test}
+    return {'geminiResponse': name_and_prompt + '\n' + default_function_names + '\n' + test_cases + '\n' + python_test + '\n' + javascript_test, 'nameAndPrompt': name_and_prompt}
