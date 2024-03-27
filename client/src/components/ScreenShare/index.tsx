@@ -77,7 +77,12 @@ function ScreenShare(props: { channelName: string }) {
 
   //? GEMINI
   const handleGeminiRequest = async () => {
-    const res = await fetch("/api/gemini/"); // GENERATE LEETCODE PROBLEM
+    if(!sessionUser) {
+      console.error("Error: No signed in user")
+      return
+    }
+
+    const res = await fetch(`/api/gemini/generate/${Number(sessionUser.id)}`); // GENERATE LEETCODE PROBLEM
 
     if (res.ok) {
       const data = await res.json();

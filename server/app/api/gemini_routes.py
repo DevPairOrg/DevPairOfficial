@@ -31,18 +31,23 @@ def addQuestionPromptToUserModel():
 
 
 
-@gemini_routes.route('/')
-def getLeetCodeResponseBits():
+@gemini_routes.route('/generate/<int:id>')
+def getLeetCodeResponseBits(id):
     """
     This route breaks down the prompt into small bits for gemini 1.0 to consume and produce accurate responses; also to hopefully prevent recitation errors
     """
+
+    user = User.query.get(id) # grab user from model
+    user = user.to_dict()
+    prev_solved_questions = user['completedLeetcodeProblems'] # ensure AI does not use a previously solved question from this user
+
     print('🥱🥱🥱 Generating Problem, please wait.')
 
     # reset chatbot conversation to avoid recitation error (RECITATION ERROR: occurs when using repetitve prompts. API docs does not provide any solution around this.)
     convo = initGlobalGeminiConvo()
 
     convo.send_message(
-        """
+        f"""
             IMPORTANT: Please adhere to the following structure when requesting solutions and tests for coding problems.
 
             For the entire structured response STRICTLY DO NOT include any markdowns such as:
@@ -57,6 +62,9 @@ def getLeetCodeResponseBits():
 
             QUESTION PROMPT:
             Describe the coding problem here, including constraints or relevant details.
+
+            ***IMPORTANT NOTE*** YOU MAY NOT USE THE FOLLOWING LEETCODE PROBLEMS:
+            {prev_solved_questions}
         """
     )
 
