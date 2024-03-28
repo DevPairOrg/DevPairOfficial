@@ -23,7 +23,7 @@ import { pairFollow, pairUnfollow } from '../../store/session';
 
 function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void }) {
     const user = useAppSelector((state) => state.session.user);
-    const pairInfo = useAppSelector((state) => state.pairedUser.user);
+    const pairInfo = useAppSelector((state) => state.chatRoom.user);
     const { channelName, leaveRoomHandler } = props;
     const [myCameraTrack, setMyCameraTrack] = useState<ICameraVideoTrack | undefined>(undefined)
     const { isLoading: isLoadingMic, localMicrophoneTrack } = useLocalMicrophoneTrack();
@@ -53,11 +53,13 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
     }, [localCameraTrack])
 
 
-    useEffect(() => {
-        if(pairInfo) {
-            setIsFollowed(user?.following.find(pair => +pair.followed_id === +pairInfo.id) ? true : false)
-        }
-    }, [pairInfo])
+    //! NEEDED TO COMMENT OUT THIS UseEffect() BECAUSE IT WAS BREAKING WHEN TRYING TO PAIR WITH TWO PEOPLE AFTER MODEL FRIENDREQUEST RE-WORK WAS IMPLEMENTED
+    // useEffect(() => {
+    //     if(pairInfo) {
+    //         setIsFollowed(user?.following.find(pair => +pair.followed_id === +pairInfo.id) ? true : false)
+    //     }
+    // }, [pairInfo])
+    //! //! NEEDED TO COMMENT OUT THIS UseEffect() BECAUSE IT WAS BREAKING WHEN TRYING TO PAIR WITH TWO PEOPLE AFTER MODEL FRIENDREQUEST RE-WORK WAS IMPLEMENTED
 
     usePublish([localMicrophoneTrack, localCameraTrack]);
 
@@ -140,4 +142,3 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
 }
 
 export default PairedVideos;
-

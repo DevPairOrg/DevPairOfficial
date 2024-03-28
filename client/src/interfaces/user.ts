@@ -1,5 +1,7 @@
 import { FollowingObject, FollowingState } from './following';
 
+type UserWithoutFriends = Omit<User, 'friends'>;
+
 export interface User {
     id: string;
     username: string;
@@ -17,6 +19,10 @@ export interface User {
 
     following: FollowingObject[];
     followers: FollowingObject[];
+
+    friends: User[]
+    sentRequests: {requestId: UserWithoutFriends} // User = user that the request is going to
+    receivedRequests: {requestId: UserWithoutFriends} // User = user that sent YOU a request
 
     errors: string;
 }

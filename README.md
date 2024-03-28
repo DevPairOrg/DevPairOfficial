@@ -1,41 +1,54 @@
-# $${\color{blue}Winter \space Hackathon-Dev-Pair}$$
+# $${\color{blue}G}{\color{red}o}{\color{yellow}o}{\color{blue}g}{\color{green}l}{\color{red}e}\space AI \space Hackathon \space DevPair$$
 <!-- FORMAT FOR THIS STYLING: $${\color{red}Welcome \space \color{lightblue}To \space \color{orange}Stackoverflow}$$ -->
-$${\color{red}by \space \color{lightblue}Minh, \space \color{lightblue}Melinda}$$
+$${\color{red}by \space \color{lightblue}Minh, \space \color{lightblue}Melinda, \space \color{lightblue}Sebastian}$$
 
 # The Official DevPair Repository
 - ### This is where we'll be constantly updating this project to its full potential.
 
 # About
-- **Accessibility-Focused**: Designed to assist users in finding pair-programming partners for practicing Data Structures & Algorithms.
-- **Random Pairing Mechanism**: Implements a first-in, first-out system for connecting users randomly.
-- **Interactive Platform**: Offers video camera sharing and chat functionalities for enhanced communication and problem-solving collaboration.
-- **Community-Driven Initiative**: Aims to serve users struggling to find programming partners, fostering a supportive community environment.
-- **Flexible Pairing Options**: Allows users to link up with a partner or choose to connect with a different participant.
+- **Accessibility-Focused with Gemini AI**: Enhances user pairing for Data Structures & Algorithms practice by introducing personalized LeetCode problems and automatic solution testing through Gemini AI.
 
-# Features (MVPs)
+- **Random Pairing with Learning Boost**: Connects users randomly while Gemini AI provides custom coding challenges and instant feedback, fostering a practical learning environment.
+
+- **Interactive Platform with Smart Features**: Offers video and chat for collaboration, enriched with Gemini AI's problem generation and solution validation, making learning interactive and efficient.
+
+- **Community-Driven with AI Support**: Builds a supportive environment for finding programming partners, with Gemini AI adding a layer of educational content suitable for all skill levels.
+
+- **Flexible Pairing with Intelligent Enhancement**: Allows choice in pairing, while Gemini AI tailors challenges and feedback to the pair’s skill set, ensuring a progressive learning journey.
+
+# Current Features (MVPs)
 1. Video Calling
 2. Chatting
-3. User Follower/Following
-4. Screen Sharing
+3. Screen Sharing
+4. Gemini AI
+5. IDE DS&A Tests
+6. User Friends
 
 ### Features Coming Soon
-5. IDE DS&A Tests
-6. User Direct Messaging
-7. User Statistics
+1. User Direct Messaging
+2. User Statistics
 
 # Technology
-1. Python (Server Side Language)
-2. Flask (Framework)
-3. React (JavaScript Library)
-4. Redux & @reduxjs/toolkit (State Management)
-5. TypeScript (Client Side Language with a strict syntactical superset of JavaScript and adds static type definitions)
-6. [Flask-SocketIO](https://flask-socketio.readthedocs.io/en/latest/) (Extension for Flask that adds WebSocket support)
-7. Agora-RTC (Enhanced version of WebRTC to offer real-time voice and video communication capabilities)
-8. PostgreSQL (Production-DB)
-9. SQLite (Development-DB)
-10. SQLAlchemy (SQL toolkit & Object-Relational Mapping (ORM) library for Python)
+
+### Front-end Technologies:
+- React: A JavaScript library for creating dynamic user interfaces, essential for front-end web application development.
+- Redux & @reduxjs/toolkit: Tools for managing and centralizing application state, commonly used with React to facilitate state management in complex applications.
+- TypeScript: A statically typed superset of JavaScript that introduces type safety and is often used to develop robust front-end and back-end applications.
+### Back-end Technologies:
+- Python: A high-level, versatile programming language for server-side logic, serving as the backbone for many web applications.
+- Flask: A minimalist web framework for Python, providing the flexibility to build web applications quickly and with minimal setup.
+- Flask-SocketIO: An extension for Flask that enables WebSocket support, facilitating real-time, bidirectional communication between the web client and server.
+### Database Management:
+- PostgreSQL: A powerful, open-source object-relational database system used in production for its advanced features and reliability.
+- SQLite: A lightweight, file-based database, ideal for development and testing environments due to its simplicity and ease of use.
+- SQLAlchemy: An ORM and SQL toolkit for Python, providing a full range of patterns for database access and manipulation.
+### Real-time Communication:
+- Agora-RTC: A technology enhancing WebRTC with additional features for high-quality real-time voice and video communication, crucial for applications requiring live interaction.
+### AI and Machine Learning:
+- Google AI Gemini API: A cutting-edge API from Google AI, designed to provide advanced artificial intelligence and machine learning capabilities. This could include anything from natural language processing, image recognition, to predictive analytics, significantly enriching the application's features and user experience.
 
 # Project Demo
+- Updated Demo Showcase Coming Soon..
 <!--
 ![Splash-Screen](client/src/assets/readme-demo-images/splash-page.png)
 ![Demo-User](client/src/assets/readme-demo-images/demo-user.png)
@@ -44,41 +57,53 @@ $${\color{red}by \space \color{lightblue}Minh, \space \color{lightblue}Melinda}$
 ![Video-Demo](client/src/assets/readme-demo-images/video-demo.png)
 -->
 
-<img src="client/src/assets/readme-demo-images/splash-page.png" width="500" />
+<!-- <img src="client/src/assets/readme-demo-images/splash-page.png" width="500" />
 <img src="client/src/assets/readme-demo-images/demo-user.png" width="500" />
 <img src="client/src/assets/readme-demo-images/dashboard.png" width="500" />
 <img src="client/src/assets/readme-demo-images/pre-pair-page.png" width="500" />
-<img src="client/src/assets/readme-demo-images/video-demo.png" width="500" />
+<img src="client/src/assets/readme-demo-images/video-demo.png" width="500" /> -->
 <br>
 <br>
 
 
 # Getting Started
 
-## Prereq:
-1. Signup for [Agora-RTC](https://sso2.agora.io/en/v6/signup)
-2. Grab your `App ID` as you will need it in the `client` folder `.env` file for the key `VITE_APP_ID`
+### Prereq:
+
+- Agora-RTC
+    1. Signup for [Agora-RTC](https://sso2.agora.io/en/v6/signup)
+    2. Grab the `App ID`
+    3. Grab the `App Certificate`
+    4. Generate a temp `RTC Token`
+
+- Gemini AI
+    1. Grab the API key in Google AI Studio to utilize [GeminiAI](https://ai.google.dev/)
+
+- Amazon Web Services S3
+    1. Setup an [AWS Account](https://aws.amazon.com/)
+    2. Setup a `bucket`
+    3. Grab the AWS `Key` and `Secret`
 
 ## Method 1: Use setup.sh script
-- Run the install script in your terminal
+- Run the install script in the terminal
     - `sh setup.sh`
-        - This script will create a `.env` with necessary variables and values for you to initialize the project and install all dependencies on the client and server.
+        - This script will create a `.env` with necessary variables and values for the user to initialize the project and install all dependencies on the client and server.
 - Terminal 1:
     - `cd into client`
-    - create a `.env` file
-    - according to the `.env.example` in the `client folder` fill out your appId for the key `VITE_APP_ID=<your appId>`
+    - In `.env`, set AppId, App Certificate, RTC Token.
     - `npm run dev`
 - Terminal 2:
     - `cd into server`
+    - In `.env`, set AWS S3 and Gemini API Key.
     - `pipenv shell`
     - `flask run`
 
 ## Method 2: Manual
 
-### Server
-- `cd` into the server folder
+### /server
+- `cd` into the `server` folder
 - Create a `.env` file with a key
-    - `SECRET_KEY=<your secret key>`
+    - `SECRET_KEY=<secret key>`
     - `DATABASE_URL=sqlite:///dev.db`
     - `SCHEMA=<schema_name>`
 - `pipenv install -r requirements.txt`
@@ -88,13 +113,27 @@ $${\color{red}by \space \color{lightblue}Minh, \space \color{lightblue}Melinda}$
 - `flask seed all`
 - `flask run`
 
-### Client
-- `cd` into the client folder
-- Create a `.env` file and fill out your appId for the key `VITE_APP_ID=<your appId>`
+### /client
+- `cd` into the `client` folder
+- Create a `.env` file and input the proper values. Refer to `.env.example`
 - `npm i`
 - `npm run build` in one terminal for typescript
 - `npm run dev` in another terminal
 
+# Enhancements / Prettier Settings
+- `cd` into the `client` folder
+- Create a `.prettierrc` file
+- Recommended settings that offer an ideal balance for code readability and style:
+    ```
+    {
+        "printWidth": 120,
+        "tabWidth": 4,
+        "singleQuote": true,
+        "trailingComma": "es5",
+        "bracketSpacing": true
+    }
+    ```
+- It's important to note, however, that these settings are based on personal preference and might not be universally preferred. Adjustments can be made according to individual or team standards to better suit different coding styles or project requirements.
 
 # Deployment
 
@@ -141,7 +180,8 @@ if environment == "production":
         op.execute(f"ALTER TABLE users SET SCHEMA {SCHEMA};")
         op.execute(f"ALTER TABLE chatrooms SET SCHEMA {SCHEMA};")
         op.execute(f"ALTER TABLE direct_messages SET SCHEMA {SCHEMA};")
-        op.execute(f"ALTER TABLE following SET SCHEMA {SCHEMA};")
+        op.execute(f"ALTER TABLE friend_requests SET SCHEMA {SCHEMA};")
+        op.execute(f"ALTER TABLE friends_association SET SCHEMA {SCHEMA};")
         op.execute(f"ALTER TABLE messages SET SCHEMA {SCHEMA};")
 ```
 
