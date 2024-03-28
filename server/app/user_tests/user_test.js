@@ -7,6 +7,7 @@ function isPalindrome(x) {
         reverse = (reverse * 10) + lastDigit;
         y = Math.floor(y / 10);
     }
+    console.log('test', reverse)
     return x === reverse;
 }
 

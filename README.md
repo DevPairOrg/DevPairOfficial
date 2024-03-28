@@ -95,6 +95,7 @@ $${\color{red}by \space \color{lightblue}Minh, \space \color{lightblue}Melinda, 
 - Terminal 2:
     - `cd into server`
     - In `.env`, set AWS S3 and Gemini API Key.
+    - After setting the keys, in the terminal for /server, type `exit` (this is to re-enter the shell with the updated .env variables)
     - `pipenv shell`
     - `flask run`
 

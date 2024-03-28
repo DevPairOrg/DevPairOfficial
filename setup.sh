@@ -52,7 +52,7 @@ if [ ! -f "$env_file" ]; then
     # Using echo to add lines to the .env file
     echo "SECRET_KEY=$secret_key" > "$env_file" # > creates and overwrites
     echo "DATABASE_URL=sqlite:///dev.db" >> "$env_file" # >> appends
-    echo "SCHEMA=flask_schema" >> "$env_file"
+    echo "SCHEMA=devpairofficial" >> "$env_file"
     echo "GEMINI_API_KEY=<your gemini api key>" >> "$env_file"
     echo "S3_IMAGE_BUCKET=<your aws bucket>" >> "$env_file"
     echo "S3_IMAGE_KEY=<your aws key>" >> "$env_file"
@@ -67,6 +67,13 @@ fi
 run_with_pipenv() {
     echo "Using pipenv to install dependencies and run migrations."
     pipenv run pip install -r requirements.txt
+    # Check if migrations folder exists
+    if [ ! -d "migrations" ]; then
+        echo "Migrations folder not found. Initializing migrations..."
+        pipenv run flask db init
+    else
+        echo "Migrations folder found. Skipping initialization."
+    fi
     pipenv run flask db migrate
     pipenv run flask db upgrade
     pipenv run flask seed all
@@ -76,6 +83,13 @@ run_with_pipenv() {
 run_with_venv() {
     echo "Using virtual environment to install dependencies and run migrations."
     pipenv install -r requirements.txt
+    # Check if migrations folder exists
+    if [ ! -d "migrations" ]; then
+        echo "Migrations folder not found. Initializing migrations..."
+        flask db init
+    else
+        echo "Migrations folder found. Skipping initialization."
+    fi
     flask db migrate
     flask db upgrade
     flask seed all

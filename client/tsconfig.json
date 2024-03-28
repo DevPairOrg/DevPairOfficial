@@ -6,7 +6,7 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "types": ["node"], // This tells TypeScript to include the Node.js type definitions during compilation.
-    "typeRoots": ["./node_modules/@types"],
+    "typeRoots": ["node_modules/@types"],
 
     /* Emit */
     "outDir": "./dist",
