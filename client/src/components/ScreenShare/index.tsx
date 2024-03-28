@@ -27,6 +27,8 @@ function ScreenShare(props: { channelName: string }) {
   const remoteUsers = useRemoteUsers();
   const agoraEngine = useRTCClient();
 
+  const sessionUser = useAppSelector((state) => state.session.user)
+
   useRemoteVideoTracks(remoteUsers);
   const pairInfo = useAppSelector((state) => state.chatRoom.user);
   // console.log(remoteUsers);
@@ -75,19 +77,45 @@ function ScreenShare(props: { channelName: string }) {
 
   //? GEMINI
   const handleGeminiRequest = async () => {
-    const res = await fetch("/api/gemini/");
+    if(!sessionUser) {
+      console.error("Error: No signed in user")
+      return
+    }
+
+    const res = await fetch(`/api/gemini/generate/${Number(sessionUser.id)}`); // GENERATE LEETCODE PROBLEM
 
     if (res.ok) {
       const data = await res.json();
-      console.log("🤡🤡🤡gemini problem", data);
+      // console.log("🤡🤡🤡gemini problem", data);
+
+      addQuestionPromptToUserModel(data.nameAndPrompt);
+
       setGeminiProblem(data.geminiResponse);
       setGeneratedProblem(true);
+
       const parsedData = parseCode(data.geminiResponse);
       setParsedResponse(parsedData);
     } else {
-      console.log("Failed to generate a problem through Gemini API.");
+      console.error("Failed to generate a problem through Gemini API.");
     }
   };
+
+  const addQuestionPromptToUserModel = async (questionPrompt: string) => {
+    if(!sessionUser) {
+      console.error("Error adding question prompt to user model. No signed in user")
+      return
+    }
+
+    const res = await fetch('/api/gemini/add', {
+      method: 'POST',
+      body: JSON.stringify({userId: sessionUser.id, prompt: questionPrompt}),
+      headers: {'Content-Type': 'application/json'}
+    })
+
+    if(!res.ok) {
+      console.error("Error adding question prompt to user model")
+    }
+  }
 
   const handleParse = () => {
     console.log("🤡🤡🤡gemini problem", geminiProblem);

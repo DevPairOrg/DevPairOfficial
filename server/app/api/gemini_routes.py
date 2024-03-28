@@ -1,22 +1,53 @@
-from flask import Blueprint
+from flask import Blueprint, request
 from ..gemini import initGlobalGeminiConvo
+from app.models import User, db
 
 gemini_routes = Blueprint('gemini', __name__)
 
-
-# initialize gemini chatbot
+# Initialize chatbot
 convo = initGlobalGeminiConvo()
 
-@gemini_routes.route('/')
-def getLeetCodeResponseBits():
+
+@gemini_routes.route('/add', methods=['POST'])
+def addQuestionPromptToUserModel():
+    try:
+        user_id = request.json.get('userId')
+        prompt = request.json.get('prompt')
+
+        if not user_id or not prompt:
+            return {"error": "Request body is missing"}, 500
+
+        user = User.query.get(user_id) # grab user from model
+        if not user:
+            return {"error": "User not found"}, 404
+
+        parsed_question_name = prompt.split('\n')[1] # get question name from gemini response
+
+        user.completed_leetcode_problems += (parsed_question_name + ', ')
+        db.session.commit()
+
+        return {'message': f'Successfully added {parsed_question_name} to user {user_id}'}
+
+    except Exception as e:
+        print("ERROR --------------->", e)
+        return {"error": "Failed to add prompt to user"}, 500
+
+
+
+@gemini_routes.route('/generate/<int:id>')
+def getLeetCodeResponseBits(id):
     """
     This route breaks down the prompt into small bits for gemini 1.0 to consume and produce accurate responses; also to hopefully prevent recitation errors
     """
+
+    user = User.query.get(id) # grab user from model
+    user = user.to_dict()
+    prev_solved_questions = user['completedLeetcodeProblems'] # ensure AI does not use a previously solved question from this user
+
     print('🥱🥱🥱 Generating Problem, please wait.')
 
-
     convo.send_message(
-        """
+        f"""
             IMPORTANT: Please adhere to the following structure when requesting solutions and tests for coding problems.
 
             For the entire structured response STRICTLY DO NOT include any markdowns such as:
@@ -31,6 +62,9 @@ def getLeetCodeResponseBits():
 
             QUESTION PROMPT:
             Describe the coding problem here, including constraints or relevant details.
+
+            ***IMPORTANT NOTE*** YOU MAY NOT USE THE FOLLOWING LEETCODE PROBLEMS:
+            {prev_solved_questions}
         """
     )
 
@@ -211,4 +245,4 @@ def getLeetCodeResponseBits():
     print('😁😁😁 test cases', test_cases)
     print('😁😁😁 python tests', python_test)
     print('😁😁😁 javascript tests', javascript_test)
-    return {'geminiResponse': name_and_prompt + '\n' + default_function_names + '\n' + test_cases + '\n' + python_test + '\n' + javascript_test}
+    return {'geminiResponse': name_and_prompt + '\n' + default_function_names + '\n' + test_cases + '\n' + python_test + '\n' + javascript_test, 'nameAndPrompt': name_and_prompt}
