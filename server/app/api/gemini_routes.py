@@ -4,6 +4,9 @@ from app.models import User, db
 
 gemini_routes = Blueprint('gemini', __name__)
 
+# Initialize chatbot
+convo = initGlobalGeminiConvo()
+
 
 @gemini_routes.route('/add', methods=['POST'])
 def addQuestionPromptToUserModel():
@@ -42,9 +45,6 @@ def getLeetCodeResponseBits(id):
     prev_solved_questions = user['completedLeetcodeProblems'] # ensure AI does not use a previously solved question from this user
 
     print('🥱🥱🥱 Generating Problem, please wait.')
-
-    # reset chatbot conversation to avoid recitation error (RECITATION ERROR: occurs when using repetitve prompts. API docs does not provide any solution around this.)
-    convo = initGlobalGeminiConvo()
 
     convo.send_message(
         f"""
