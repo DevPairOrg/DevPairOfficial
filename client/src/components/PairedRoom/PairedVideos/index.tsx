@@ -13,24 +13,24 @@ import AgoraRTC, {
 } from 'agora-rtc-react';
 
 import { useEffect, useState } from 'react';
-import config from '../../AgoraManager/config';
-import { useAppDispatch, useAppSelector } from '../../hooks';
+import config from '../../../AgoraManager/config';
+import { useAppSelector } from '../../../hooks';
 import './index.css';
-import { AgoraProvider } from '../../AgoraManager/agoraManager';
-import ScreenShare from '../ScreenShare';
-import userWaiting from '../../assets/images/user-waiting.svg';
-import { pairFollow, pairUnfollow } from '../../store/session';
+import { AgoraProvider } from '../../../AgoraManager/agoraManager';
+import ScreenShare from '../PairedContent';
+import userWaiting from '../../../assets/images/user-waiting.svg';
+// import { pairFollow, pairUnfollow } from '../../../store/session';
 
 function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void }) {
     const user = useAppSelector((state) => state.session.user);
     const pairInfo = useAppSelector((state) => state.chatRoom.user);
     const { channelName, leaveRoomHandler } = props;
-    const [myCameraTrack, setMyCameraTrack] = useState<ICameraVideoTrack | undefined>(undefined)
+    const [myCameraTrack, setMyCameraTrack] = useState<ICameraVideoTrack | undefined>(undefined);
     const { isLoading: isLoadingMic, localMicrophoneTrack } = useLocalMicrophoneTrack();
     const { isLoading: isLoadingCam, localCameraTrack } = useLocalCameraTrack();
     const remoteUsers = useRemoteUsers();
-    const [isFollowed, setIsFollowed] = useState<boolean>(false)
-    const dispatch = useAppDispatch()
+    // const [isFollowed, setIsFollowed] = useState<boolean>(false);
+    // const dispatch = useAppDispatch();
 
     useJoin({
         appid: config.appId,
@@ -47,11 +47,10 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
     }, []);
 
     useEffect(() => {
-        if(localCameraTrack) {
-            setMyCameraTrack(localCameraTrack)
+        if (localCameraTrack) {
+            setMyCameraTrack(localCameraTrack);
         }
-    }, [localCameraTrack])
-
+    }, [localCameraTrack]);
 
     //! NEEDED TO COMMENT OUT THIS UseEffect() BECAUSE IT WAS BREAKING WHEN TRYING TO PAIR WITH TWO PEOPLE AFTER MODEL FRIENDREQUEST RE-WORK WAS IMPLEMENTED
     // useEffect(() => {
@@ -65,32 +64,31 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
 
     const deviceLoading = isLoadingMic || isLoadingCam;
 
-    const handleVideoFollow = async (e: React.MouseEvent<HTMLButtonElement>) => {
-        e.preventDefault();
-        e.stopPropagation();
+    // const handleVideoFollow = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    //     e.preventDefault();
+    //     e.stopPropagation();
 
-        try {
-            if (!isFollowed && pairInfo) {
-                await dispatch(pairFollow(+pairInfo.id)).unwrap();
-                setIsFollowed(true);
-            } else {
+    //     try {
+    //         if (!isFollowed && pairInfo) {
+    //             await dispatch(pairFollow(+pairInfo.id)).unwrap();
+    //             setIsFollowed(true);
+    //         } else {
 
-                if (pairInfo) {
-                    const relationshipId = user?.following.find(pair => +pair.followed_id === +pairInfo.id)?.id
-                    if (relationshipId) {
+    //             if (pairInfo) {
+    //                 const relationshipId = user?.following.find(pair => +pair.followed_id === +pairInfo.id)?.id
+    //                 if (relationshipId) {
 
-                        await dispatch(pairUnfollow(+relationshipId)).unwrap();
-                        setIsFollowed(false);
-                    }
-                } else {
-                    console.log('No matching following target found');
-                }
-            }
-        } catch (error) {
-            console.error('Error in handleFollow:', error);
-        }
-
-    };
+    //                     await dispatch(pairUnfollow(+relationshipId)).unwrap();
+    //                     setIsFollowed(false);
+    //                 }
+    //             } else {
+    //                 console.log('No matching following target found');
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error('Error in handleFollow:', error);
+    //     }
+    // };
 
     return (
         <>
@@ -112,7 +110,14 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
                                 <div className="videos" style={{ height: 300, width: 300 }} key={remoteUser.uid}>
                                     <p className="video-username">{pairInfo.username}</p>
                                     <RemoteUser user={remoteUser} playVideo={true} playAudio={true} />
-                                    <button id="follow-user" onClick={handleVideoFollow}>{isFollowed ? "unfollow" : "Follow"}</button>
+                                    <button
+                                        id="follow-user"
+                                        onClick={() => {
+                                            console.log('This button should send a friend request');
+                                        }}
+                                    >
+                                        Replace w/ Friend Request
+                                    </button>
                                 </div>
                             );
                         }

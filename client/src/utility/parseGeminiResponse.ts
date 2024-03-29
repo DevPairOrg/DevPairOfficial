@@ -13,9 +13,18 @@ export function parseCode(code: string) {
 
     const processedLines = lines.map((line: string) => {
         if (line.trim().startsWith('```')) {
-            inCodeBlock = !inCodeBlock; // Enter or exit code block
-            preserveIndentation = inCodeBlock; // Enable or disable based on code block status
             return ''; // Skip ``` lines themselves
+        }
+
+        if (line.trim().startsWith('PYTHON UNIT TESTING:') || line.trim().startsWith('JAVASCRIPT UNIT TESTING:')) {
+            inCodeBlock = true; // Enter or exit code block
+            preserveIndentation = inCodeBlock; // Enable or disable based on code block status
+        }
+
+        if (line.trim().startsWith('print')) {
+            inCodeBlock = !inCodeBlock;
+            preserveIndentation = inCodeBlock;
+            return line;
         }
 
         // Additional conditions here...

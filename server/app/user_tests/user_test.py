@@ -1,40 +1,28 @@
-def reverse(x):
-  neg = False
-  if x < 0:
-    neg = True
-    x = abs(x)  # Convert to positive for digit reversal
-
-  rev = 0
-  while x > 0:
-    pop = x % 10
-    rev = rev * 10 + pop
-    x //= 10
-    if rev < -2**31 or rev > 2**31 - 1:
-      return 0
-
-  return -rev if neg else rev
+def binary_search(nums, target):
+    # Your code goes here
+    testing
 
 class SolutionTest:
-    @staticmethod
-    def run_test_case(input, expected):
-        result = reverse(input)
-        return result == expected
+@staticmethod
+def run_test_case(nums, target, expected):
+result = binary_search(nums, target)
+return result == expected
 
 def run_all_tests():
-    test_suite = SolutionTest()
-    test_results = []
-    test_cases = [
-        {'input': 123, 'expected': 321},
-        {'input': -123, 'expected': -321},
-        {'input': 120, 'expected': 21}
-    ]
-    for i, test_case in enumerate(test_cases, start=1):
-        input, expected = test_case['input'], test_case['expected']
-        result = test_suite.run_test_case(input, expected)
-        test_results.append((f"Test case {i}", result))
-    return test_results
+test_suite = SolutionTest()
+test_results = []
+test_cases = [
+{'input': [-1,0,3,5,9,12], 'target': 9, 'expected': 4},
+{'input': [-1,0,3,5,9,12], 'target': 2, 'expected': 3},
+{'input': [2,5], 'target': 4, 'expected': 1}
+]
+for i, test_case in enumerate(test_cases, start=1):
+nums, target, expected = test_case['input'], test_case['target'], test_case['expected']
+result = test_suite.run_test_case(nums, target, expected)
+test_results.append((f"Test case {i}", result))
+return test_results
 
 if __name__ == '__main__':
-    results = run_all_tests()
-    for test_case, result in results:
-        print(f"{test_case}: {True if result else False}")
+results = run_all_tests()
+for test_case, result in results:
+print(f"{test_case}: {True if result else False}")

@@ -1,11 +1,11 @@
 import React, { FormEvent, useCallback, useEffect, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import { useSocket } from "../../hooks/socket";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
+import { useSocket } from "../../../hooks/socket";
 import {
   clearChatMessages,
   receiveChatMessage,
-} from "../../store/chatRoom";
-import { PairedChatMessage } from "../../interfaces/socket";
+} from "../../../store/chatRoom";
+import { PairedChatMessage } from "../../../interfaces/socket";
 import "./index.css";
 
 // Define the props interface for the PairedChat component

@@ -1,90 +1,21 @@
 import { useState } from 'react';
-import ShareScreenComponent from '../../AgoraManager/screenShare';
-import config from '../../AgoraManager/config';
-import { fetchRTCToken } from '../../utility/fetchRTCToken';
+import ShareScreenComponent from '../../../AgoraManager/screenShare';
+import config from '../../../AgoraManager/config';
+import { fetchRTCToken } from '../../../utility/fetchRTCToken';
 import { useEffect } from 'react';
 import { RemoteVideoTrack, useClientEvent, useRTCClient, useRemoteUsers, useRemoteVideoTracks } from 'agora-rtc-react';
-import { useAppSelector } from '../../hooks';
-import RemoteAndLocalVolumeComponent from '../../AgoraManager/volumeControl';
-import shareScreenPlaceholder from '../../assets/images/share-screen-holder.webp';
-import IDE from '../CodeMirror';
-import { parseCode } from '../../utility/parseGeminiResponse';
-import { parsedData } from '../../interfaces/gemini';
+import { useAppSelector } from '../../../hooks';
+import RemoteAndLocalVolumeComponent from '../../../AgoraManager/volumeControl';
+import shareScreenPlaceholder from '../../../assets/images/share-screen-holder.webp';
+import IDE from '../../IDE';
+import { parseCode } from '../../../utility/parseGeminiResponse';
+import { parsedData } from '../../../interfaces/gemini';
 
 function ScreenShare(props: { channelName: string }) {
     const { channelName } = props;
     const [screenSharing, setScreenSharing] = useState<boolean>(false);
     const [isRemoteScreen, setIsRemoteScreen] = useState<boolean>(false);
-    const [geminiProblem, setGeminiProblem] = useState<string>(`
-  PROBLEM NAME:
-  Max Consecutive Ones
-
-  **QUESTION PROMPT**:
-  Given a binary array, find the maximum number of consecutive 1s in the array. The array only contains 0s and 1s.
-
-  Constraints:
-  * The input array is not null.
-  * The length of the input array is within the range [1, 100,000].
-  EMPTY FUNCTION:
-  def maxConsecutiveOnes(nums):
-      # Your code goes here
-      pass
-
-  function maxConsecutiveOnes(nums) {
-      // Your code goes here
-  }
-
-  TEST CASES:
-  - INPUT: [1,1,0,1,1,1],
-    OUTPUT: 3
-  - INPUT: [1,0,1,1,0,1],
-    OUTPUT: 2
-  - INPUT: [1,0,0,0,1],
-    OUTPUT: 1
-
-  PYTHON UNIT TESTING:
-  \`\`\`python
-  class SolutionTest:
-      @staticmethod
-      def run_test_case(nums, expected):
-          result = maxConsecutiveOnes(nums)
-          return result == expected
-
-  def run_all_tests():
-      test_suite = SolutionTest()
-      test_results = []
-      test_cases = [
-          {'input': [1,1,0,1,1,1], 'expected': 3},
-          {'input': [1,0,1,1,0,1], 'expected': 2},
-          {'input': [1,0,0,0,1], 'expected': 1}
-      ]
-      for i, test_case in enumerate(test_cases, start=1):
-          input, expected = test_case['input'], test_case['expected']
-          result = test_suite.run_test_case(input, expected)
-          test_results.append((f"Test case {i}", result))
-      return test_results
-
-  if __name__ == '__main__':
-      results = run_all_tests()
-      for test_case, result in results:
-          print(f"{test_case}: {True if result else False}")
-  \`\`\`
-
-  JAVASCRIPT UNIT TESTING:
-  \`\`\`javascript
-  const testCases = [
-    { input: [1, 1, 0, 1, 1, 1], expected: 3 },
-    { input: [1, 0, 1, 1, 0, 1], expected: 2 },
-    { input: [1, 0, 0, 0, 1], expected: 1 },
-  ];
-
-  testCases.forEach(({ input, expected }, index) => {
-    const result = maxConsecutiveOnes(input);
-    console.assert(result === expected, \`Test case \${index + 1} failed\`);
-    console.log(\`Test case \${index + 1}\`, result === expected);
-  });
-  \`\`\`
-  `);
+    const [geminiProblem, setGeminiProblem] = useState<string>('');
     const [generatedProblem, setGeneratedProblem] = useState<boolean>(false);
     const [parsedResponse, setParsedResponse] = useState<parsedData>();
     const remoteUsers = useRemoteUsers();
@@ -147,15 +78,15 @@ function ScreenShare(props: { channelName: string }) {
 
         if (res.ok) {
             const data = await res.json();
-            // console.log("🤡🤡🤡gemini problem", data);
+            console.log('🤡🤡🤡gemini problem', data.geminiResponse);
 
             addQuestionPromptToUserModel(data.nameAndPrompt);
 
-            // setGeminiProblem(data.geminiResponse);
+            setGeminiProblem(data.geminiResponse);
             setGeneratedProblem(true);
 
-            // const parsedData = parseCode(data.geminiResponse);
-            // setParsedResponse(parsedData);
+            const parsedData = parseCode(data.geminiResponse);
+            setParsedResponse(parsedData);
         } else {
             console.error('Failed to generate a problem through Gemini API.');
         }
