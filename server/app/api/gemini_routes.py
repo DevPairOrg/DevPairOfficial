@@ -240,9 +240,10 @@ def getLeetCodeResponseBits(id):
 
     javascript_test = convo.last.text
 
-    print('😁😁😁 name & prompt', name_and_prompt)
-    print('😁😁😁 default fn names', default_function_names)
-    print('😁😁😁 test cases', test_cases)
-    print('😁😁😁 python tests', python_test)
-    print('😁😁😁 javascript tests', javascript_test)
+    # print('😁😁😁 name & prompt', name_and_prompt)
+    # print('😁😁😁 default fn names', default_function_names)
+    # print('😁😁😁 test cases', test_cases)
+    # print('😁😁😁 python tests', python_test)
+    # print('😁😁😁 javascript tests', javascript_test)
+    print('😣😣😣 geminiResponse', name_and_prompt + '\n' + default_function_names + '\n' + test_cases + '\n' + python_test + '\n' + javascript_test)
     return {'geminiResponse': name_and_prompt + '\n' + default_function_names + '\n' + test_cases + '\n' + python_test + '\n' + javascript_test, 'nameAndPrompt': name_and_prompt}
