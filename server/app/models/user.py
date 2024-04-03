@@ -26,6 +26,7 @@ class User(db.Model, UserMixin):
     link_linkedin = db.Column(db.String, nullable=True)
     link_portfolio = db.Column(db.String, nullable=True)
     link_leetcode = db.Column(db.String, nullable=True)
+    completed_leetcode_problems = db.Column(db.String, nullable=False, default='')
 
     messages = db.relationship('Message', back_populates='user', cascade="all, delete-orphan")
 
@@ -69,11 +70,12 @@ class User(db.Model, UserMixin):
             'linkedin': self.link_linkedin,
             'portfolio': self.link_portfolio,
             'leetcode': self.link_leetcode,
+            'completedLeetcodeProblems': self.completed_leetcode_problems
         }
 
         if include_relationships:
             data['friends'] = [friend.to_dict(include_relationships=False) for friend in self.friends]
-        
+
         if include_friend_requests:
             data['sentRequests'] = {request.id: request.receiver.to_dict(include_relationships=False) for request in self.sent_friend_requests}
             data['receivedRequests'] = {request.id: request.sender.to_dict(include_relationships=False) for request in self.received_friend_requests}
