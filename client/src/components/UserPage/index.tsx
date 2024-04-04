@@ -1,19 +1,16 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../hooks";
 import { RootState } from "../../store";
-import { getFollowing } from "../../store/userFollowing";
-import { getUser } from "../../store/user";
 import TargetUserSocials from "./targetUserSocials";
-import { MouseEvent } from "react";
-import { FollowingObject } from "../../interfaces/following";
-import { unfollow, postFollow } from "../../store/userFollowing";
+
 import TargetUserInfoBox from "./targetUserInfoBox";
 import TargetUserAbout from "./targetUserAbout";
 import "./index.css";
 import Footer from "../Footer";
 import EditUserPage from "./editProfile";
 import PreviewProfile from "./PreviewProfile";
+import { acceptFriendRequest } from "../../store/session";
 
 function UserPage() {
   const { userId } = useParams();
@@ -25,86 +22,24 @@ function UserPage() {
   const targetUser = useAppSelector(
     (state: RootState) => state.user.targetUser
   );
-  const following = useAppSelector((state: RootState) => state.userFollowing);
-  //   console.log("User's page: ", targetUser);
-  //   console.log("Session User", sessionUser);
-  //   console.log("following", following);
-  // useEffect(() => {
-  //     console.log('editMode', editMode);
-  // }, [editMode]);
 
-  useEffect(() => {
-    async function fetchData() {
-      if (userId) {
-        const userFetched = await dispatch(getUser(+userId)).unwrap();
-        if (userFetched) {
-          await dispatch(getFollowing(userFetched));
-        }
-      }
-      if (sessionUser) {
-        await dispatch(getFollowing(sessionUser));
-      }
-    }
-    fetchData();
-  }, [userId, sessionUser, dispatch]);
+  const friends = useAppSelector((state: RootState) => state.session.user?.friends)
+  const sentRequests = useAppSelector((state: RootState) => state.session.user?.sentRequests)
+  const receivedRequests = useAppSelector((state: RootState) => state.session.user?.receivedRequests)
 
-  useEffect(() => {
-    if (sessionUser && targetUser) {
-      const isFollowingTarget =
-        following?.following?.some(
-          (obj) =>
-            +obj.followed_id === +targetUser.id &&
-            +obj.follower_id === +sessionUser.id
-        ) ?? false;
+  console.log(receivedRequests)
 
-      setIsFollowed(isFollowingTarget);
-    }
-  }, [following, sessionUser, targetUser, isFollowed]);
 
-  const handleFollow = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (sessionUser?.errors) {
-      alert("You must be logged in to follow this user.");
-      return;
-    }
 
-    if (sessionUser?.id === targetUser?.id) {
-      alert("You may not follow yourself");
-      return;
-    }
+  
 
-    try {
-      if (!isFollowed) {
-        await dispatch(postFollow(+userId!)).unwrap();
-        setIsFollowed(true);
-      } else {
-        const followingTarget = following?.following?.find(
-          (follow: FollowingObject) =>
-            +follow.follower_id === +sessionUser?.id! &&
-            +follow.followed_id === +userId!
-        );
 
-        if (followingTarget) {
-          await dispatch(unfollow(followingTarget.id)).unwrap();
-          setIsFollowed(false);
-        } else {
-          console.log("No matching following target found");
-        }
-      }
-    } catch (error) {
-      console.error("Error in handleFollow:", error);
-    }
 
-    updateFollowState();
-  };
+  const handleAcceptRequest = async (requestId: number) => {
+    await dispatch(acceptFriendRequest(requestId))
+  }
 
-  const updateFollowState = async () => {
-    if (sessionUser) {
-      await dispatch(getFollowing(sessionUser));
-      await dispatch(getUser(+userId!));
-    }
-  };
+
 
   const isCurrentUserProfile =
     userId && sessionUser && +sessionUser.id === +userId;
@@ -132,10 +67,10 @@ function UserPage() {
                   Profile
                 </button>
                 <button id="db-button" onClick={() => setAction(2)}>
-                  Following
+                  Friends
                 </button>
                 <button id="db-button" onClick={() => setAction(3)}>
-                  Followers
+                  Requests
                 </button>
               </div>
               <div id="user-profile-content-container">
@@ -191,17 +126,16 @@ function UserPage() {
                 )}
                 {action === 2 && (
                   <div id="user-friends">
-                    {following && following.following!.length > 0 ? (
-                      following.following!.map((follow) => {
-                        // console.log('follow', follow);
+                    {friends && friends.length > 0 ? (
+                      friends.map((friend) => {
                         return (
-                          <a href={`/users/${follow?.followed.id}`}>
+                          <a href={`/users/${friend.id}`}>
                             <div id="each-friend">
-                              <div>{follow?.followed.username}</div>
+                              <div>{friend.username}</div>
                               <img
                                 src={
-                                  follow?.followed.picUrl
-                                    ? follow.followed.picUrl
+                                  friend.picUrl
+                                    ? friend.picUrl
                                     : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
                                 }
                                 style={{ height: "150px", width: "150px" }}
@@ -211,24 +145,25 @@ function UserPage() {
                         );
                       })
                     ) : (
-                      <div>Currently not following anyone...</div>
+                      <div>No friends yet... Get pairing to build your network!</div>
                     )}
                   </div>
                 )}
                 {action === 3 && (
                   <div id="user-friends">
-                    {following && following.followers!.length > 0 ? (
-                      following.followers!.map((follower) => {
-                        // console.log('follow', follower);
+                    <p>Sent: </p>
+                    {sentRequests && Object.keys(sentRequests).length > 0 ? (
+                      Object.keys(sentRequests).map((requestId) => {
+                        const user = sentRequests[+requestId]
                         return (
                           <>
-                            <a href={`/users/${follower.follower.id}`}>
+                            <a href={`/users/${user.id}`}>
                               <div id="each-friend">
-                                <div>{follower?.follower.username}</div>
+                                <div>{user.username}</div>
                                 <img
                                   src={
-                                    follower?.follower.picUrl
-                                      ? follower.follower.picUrl
+                                    user.picUrl
+                                      ? user.picUrl
                                       : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
                                   }
                                   style={{ height: "150px", width: "150px" }}
@@ -237,9 +172,37 @@ function UserPage() {
                             </a>
                           </>
                         );
-                      })
+                      }
+                      )
                     ) : (
-                      <div>You have no new followers...</div>
+                      <div>You currently have no pending requests...</div>
+                    )}
+                    <p>Recieved: </p>
+                    {receivedRequests && Object.keys(receivedRequests).length > 0 ? (
+                      Object.keys(receivedRequests).map((requestId) => {
+                        const user = receivedRequests[+requestId]
+                        return (
+                          <>
+                            <a href={`/users/${user.id}`}>
+                              <div id="each-friend">
+                                <div>{user.username}</div>
+                                <img
+                                  src={
+                                    user.picUrl
+                                      ? user.picUrl
+                                      : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
+                                  }
+                                  style={{ height: "150px", width: "150px" }}
+                                />
+                              </div>
+                            </a>
+                            <button onClick={() => handleAcceptRequest(+requestId)}>Accept</button>
+                          </>
+                        );
+                      }
+                      )
+                    ) : (
+                      <div>You currently have no pending requests...</div>
                     )}
                   </div>
                 )}

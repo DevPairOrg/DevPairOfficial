@@ -133,7 +133,7 @@ def accept_friend_request(request_id):
 
         db.session.delete(friend_request)
         db.session.commit()
-        return {friend_request.id: friend_request.sender.to_dict(include_relationships=False)}, 200
+        return current_user.to_dict(include_friend_requests=True), 200
     except IntegrityError as e:
         # undo any changes to db before the error
         db.session.rollback()

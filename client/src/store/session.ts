@@ -111,6 +111,29 @@ export const editUser = createAsyncThunk<User | null, FormData, { rejectValue: {
     }
 );
 
+export const acceptFriendRequest = createAsyncThunk<User | null, number, { rejectValue: string }>(
+    'session/acceptFriendRequest',
+    async (requestId, {rejectWithValue}) => {
+        try {
+            const response = await fetch(`/api/friends/request/${requestId}/accept`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            if (response.ok) {
+                const data = await response.json();
+                return data;
+            } else {
+                return rejectWithValue('Failed to accept friend request');
+            }
+        } catch (error) {
+            console.error('Error in accept request: ', error);
+            return rejectWithValue('Failed to accept friend request');
+        }
+    }
+)
+
 export const pairFollow = createAsyncThunk<User | null, number, { rejectValue: string }>(
     'session/pairFollow',
     async (followId, { rejectWithValue }) => {
@@ -187,6 +210,9 @@ const sessionSlice = createSlice({
             })
             .addCase(pairUnfollow.fulfilled, (state, action) => {
                 state.user = action.payload;
+            })
+            .addCase(acceptFriendRequest.fulfilled, (state, action) => {
+                state.user = action.payload
             })
     },
 });
