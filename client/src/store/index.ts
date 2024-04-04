@@ -3,6 +3,7 @@ import sessionReducer from './session';
 import chatRoomReducer from './chatRoom';
 import followingReducer from './userFollowing';
 import userReducer from './user';
+import currentUserPathReducer from './userPath';
 
 const store = configureStore({
     // configure store with the reducer here, toolkit should come with redux-thunk middlewaree by default
@@ -11,6 +12,7 @@ const store = configureStore({
         chatRoom: chatRoomReducer,
         userFollowing: followingReducer,
         user: userReducer,
+        userPath: currentUserPathReducer,
     },
     middleware: (getDefaultMiddleware) => {
         return getDefaultMiddleware(); // Thunk middleware is included by default

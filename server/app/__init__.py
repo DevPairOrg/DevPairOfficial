@@ -25,10 +25,10 @@ app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), '../
 login = LoginManager(app)
 login.login_view = 'auth.unauthorized'
 
-
 @login.user_loader
 def load_user(id):
     return User.query.get(int(id))
+
 
 
 # Tell flask about our seed commands
@@ -47,6 +47,7 @@ Migrate(app, db)
 
 # initialize the app with the socket instance
 socketio.init_app(app, async_mode='gevent')
+
 
 # Application Security
 CORS(app)

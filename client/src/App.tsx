@@ -8,8 +8,8 @@ import { useAppDispatch, useAppSelector } from './hooks';
 import LandingPage from './components/LandingPage';
 import VideoCall from './components/VideoCalling';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
-// import HomePage from './components/HomePage';
 import UserPage from './components/UserPage/index';
+import RouteChangeListener from './components/RouteChangeListener/RouteChangeListener';
 
 const App: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -39,6 +39,7 @@ const App: React.FC = () => {
         <>
             {isLoaded && (
                 <Router>
+                    <RouteChangeListener />
                     <Navigation isLoaded={isLoaded} />
                     <Routes>
                         <Route path="" element={<LandingPage />} />
