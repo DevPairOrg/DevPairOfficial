@@ -216,17 +216,20 @@ def reject_friend_request(request_id):
     "success": "Request successfully rejected."
     }
     """
+    try:
+        friend_request = FriendRequest.query.get(request_id)
 
-    friend_request = FriendRequest.query.get(request_id)
+        if not friend_request:
+            return {"error": "Friend request not found."}, 404
+        if friend_request.receiver != current_user:
+            return {"error": "You can only reject requests sent to you."}, 400
 
-    if not friend_request:
-        return {"error": "Friend request not found."}, 404
-    if friend_request.receiver != current_user:
-        return {"error": "You can only reject requests sent to you."}, 400
-
-    db.session.delete(friend_request)
-    db.session.commit()
-    return {"success": "Request successfully rejected."}, 200
+        db.session.delete(friend_request)
+        db.session.commit()
+        return current_user.to_dict(include_friend_requests=True), 200
+    except IntegrityError as e:
+        db.session.rollback()
+        return {"error": "Failed to reject request" + str(e)}, 500
 
 @friend_routes.route('/<int:friend_id>', methods=['DELETE'])
 @login_required

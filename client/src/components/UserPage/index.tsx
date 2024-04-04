@@ -7,7 +7,7 @@ import "./index.css";
 import Footer from "../Footer";
 import EditUserPage from "./editProfile";
 import PreviewProfile from "./PreviewProfile";
-import { acceptFriendRequest, cancelFriendRequest } from "../../store/session";
+import { acceptFriendRequest, cancelFriendRequest, rejectFriendRequest } from "../../store/session";
 import { getUser } from "../../store/user";
 
 function UserPage() {
@@ -46,6 +46,9 @@ function UserPage() {
         break;
       case "cancel":
         await dispatch(cancelFriendRequest(+requestId));
+        break;
+      case "reject":
+        await dispatch(rejectFriendRequest(+requestId));
         break;
       default:
         break;
@@ -219,6 +222,12 @@ function UserPage() {
                               style={{color: "black"}}
                             >
                               Accept
+                            </button>
+                            <button
+                              onClick={() => handleRequest(+requestId, "reject")}
+                              style={{color: "black"}}
+                            >
+                              Reject
                             </button>
                           </>
                         );
