@@ -76,7 +76,7 @@ def send_friend_request(receiver_id):
         db.session.add(new_request)
         db.session.commit()
 
-        return {new_request.id: new_request.to_dict()}, 201
+        return {new_request.id: new_request.receiver.to_dict(include_relationships=False)}, 201
     except IntegrityError as e:
         db.session.rollback()
         return {"error": "Failed to send friend request: {}".format(str(e))}, 500
