@@ -21,6 +21,7 @@ export interface User {
     friends: User[]
     sentRequests: {[requestId: number]: UserWithoutFriends} // User = user that the request is going to
     receivedRequests: {[requestId: number]: UserWithoutFriends} // User = user that sent YOU a request
+    totalPending: number
 
     isFriend?: boolean
 

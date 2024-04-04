@@ -78,7 +78,7 @@ function UserPage() {
                   Friends
                 </button>
                 <button id="db-button" onClick={() => setAction(3)}>
-                  Requests
+                  Requests - {sessionUser.totalPending}
                 </button>
               </div>
               <div id="user-profile-content-container">
@@ -134,7 +134,7 @@ function UserPage() {
                 )}
                 {action === 2 && (
                   <div id="user-friends">
-                    <p>Pending - </p>
+                    <p>All friends - {friends?.length}</p>
                     {friends && friends.length > 0 ? (
                       friends.map((friend) => {
                         return (
@@ -162,6 +162,7 @@ function UserPage() {
                 )}
                 {action === 3 && (
                   <div id="user-friends">
+                    <p>Pending - {sessionUser.totalPending}</p>
                     {sentRequests && Object.keys(sentRequests).length > 0 ? (
                       Object.keys(sentRequests).map((requestId) => {
                         const user = sentRequests[+requestId];
@@ -180,8 +181,10 @@ function UserPage() {
                                 />
                               </div>
                             </a>
+                            <p>Outgoing Request</p>
                             <button
                               onClick={() => handleRequest(+requestId, "cancel")}
+                              style={{color: "black"}}
                             >
                               Cancel
                             </button>
@@ -210,8 +213,10 @@ function UserPage() {
                                 />
                               </div>
                             </a>
+                            <p>Incoming Request</p>
                             <button
                               onClick={() => handleRequest(+requestId, "accept")}
+                              style={{color: "black"}}
                             >
                               Accept
                             </button>

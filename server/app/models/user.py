@@ -79,6 +79,8 @@ class User(db.Model, UserMixin):
         if include_friend_requests:
             data['sentRequests'] = {request.id: request.receiver.to_dict(include_relationships=False) for request in self.sent_friend_requests}
             data['receivedRequests'] = {request.id: request.sender.to_dict(include_relationships=False) for request in self.received_friend_requests}
+            data['totalPending'] = len(self.sent_friend_requests) + len(self.received_friend_requests)
+
 
         if check_friend:
             data['isFriend'] = other_user in self.friends
