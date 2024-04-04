@@ -22,7 +22,6 @@ const useSocketListeners = (
         socket.emit('join_room');
         socket.on('joined', (data: { room: string; users: UserDict[] }) => {
             console.log('Socket listening to "Joined"', data);
-            console.log('Typeof channelname @@@@@@@@@@@@@@@@@@@@', typeof data.room);
             if (!config.channelName) {
                 console.log('Config has no channel name');
                 setChannelName(data.room);
