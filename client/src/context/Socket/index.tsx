@@ -82,11 +82,17 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         // You can also place disconnect logic here if you want to
         // disconnect based on specific route changes
         console.log('Route changed to', location);
+        console.log('Route includes /code-collab?', location == '/code-collab');
         // For example, if leaving the /code-collab route:
         if (location) {
             if (!location.includes('/code-collab')) {
-                socket?.disconnect();
-                console.log('🙄😶🙄😪😪😫😏😏 PROPERLY DISCONNECTED🙄😶🙄😪😪😫😏😏 PROPERLY DISCONNECTED');
+                console.log('Current Socket', socket);
+                if (socket) {
+                    socket.disconnect();
+                    console.log('Socket Exists, Disconnecting...');
+                } else {
+                    console.log('No existing socket, disconnect not necessary.');
+                }
             }
         }
     }, [location]);

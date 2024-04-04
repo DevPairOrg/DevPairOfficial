@@ -10,8 +10,6 @@ import PairedVideos from '../PairedVideos';
 // const LazyPairedVideos = lazy(() => import('../PairedVideos'));
 import { useAppDispatch } from '../../hooks';
 import { clearUser, receiveUser } from '../../store/chatRoom';
-import { useLocation } from 'react-router-dom';
-import { updateCurrentPath } from '../../store/userPath';
 import CatImage from '/src/assets/images/devpair-loading-screen.png';
 import './index.css';
 import Footer from '../Footer';
@@ -19,7 +17,6 @@ import Footer from '../Footer';
 const VideoCall: React.FC = () => {
     const { connectSocket, socket, error } = useSocket();
     const user = useAppSelector((state) => state.session.user);
-    const location = useLocation();
     const agoraEngine = useRTCClient(AgoraRTC.createClient({ codec: 'vp8', mode: config.selectedProduct }));
     const [joined, setJoined] = useState<boolean>(false);
     const [channelName, setChannelName] = useState<string>('');
@@ -29,8 +26,6 @@ const VideoCall: React.FC = () => {
 
     useEffect(() => {
         if (socket) {
-            console.log('😁😁😁 Socket already established');
-            dispatch(updateCurrentPath(location.pathname));
             socket.emit('join_room');
             socket.on('joined', (data) => {
                 if (!config.channelName) {
