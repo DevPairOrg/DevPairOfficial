@@ -147,19 +147,26 @@ function UserPage() {
                     {friends && friends.length > 0 ? (
                       friends.map((friend) => {
                         return (
-                          <a href={`/users/${friend.id}`}>
-                            <div id="each-friend">
-                              <div>{friend.username}</div>
-                              <img
-                                src={
-                                  friend.picUrl
-                                    ? friend.picUrl
-                                    : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
-                                }
-                                style={{ height: "150px", width: "150px" }}
-                              />
-                            </div>
-                          </a>
+                          <>
+                            <a href={`/users/${friend.id}`}>
+                              <div id="each-friend">
+                                <div>{friend.username}</div>
+                                <img
+                                  src={
+                                    friend.picUrl
+                                      ? friend.picUrl
+                                      : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
+                                  }
+                                  style={{ height: "150px", width: "150px" }}
+                                />
+                              </div>
+                            </a>
+                            <OpenModalButton
+                              className="profile-buttons"
+                              buttonText="Remove Friend"
+                              modalComponent={<RemoveFriendModal user={friend} />}
+                            />
+                          </>
                         );
                       })
                     ) : (
@@ -287,9 +294,7 @@ function UserPage() {
                                 className="profile-buttons"
                                 buttonText="Remove Friend"
                                 modalComponent={
-                                  <RemoveFriendModal
-                                    user={user}
-                                  />
+                                  <RemoveFriendModal user={user} />
                                 }
                               />
                             )}
@@ -527,7 +532,8 @@ function UserPage() {
                       <h2>Friends</h2>
                       <div className="hr-line-primary"></div>
                       <div className="follow-scroll">
-                        {user && user.friends &&
+                        {user &&
+                          user.friends &&
                           user.friends.length > 0 &&
                           user.friends.map((friend, i) => {
                             return (
