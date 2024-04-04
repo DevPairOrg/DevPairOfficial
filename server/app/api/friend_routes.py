@@ -172,16 +172,20 @@ def cancel_sent_request(request_id):
     if not isinstance(request_id, int):
         return {"error": "Invalid request ID"}, 400
 
-    friend_request = FriendRequest.query.get(request_id)
+    try:
+        friend_request = FriendRequest.query.get(request_id)
 
-    if not friend_request:
-        return {"error": "Friend request not found."}, 404
-    if friend_request.sender != current_user:
-        return {"error": "You can only cancel requests you have sent."}, 400
-    
-    db.session.delete(friend_request)
-    db.session.commit()
-    return {"success": "Request successfully deleted."}, 200
+        if not friend_request:
+            return {"error": "Friend request not found."}, 404
+        if friend_request.sender != current_user:
+            return {"error": "You can only cancel requests you have sent."}, 400
+        
+        db.session.delete(friend_request)
+        db.session.commit()
+        return current_user.to_dict(include_friend_requests=True), 200
+    except IntegrityError as e:
+        db.session.rollback()
+        return {"error": "Failed to cancel request" + str(e)}, 500
 
 @friend_routes.route('/request/<int:request_id>/reject', methods=['DELETE'])
 @login_required

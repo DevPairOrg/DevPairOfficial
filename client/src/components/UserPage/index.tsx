@@ -7,7 +7,7 @@ import "./index.css";
 import Footer from "../Footer";
 import EditUserPage from "./editProfile";
 import PreviewProfile from "./PreviewProfile";
-import { acceptFriendRequest } from "../../store/session";
+import { acceptFriendRequest, cancelFriendRequest } from "../../store/session";
 import { getUser } from "../../store/user";
 
 function UserPage() {
@@ -16,7 +16,6 @@ function UserPage() {
   const [action, setAction] = useState<number>(0);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [isCurrentUserProfile, setIsCurrentProfile] = useState<boolean>(false);
-
   const sessionUser = useAppSelector((state: RootState) => state.session.user);
   const user = useAppSelector((state: RootState) => state.user.userData);
 
@@ -40,8 +39,17 @@ function UserPage() {
     }
   }, [userId]);
 
-  const handleAcceptRequest = async (requestId: number) => {
-    await dispatch(acceptFriendRequest(requestId));
+  const handleRequest = async (requestId: number, action: string) => {
+    switch (action) {
+      case "accept":
+        await dispatch(acceptFriendRequest(requestId));
+        break;
+      case "cancel":
+        await dispatch(cancelFriendRequest(+requestId));
+        break;
+      default:
+        break;
+    }
   };
 
   return (
@@ -126,6 +134,7 @@ function UserPage() {
                 )}
                 {action === 2 && (
                   <div id="user-friends">
+                    <p>Pending - </p>
                     {friends && friends.length > 0 ? (
                       friends.map((friend) => {
                         return (
@@ -153,7 +162,6 @@ function UserPage() {
                 )}
                 {action === 3 && (
                   <div id="user-friends">
-                    <p>Sent: </p>
                     {sentRequests && Object.keys(sentRequests).length > 0 ? (
                       Object.keys(sentRequests).map((requestId) => {
                         const user = sentRequests[+requestId];
@@ -172,15 +180,19 @@ function UserPage() {
                                 />
                               </div>
                             </a>
+                            <button
+                              onClick={() => handleRequest(+requestId, "cancel")}
+                            >
+                              Cancel
+                            </button>
                           </>
                         );
                       })
                     ) : (
                       <div>You currently have no pending requests...</div>
                     )}
-                    <p>Recieved: </p>
                     {receivedRequests &&
-                    Object.keys(receivedRequests).length > 0 ? (
+                    Object.keys(receivedRequests).length > 0 && (
                       Object.keys(receivedRequests).map((requestId) => {
                         const user = receivedRequests[+requestId];
                         return (
@@ -199,15 +211,13 @@ function UserPage() {
                               </div>
                             </a>
                             <button
-                              onClick={() => handleAcceptRequest(+requestId)}
+                              onClick={() => handleRequest(+requestId, "accept")}
                             >
                               Accept
                             </button>
                           </>
                         );
                       })
-                    ) : (
-                      <div>You currently have no pending requests...</div>
                     )}
                   </div>
                 )}

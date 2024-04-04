@@ -134,6 +134,30 @@ export const acceptFriendRequest = createAsyncThunk<User | null, number, { rejec
     }
 )
 
+export const cancelFriendRequest = createAsyncThunk<User, number, {rejectValue: string }>(
+    'session/cancelFriendRequest',
+    async (requestId, {rejectWithValue}) => {
+        try {
+            const response = await fetch(`/api/friends/request/${requestId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            if (response.ok) {
+                const data = await response.json();
+                return data;
+            } else {
+                return rejectWithValue('Failed to cancel friend request');
+            }
+        } catch (error) {
+            console.error('Error in cancel request: ', error);
+            return rejectWithValue('Failed to cancel friend request');
+        }
+
+    }
+)
+
 export const pairFollow = createAsyncThunk<User | null, number, { rejectValue: string }>(
     'session/pairFollow',
     async (followId, { rejectWithValue }) => {
@@ -212,6 +236,9 @@ const sessionSlice = createSlice({
                 state.user = action.payload;
             })
             .addCase(acceptFriendRequest.fulfilled, (state, action) => {
+                state.user = action.payload
+            })
+            .addCase(cancelFriendRequest.fulfilled, (state, action) => {
                 state.user = action.payload
             })
     },
