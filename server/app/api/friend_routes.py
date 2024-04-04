@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from app.models import User, db, FriendRequest, FriendshipStatus
 from .auth_routes import validation_errors_to_error_messages
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import and_
 
 friend_routes = Blueprint('friends', __name__)
 
@@ -50,6 +51,7 @@ def send_friend_request(receiver_id):
 
     # Validate receiver ID
     if not isinstance(receiver_id, int):
+
         return {"error": "Invalid receiver ID"}, 400
     
     try:
@@ -63,9 +65,10 @@ def send_friend_request(receiver_id):
             return {"error": "Already friends"}, 400
         
         # Check for existing friend request 
+
         existing_request = FriendRequest.query.filter(
-            (FriendRequest.sender_id == current_user.id & FriendRequest.receiver_id == receiver_id) |
-            (FriendRequest.sender_id == receiver_id & FriendRequest.receiver_id == current_user.id)
+            and_(FriendRequest.sender_id == current_user.id, FriendRequest.receiver_id == receiver_id) |
+            and_(FriendRequest.sender_id == receiver_id, FriendRequest.receiver_id == current_user.id)
         ).first()
 
         if existing_request:
@@ -76,11 +79,11 @@ def send_friend_request(receiver_id):
         db.session.add(new_request)
         db.session.commit()
 
-        return {new_request.id: new_request.receiver.to_dict(include_relationships=False)}, 201
+        return current_user.to_dict(include_friend_requests=True), 201
     except IntegrityError as e:
         db.session.rollback()
         return {"error": "Failed to send friend request: {}".format(str(e))}, 500
-    except:
+    except Exception as e:
         db.session.rollback()
         return {"error": "Internal Server Error"}, 500
 

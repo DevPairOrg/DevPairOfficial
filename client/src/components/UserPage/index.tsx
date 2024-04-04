@@ -11,8 +11,9 @@ import {
   acceptFriendRequest,
   cancelFriendRequest,
   rejectFriendRequest,
+  sendFriendRequest,
 } from "../../store/session";
-import { getUser } from "../../store/user";
+import { changeAwaitingRequest, getUser } from "../../store/user";
 import OpenModalButton from "../OpenModalButton";
 import RemoveFriendModal from "./RemoveFriendModal";
 
@@ -45,16 +46,22 @@ function UserPage() {
     }
   }, [userId]);
 
-  const handleRequest = async (requestId: number, action: string) => {
+  const handleRequest = async (Id: number, action: string) => {
     switch (action) {
       case "accept":
-        await dispatch(acceptFriendRequest(requestId));
+        await dispatch(acceptFriendRequest(Id));
         break;
       case "cancel":
-        await dispatch(cancelFriendRequest(+requestId));
+        await dispatch(cancelFriendRequest(Id));
         break;
       case "reject":
-        await dispatch(rejectFriendRequest(+requestId));
+        await dispatch(rejectFriendRequest(Id));
+        break;
+      case "send":
+        const actionresult = await dispatch(sendFriendRequest(Id))
+        if (sendFriendRequest.fulfilled.match(actionresult)) {
+          dispatch(changeAwaitingRequest());
+        }
         break;
       default:
         break;
@@ -287,7 +294,7 @@ function UserPage() {
                             >
                               Direct Message
                             </button>
-                            {user.isFriend && (
+                            {user.isFriend ? (
                               <OpenModalButton
                                 className="profile-buttons"
                                 buttonText="Remove Friend"
@@ -295,6 +302,10 @@ function UserPage() {
                                   <RemoveFriendModal user={user} />
                                 }
                               />
+                            ) : (
+                              <button className="profile-buttons" onClick={() => handleRequest(+user.id, "send")}>
+                                Send Friend Request
+                              </button>
                             )}
                           </div>
                         </div>

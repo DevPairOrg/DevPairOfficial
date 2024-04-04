@@ -12,6 +12,7 @@ export interface UserForm {
   leetcode: string;
 }
 export const changeIsFriend = createAction("user/changeIsFriend");
+export const changeAwaitingRequest = createAction("user/changeAwaitingRequest")
 
 export const getUser = createAsyncThunk<
   User | null,
@@ -31,7 +32,7 @@ export const getUser = createAsyncThunk<
   }
 });
 
-// export const sendFriendRequest = createAsyncThunk
+
 
 const initialState: { data: User | null } = { data: null };
 
@@ -44,6 +45,11 @@ const userSlice = createSlice({
         state.data.isFriend = false;
       }
     },
+    changeAwaitingRequest(state) {
+      if (state.data) {
+        state.data.awaitingRequest = true;
+      }
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(getUser.fulfilled, (state, action) => {

@@ -2,7 +2,6 @@ import { FollowingState } from './following';
 
 type UserWithoutFriends = Omit<User, 'friends'>;
 
-
 export interface User {
     id: string;
     username: string;
