@@ -5,6 +5,7 @@ import store from "./store/index";
 import App from "./App.tsx";
 import { SocketProvider } from "./context/Socket";
 import { NavigationProvider } from "./context/Navigation/index.tsx";
+
 import "./main.css";
 import { ModalProvider, Modal } from "./context/Modal/Modal.tsx";
 

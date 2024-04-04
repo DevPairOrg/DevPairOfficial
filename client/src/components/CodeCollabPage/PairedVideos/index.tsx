@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import AgoraRTC, {
     LocalVideoTrack,
     RemoteUser,
@@ -5,32 +6,29 @@ import AgoraRTC, {
     useLocalCameraTrack,
     useLocalMicrophoneTrack,
     usePublish,
-    // useRTCClient,
     useRemoteUsers,
-    // useClientEvent,
     AgoraRTCScreenShareProvider,
     ICameraVideoTrack,
+    // IAgoraRTC,
 } from 'agora-rtc-react';
-
-import { useEffect, useState } from 'react';
-import config from '../../AgoraManager/config';
-import { useAppDispatch, useAppSelector } from '../../hooks';
+import { AgoraProvider } from '../../../AgoraManager/agoraManager';
+import config from '../../../AgoraManager/config';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
+import ScreenShare from '../../ScreenShare';
+import { pairFollow, pairUnfollow } from '../../../store/session';
+import userWaiting from '../../../assets/images/user-waiting.svg';
 import './index.css';
-import { AgoraProvider } from '../../AgoraManager/agoraManager';
-import ScreenShare from '../ScreenShare';
-import userWaiting from '../../assets/images/user-waiting.svg';
-import { pairFollow, pairUnfollow } from '../../store/session';
 
 function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void }) {
     const user = useAppSelector((state) => state.session.user);
     const pairInfo = useAppSelector((state) => state.chatRoom.user);
     const { channelName, leaveRoomHandler } = props;
-    const [myCameraTrack, setMyCameraTrack] = useState<ICameraVideoTrack | undefined>(undefined)
+    const [myCameraTrack, setMyCameraTrack] = useState<ICameraVideoTrack | undefined>(undefined);
     const { isLoading: isLoadingMic, localMicrophoneTrack } = useLocalMicrophoneTrack();
     const { isLoading: isLoadingCam, localCameraTrack } = useLocalCameraTrack();
     const remoteUsers = useRemoteUsers();
-    const [isFollowed, setIsFollowed] = useState<boolean>(false)
-    const dispatch = useAppDispatch()
+    const [isFollowed, setIsFollowed] = useState<boolean>(false);
+    const dispatch = useAppDispatch();
 
     useJoin({
         appid: config.appId,
@@ -47,19 +45,10 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
     }, []);
 
     useEffect(() => {
-        if(localCameraTrack) {
-            setMyCameraTrack(localCameraTrack)
+        if (localCameraTrack) {
+            setMyCameraTrack(localCameraTrack);
         }
-    }, [localCameraTrack])
-
-
-    //! NEEDED TO COMMENT OUT THIS UseEffect() BECAUSE IT WAS BREAKING WHEN TRYING TO PAIR WITH TWO PEOPLE AFTER MODEL FRIENDREQUEST RE-WORK WAS IMPLEMENTED
-    // useEffect(() => {
-    //     if(pairInfo) {
-    //         setIsFollowed(user?.following.find(pair => +pair.followed_id === +pairInfo.id) ? true : false)
-    //     }
-    // }, [pairInfo])
-    //! //! NEEDED TO COMMENT OUT THIS UseEffect() BECAUSE IT WAS BREAKING WHEN TRYING TO PAIR WITH TWO PEOPLE AFTER MODEL FRIENDREQUEST RE-WORK WAS IMPLEMENTED
+    }, [localCameraTrack]);
 
     usePublish([localMicrophoneTrack, localCameraTrack]);
 
@@ -74,11 +63,9 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
                 await dispatch(pairFollow(+pairInfo.id)).unwrap();
                 setIsFollowed(true);
             } else {
-
                 if (pairInfo) {
-                    const relationshipId = user?.following.find(pair => +pair.followed_id === +pairInfo.id)?.id
+                    const relationshipId = user?.following.find((pair) => +pair.followed_id === +pairInfo.id)?.id;
                     if (relationshipId) {
-
                         await dispatch(pairUnfollow(+relationshipId)).unwrap();
                         setIsFollowed(false);
                     }
@@ -89,7 +76,6 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
         } catch (error) {
             console.error('Error in handleFollow:', error);
         }
-
     };
 
     return (
@@ -112,7 +98,9 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
                                 <div className="videos" style={{ height: 300, width: 300 }} key={remoteUser.uid}>
                                     <p className="video-username">{pairInfo.username}</p>
                                     <RemoteUser user={remoteUser} playVideo={true} playAudio={true} />
-                                    <button id="follow-user" onClick={handleVideoFollow}>{isFollowed ? "unfollow" : "Follow"}</button>
+                                    <button id="follow-user" onClick={handleVideoFollow}>
+                                        {isFollowed ? 'unfollow' : 'Follow'}
+                                    </button>
                                 </div>
                             );
                         }

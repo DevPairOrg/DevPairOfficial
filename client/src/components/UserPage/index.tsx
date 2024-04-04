@@ -96,17 +96,15 @@ function UserPage() {
                     <div className="container2">
                       <div className="container_terminal"></div>
 
-                      <a href="/code-collab">
-                        <div className="terminal_toolbar">
-                          <div className="butt2">
-                            <button className="btn btn-color"></button>
-                            <button className="btn"></button>
-                            <button className="btn"></button>
-                          </div>
-                          <p className="user">
-                            {sessionUser.username}@admin: ~
-                          </p>
-                        </div>
+                                            <a href="/code-collab">
+                                                <div className="terminal_toolbar">
+                                                    <div className="butt2">
+                                                        <button className="btn btn-color"></button>
+                                                        <button className="btn"></button>
+                                                        <button className="btn"></button>
+                                                    </div>
+                                                    <p className="user">{sessionUser.username}@admin: ~</p>
+                                                </div>
 
                         <div className="terminal_body">
                           <div>

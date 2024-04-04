@@ -1,25 +1,22 @@
-import {
-  Dispatch,
-  SetStateAction,
-} from "react";
-import { useAppSelector } from "../../hooks";
-import "./PreviewProfile.css";
+import { Dispatch, SetStateAction } from 'react';
+import { useAppSelector } from '../../hooks';
+import './PreviewProfile.css';
 
 interface PreviewProfileProps {
-  setEditMode: Dispatch<SetStateAction<boolean>>;
+    setEditMode: Dispatch<SetStateAction<boolean>>;
 }
 
 function PreviewProfile({ setEditMode }: PreviewProfileProps) {
-  const sessionUser = useAppSelector(state => state.session.user);
+    const sessionUser = useAppSelector((state) => state.session.user);
 
-  return (
-    <div id="profile-main">
-      <div id="profile-header">
-        <p>Profile Preview</p>
-        <button className="profile-buttons" onClick={() => setEditMode(true)}>
-          Edit Profile
-        </button>
-      </div>
+    return (
+        <div id="profile-main">
+            <div id="profile-header">
+                <p>Profile Preview</p>
+                <button className="profile-buttons" onClick={() => setEditMode(true)}>
+                    Edit Profile
+                </button>
+            </div>
 
       <div id="profile-split">
         <div id="profile-content">
