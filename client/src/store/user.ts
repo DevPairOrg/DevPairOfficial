@@ -29,9 +29,11 @@ export const getUser = createAsyncThunk<User | null, number, { rejectValue: {} |
     }
 );
 
+// export const sendFriendRequest = createAsyncThunk
 
 
-const initialState: {targetUser: User | null} = {targetUser: null}
+
+const initialState: {userData: User | null} = {userData: null}
 
 const userSlice = createSlice({
     name: 'user',
@@ -40,7 +42,7 @@ const userSlice = createSlice({
     extraReducers: (builder) => {
         builder
             .addCase(getUser.fulfilled, (state, action) => {
-                state.targetUser = action.payload;
+                state.userData = action.payload;
             })
 
     },

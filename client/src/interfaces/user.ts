@@ -1,4 +1,4 @@
-import { FollowingObject, FollowingState } from './following';
+import { FollowingState } from './following';
 
 type UserWithoutFriends = Omit<User, 'friends'>;
 
@@ -21,6 +21,8 @@ export interface User {
     friends: User[]
     sentRequests: {[requestId: number]: UserWithoutFriends} // User = user that the request is going to
     receivedRequests: {[requestId: number]: UserWithoutFriends} // User = user that sent YOU a request
+
+    isFriend?: boolean
 
     errors: string;
 }

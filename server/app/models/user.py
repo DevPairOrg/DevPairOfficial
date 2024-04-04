@@ -57,7 +57,7 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    def to_dict(self, include_relationships=True, include_friend_requests=False):
+    def to_dict(self, other_user=None, include_relationships=True, include_friend_requests=False, check_friend=False):
         data = {
             'id': self.id,
             'username': self.username,
@@ -80,6 +80,8 @@ class User(db.Model, UserMixin):
             data['sentRequests'] = {request.id: request.receiver.to_dict(include_relationships=False) for request in self.sent_friend_requests}
             data['receivedRequests'] = {request.id: request.sender.to_dict(include_relationships=False) for request in self.received_friend_requests}
 
+        if check_friend:
+            data['isFriend'] = other_user in self.friends
 
         return data
     
