@@ -1,131 +1,49 @@
-import { useState, useEffect, useCallback } from 'react';
-import AgoraRTC, { AgoraRTCProvider, useRTCClient } from 'agora-rtc-react';
-import config from '../../AgoraManager/config';
+import { useState } from 'react';
 import { useAppSelector } from '../../hooks';
 import { useSocket } from '../../context/Socket';
-import { fetchRTCToken } from '../../utility/fetchRTCToken';
-import PairedChat from '../PairedChat';
-import PairedVideos from '../PairedVideos';
-// const LazyPairedChat = lazy(() => import('../PairedChat'));
-// const LazyPairedVideos = lazy(() => import('../PairedVideos'));
-import { useAppDispatch } from '../../hooks';
-import { clearUser, receiveUser } from '../../store/chatRoom';
-import CatImage from '/src/assets/images/devpair-loading-screen.png';
-import './index.css';
+import VideoMain from './VideoMain';
+import StartVideoCall from './StartVideoCall';
+import useAgoraClient from '../../hooks/useAgoraClient';
+import useSocketListeners from '../../hooks/useSocketListeners';
+import useFetchToken from '../../hooks/useFetchToken';
 import Footer from '../Footer';
+import './index.css';
 
 const VideoCall: React.FC = () => {
-    const { connectSocket, socket, error } = useSocket();
+    const { connectSocket, socket } = useSocket();
     const user = useAppSelector((state) => state.session.user);
-    const agoraEngine = useRTCClient(AgoraRTC.createClient({ codec: 'vp8', mode: config.selectedProduct }));
     const [joined, setJoined] = useState<boolean>(false);
     const [channelName, setChannelName] = useState<string>('');
-    const [loading, setLoading] = useState(false);
-    const dispatch = useAppDispatch();
-    if (error) console.log('😋🤗🤗😋😣🤩😍', error);
+    const [loading, setLoading] = useState<boolean>(false);
 
-    useEffect(() => {
-        if (socket) {
-            socket.emit('join_room');
-            socket.on('joined', (data) => {
-                if (!config.channelName) {
-                    setChannelName(data.room);
-                }
-                if (user && data.users.length > 1) {
-                    const pair = data.users.filter((duser) => duser.id !== user.id)[0];
-                    dispatch(receiveUser(pair));
-                }
-            });
+    const agoraEngine = useAgoraClient();
 
-            socket.on('user_left', (_data) => {
-                dispatch(clearUser());
-            });
-        }
+    useSocketListeners(socket, channelName, setChannelName, setJoined, user);
+    useFetchToken({ channelName, setJoined });
 
-        return () => {
-            if (socket && joined) {
-                // Clean up all event listeners when component unmounts
-                socket.removeAllListeners('joined');
-                socket.removeAllListeners('user_left');
-                socket.emit('leave_room', { room: channelName });
-                config.channelName = '';
-                config.joined = false;
-            }
-        };
-    }, [user, socket, channelName, dispatch, joined]);
-
-    useEffect(() => {
-        const fetchTokenFunction = async () => {
-            if (config.serverUrl && channelName && !config.joined) {
-                try {
-                    const token = (await fetchRTCToken(channelName)) as string;
-                    config.rtcToken = token;
-                    config.channelName = channelName;
-                    setJoined(true);
-                } catch (error) {
-                    console.error(error);
-                }
-            } else {
-                console.log('Please make sure you specified the token server URL in the configuration file');
-            }
-        };
-
-        fetchTokenFunction();
-    }, [channelName]);
+    console.log('joined', joined);
+    console.log('channel', channelName);
+    console.log('loading', loading);
 
     const handleJoinClick = () => {
-        setLoading(true); // Start loading
-        if (!socket) {
-            connectSocket();
-        }
+        console.log('Join Button Clicked');
+        setLoading(true);
+        if (!socket) connectSocket();
     };
-
-    const leaveRoomHandler = useCallback(() => {
-        if (joined && socket) {
-            socket.emit('leave_room', { room: channelName });
-            setJoined(false);
-            setChannelName('');
-            dispatch(clearUser());
-            config.channelName = '';
-            setLoading(false);
-        }
-    }, [joined, socket, channelName]);
 
     return (
         <>
             {joined ? (
-                <main id="video-main-wrapper">
-                    <AgoraRTCProvider client={agoraEngine}>
-                        <div className="video-wrapper">
-                            <PairedVideos channelName={config.channelName} leaveRoomHandler={leaveRoomHandler} />
-                        </div>
-                        <div id="paired-chat-container">
-                            <PairedChat channelName={config.channelName} />
-                        </div>
-                    </AgoraRTCProvider>
-                </main>
-            ) : (
-                // This is the waiting lobby before a user clicks 'Pair Up!'
                 <>
-                    <main id="video-main-wrapper">
-                        <div className="not-joined-wrapper">
-                            <h1>Get Started with Video Calling</h1>
-                            <div id="join-call-cat-image">
-                                <img src={CatImage} alt="loading-screen" />
-                            </div>
-                            <div id="join-channel-button-container">
-                                <button onClick={handleJoinClick} disabled={loading} className="join-channel-button">
-                                    {loading ? (
-                                        <div className="spinner"></div>
-                                    ) : (
-                                        <p className="join-channel-button-text">Pair Up!</p>
-                                    )}
-                                </button>
-                            </div>
-                        </div>
-                    </main>
+                    <VideoMain
+                        channelName={channelName}
+                        agoraEngine={agoraEngine}
+                        leaveRoomHandler={() => setJoined(false)}
+                    />
                     <Footer />
                 </>
+            ) : (
+                <StartVideoCall handleJoinClick={handleJoinClick} loading={loading} />
             )}
         </>
     );

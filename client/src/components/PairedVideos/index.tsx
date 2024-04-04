@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import AgoraRTC, {
     LocalVideoTrack,
     RemoteUser,
@@ -9,15 +10,13 @@ import AgoraRTC, {
     AgoraRTCScreenShareProvider,
     ICameraVideoTrack,
 } from 'agora-rtc-react';
-
-import { useEffect, useState } from 'react';
+import { AgoraProvider } from '../../AgoraManager/agoraManager';
 import config from '../../AgoraManager/config';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import './index.css';
-import { AgoraProvider } from '../../AgoraManager/agoraManager';
 import ScreenShare from '../ScreenShare';
-import userWaiting from '../../assets/images/user-waiting.svg';
 import { pairFollow, pairUnfollow } from '../../store/session';
+import userWaiting from '../../assets/images/user-waiting.svg';
+import './index.css';
 
 function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void }) {
     const user = useAppSelector((state) => state.session.user);
@@ -52,14 +51,6 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
             setMyCameraTrack(localCameraTrack);
         }
     }, [localCameraTrack]);
-
-    //! NEEDED TO COMMENT OUT THIS UseEffect() BECAUSE IT WAS BREAKING WHEN TRYING TO PAIR WITH TWO PEOPLE AFTER MODEL FRIENDREQUEST RE-WORK WAS IMPLEMENTED
-    // useEffect(() => {
-    //     if(pairInfo) {
-    //         setIsFollowed(user?.following.find(pair => +pair.followed_id === +pairInfo.id) ? true : false)
-    //     }
-    // }, [pairInfo])
-    //! //! NEEDED TO COMMENT OUT THIS UseEffect() BECAUSE IT WAS BREAKING WHEN TRYING TO PAIR WITH TWO PEOPLE AFTER MODEL FRIENDREQUEST RE-WORK WAS IMPLEMENTED
 
     usePublish([localMicrophoneTrack, localCameraTrack]);
 

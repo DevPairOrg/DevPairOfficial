@@ -29,7 +29,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
     const [error, setError] = useState<string | null>(null);
 
-    console.log('Socket Provider Updated Location', location);
+    // console.log('Socket Provider Updated Location', location);
 
     const connectSocket = useCallback(() => {
         if (user && user.id && !socket) {
@@ -81,8 +81,8 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     useEffect(() => {
         // You can also place disconnect logic here if you want to
         // disconnect based on specific route changes
-        console.log('Route changed to', location);
-        console.log('Route includes /code-collab?', location == '/code-collab');
+        // console.log('Route changed to', location);
+        // console.log('Route includes /code-collab?', location == '/code-collab');
         // For example, if leaving the /code-collab route:
         if (location) {
             if (!location.includes('/code-collab')) {
