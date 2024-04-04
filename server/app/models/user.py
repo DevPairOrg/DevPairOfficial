@@ -84,6 +84,8 @@ class User(db.Model, UserMixin):
 
         if check_friend:
             data['isFriend'] = other_user in self.friends
+            data['awaitingRequest'] = other_user in [request.sender for request in self.received_friend_requests]
+            data['pendingRequest'] =  other_user in [request.receiver for request in self.sent_friend_requests]
 
         return data
     

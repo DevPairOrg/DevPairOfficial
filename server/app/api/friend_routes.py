@@ -258,16 +258,20 @@ def unfriend(friend_id):
     "success": "Successfully unfriended user."
     }
     """
-    if friend_id == current_user.id:
-        return {"error": "You cannot unfriend yourself."}, 400
+    try:
+        if friend_id == current_user.id:
+            return {"error": "You cannot unfriend yourself."}, 400
 
-    friend = User.query.get(friend_id)
-    if not friend:
-        return {"error": "User not found."}, 404
-    
-    # Delete friend association (remove from each other's friend lists)
-    current_user.friends.remove(friend)
-    friend.friends.remove(current_user)
+        friend = User.query.get(friend_id)
+        if not friend:
+            return {"error": "User not found."}, 404
+        
+        # Delete friend association (remove from each other's friend lists)
+        current_user.friends.remove(friend)
+        friend.friends.remove(current_user)
 
-    db.session.commit()
-    return {"success": "Successfully unfriended user."}, 200
+        db.session.commit()
+        return current_user.to_dict(include_friend_requests=True), 200
+    except IntegrityError as e:
+        db.session.rollback()
+        return {"error": "Failed to remove friend" + str(e)}, 500

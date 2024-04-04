@@ -7,8 +7,14 @@ import "./index.css";
 import Footer from "../Footer";
 import EditUserPage from "./editProfile";
 import PreviewProfile from "./PreviewProfile";
-import { acceptFriendRequest, cancelFriendRequest, rejectFriendRequest } from "../../store/session";
+import {
+  acceptFriendRequest,
+  cancelFriendRequest,
+  rejectFriendRequest,
+} from "../../store/session";
 import { getUser } from "../../store/user";
+import OpenModalButton from "../OpenModalButton";
+import RemoveFriendModal from "./RemoveFriendModal";
 
 function UserPage() {
   const { userId } = useParams();
@@ -17,7 +23,7 @@ function UserPage() {
   const [editMode, setEditMode] = useState<boolean>(false);
   const [isCurrentUserProfile, setIsCurrentProfile] = useState<boolean>(false);
   const sessionUser = useAppSelector((state: RootState) => state.session.user);
-  const user = useAppSelector((state: RootState) => state.user.userData);
+  const user = useAppSelector((state: RootState) => state.user.data);
 
   const friends = useAppSelector(
     (state: RootState) => state.session.user?.friends
@@ -186,8 +192,10 @@ function UserPage() {
                             </a>
                             <p>Outgoing Request</p>
                             <button
-                              onClick={() => handleRequest(+requestId, "cancel")}
-                              style={{color: "black"}}
+                              onClick={() =>
+                                handleRequest(+requestId, "cancel")
+                              }
+                              style={{ color: "black" }}
                             >
                               Cancel
                             </button>
@@ -198,7 +206,7 @@ function UserPage() {
                       <div>You currently have no pending requests...</div>
                     )}
                     {receivedRequests &&
-                    Object.keys(receivedRequests).length > 0 && (
+                      Object.keys(receivedRequests).length > 0 &&
                       Object.keys(receivedRequests).map((requestId) => {
                         const user = receivedRequests[+requestId];
                         return (
@@ -218,21 +226,24 @@ function UserPage() {
                             </a>
                             <p>Incoming Request</p>
                             <button
-                              onClick={() => handleRequest(+requestId, "accept")}
-                              style={{color: "black"}}
+                              onClick={() =>
+                                handleRequest(+requestId, "accept")
+                              }
+                              style={{ color: "black" }}
                             >
                               Accept
                             </button>
                             <button
-                              onClick={() => handleRequest(+requestId, "reject")}
-                              style={{color: "black"}}
+                              onClick={() =>
+                                handleRequest(+requestId, "reject")
+                              }
+                              style={{ color: "black" }}
                             >
                               Reject
                             </button>
                           </>
                         );
-                      })
-                    )}
+                      })}
                   </div>
                 )}
               </div>
@@ -263,7 +274,7 @@ function UserPage() {
                         <div id="targetuser-info">
                           <span>{user.username}</span>
                           <span>Joined July 2022</span>
-                          <span>{user.friends.length ?? 0} Friends</span>
+                          <span>{user?.friends?.length ?? 0} Friends</span>
                           <div className="profile-buttons-container">
                             <button
                               className="profile-buttons"
@@ -271,11 +282,17 @@ function UserPage() {
                             >
                               Direct Message
                             </button>
-                            <button className="profile-buttons">
-                              {user.isFriend
-                                ? "Remove Friend"
-                                : "Send Friend Request"}
-                            </button>
+                            {user.isFriend && (
+                              <OpenModalButton
+                                className="profile-buttons"
+                                buttonText="Remove Friend"
+                                modalComponent={
+                                  <RemoveFriendModal
+                                    user={user}
+                                  />
+                                }
+                              />
+                            )}
                           </div>
                         </div>
                       </div>
@@ -510,7 +527,7 @@ function UserPage() {
                       <h2>Friends</h2>
                       <div className="hr-line-primary"></div>
                       <div className="follow-scroll">
-                        {user &&
+                        {user && user.friends &&
                           user.friends.length > 0 &&
                           user.friends.map((friend, i) => {
                             return (
