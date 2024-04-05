@@ -13,6 +13,8 @@ export interface UserForm {
 }
 export const changeIsFriend = createAction("user/changeIsFriend");
 export const changeAwaitingRequest = createAction("user/changeAwaitingRequest")
+export const changePendingRequest = createAction("user/changePendingRequest")
+
 
 export const getUser = createAsyncThunk<
   User | null,
@@ -48,6 +50,11 @@ const userSlice = createSlice({
     changeAwaitingRequest(state) {
       if (state.data) {
         state.data.awaitingRequest = !state.data.awaitingRequest;
+      }
+    },
+    changePendingRequest(state) {
+      if (state.data) {
+        state.data.pendingRequest = !state.data.pendingRequest;
       }
     }
   },

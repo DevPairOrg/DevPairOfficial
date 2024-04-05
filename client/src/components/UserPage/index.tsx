@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../../hooks";
 import { RootState } from "../../store";
 import "./targetUserSocials.css";
 import "./index.css";
-import Footer from "../Footer";
+import Footer from "../Footer/Footer";
 import EditUserPage from "./editProfile";
 import PreviewProfile from "./PreviewProfile";
 import {
@@ -16,9 +16,10 @@ import {
 import {
   changeAwaitingRequest,
   changeIsFriend,
+  changePendingRequest,
   getUser,
 } from "../../store/user";
-import OpenModalButton from "../OpenModalButton";
+import OpenModalButton from "../OpenModalButton/OpenModalButton";
 import RemoveFriendModal from "./RemoveFriendModal";
 
 function UserPage() {
@@ -61,6 +62,7 @@ function UserPage() {
           acceptFriendRequest.fulfilled.match(actionResult)
         ) {
           dispatch(changeIsFriend());
+          dispatch(changePendingRequest());
         }
         break;
       case "cancel":
@@ -70,11 +72,15 @@ function UserPage() {
           cancelFriendRequest.fulfilled.match(actionResult)
         ) {
           dispatch(changeAwaitingRequest());
+
         }
 
         break;
       case "reject":
-        await dispatch(rejectFriendRequest(Id));
+        actionResult = await dispatch(rejectFriendRequest(Id));
+        if (!isCurrentUserProfile && rejectFriendRequest.fulfilled.match(actionResult)) {
+          dispatch(changePendingRequest());
+        }
         break;
       case "send":
         actionResult = await dispatch(sendFriendRequest(Id));
