@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import config from '../AgoraManager/config';
-import { fetchRTCToken } from '../utility/fetchRTCToken';
+import config from '../../AgoraManager/config';
+import { fetchRTCToken } from './fetchRTCToken';
 
 interface UseFetchTokenProps {
     channelName: string;

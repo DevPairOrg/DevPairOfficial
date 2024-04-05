@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ShareScreenComponent from '../../AgoraManager/screenShare';
 import config from '../../AgoraManager/config';
-import { fetchRTCToken } from '../../utility/fetchRTCToken';
+import { fetchRTCToken } from '../../hooks/Agora/fetchRTCToken';
 import { useEffect } from 'react';
 import {
     // IAgoraRTC,

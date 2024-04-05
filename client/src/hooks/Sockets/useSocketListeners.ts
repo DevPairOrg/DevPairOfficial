@@ -1,11 +1,11 @@
 // useSocketListeners.ts
 import { useEffect } from 'react';
 import { Socket } from 'socket.io-client';
-import { useAppDispatch } from '.';
-import { clearUser, receiveUser } from '../store/chatRoom';
-import { UserDict } from '../interfaces/socket';
-import config from '../AgoraManager/config';
-import { User } from '../interfaces/user';
+import { useAppDispatch } from '..';
+import { clearUser, receiveUser } from '../../store/chatRoom';
+import { UserDict } from '../../interfaces/socket';
+import config from '../../AgoraManager/config';
+import { User } from '../../interfaces/user';
 
 const useSocketListeners = (
     socket: Socket | null,

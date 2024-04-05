@@ -3,9 +3,9 @@ import { useAppSelector } from '../../hooks';
 import { useSocket } from '../../context/Socket';
 import VideoMain from './VideoChat';
 import StartVideoCall from './StartCall';
-import useAgoraClient from '../../hooks/useAgoraClient';
-import useSocketListeners from '../../hooks/useSocketListeners';
-import useFetchToken from '../../hooks/useFetchToken';
+import useAgoraClient from '../../hooks/Agora/useAgoraClient';
+import useSocketListeners from '../../hooks/Sockets/useSocketListeners';
+import useFetchToken from '../../hooks/Agora/useFetchToken';
 import Footer from '../Footer';
 import './index.css';
 
