@@ -9,18 +9,18 @@ import AgoraRTC, {
     useRemoteUsers,
     AgoraRTCScreenShareProvider,
     ICameraVideoTrack,
-    IAgoraRTCClient
-    // IAgoraRTC,
+    IAgoraRTCClient,
+    AgoraRTCProvider,
 } from 'agora-rtc-react';
 import { AgoraProvider } from '../../../AgoraManager/agoraManager';
 import config from '../../../AgoraManager/config';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import ScreenShare from '../../ScreenShare';
+import ScreenShare from '../PairedContent';
 import { pairFollow, pairUnfollow } from '../../../store/session';
 import userWaiting from '../../../assets/images/user-waiting.svg';
 import './index.css';
 
-function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void; agoraEngine: IAgoraRTCClient  }) {
+function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void; agoraEngine: IAgoraRTCClient }) {
     const user = useAppSelector((state) => state.session.user);
     const pairInfo = useAppSelector((state) => state.chatRoom.user);
     const { channelName, leaveRoomHandler, agoraEngine } = props;
@@ -83,39 +83,41 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
 
     return (
         <>
-            <div id="video-container">
-                {deviceLoading ? (
-                    <div className="videos" style={{ height: 300, width: 300 }}>
-                        Loading Devices...
-                    </div>
-                ) : (
-                    <div className="videos" style={{ height: 300, width: 300 }}>
-                        <p className="video-username">{user?.username}</p>
-                        <LocalVideoTrack track={myCameraTrack} play={true} />
-                    </div>
-                )}
-                {remoteUsers.length > 0 && remoteUsers.find((user) => user.uid === pairInfo?.videoUid) ? (
-                    remoteUsers.map((remoteUser) => {
-                        if (remoteUser.uid === pairInfo?.videoUid) {
-                            return (
-                                <div className="videos" style={{ height: 300, width: 300 }} key={remoteUser.uid}>
-                                    <p className="video-username">{pairInfo.username}</p>
-                                    <RemoteUser user={remoteUser} playVideo={true} playAudio={true} />
-                                    <button id="follow-user" onClick={handleVideoFollow}>
-                                        {isFollowed ? 'unfollow' : 'Follow'}
-                                    </button>
-                                </div>
-                            );
-                        }
-                    })
-                ) : (
-                    <>
-                        <div className="videos cat-waiting" style={{ height: 300, width: 300 }}>
-                            <img src={userWaiting} alt="Cat informing we are waiting for a user to join" />
-                            <p>Waiting for user...</p>
+            <div className="video-wrapper">
+                <div id="video-container">
+                    {deviceLoading ? (
+                        <div className="videos" style={{ height: 300, width: 300 }}>
+                            Loading Devices...
                         </div>
-                    </>
-                )}
+                    ) : (
+                        <div className="videos" style={{ height: 300, width: 300 }}>
+                            <p className="video-username">{user?.username}</p>
+                            <LocalVideoTrack track={myCameraTrack} play={true} />
+                        </div>
+                    )}
+                    {remoteUsers.length > 0 && remoteUsers.find((user) => user.uid === pairInfo?.videoUid) ? (
+                        remoteUsers.map((remoteUser) => {
+                            if (remoteUser.uid === pairInfo?.videoUid) {
+                                return (
+                                    <div className="videos" style={{ height: 300, width: 300 }} key={remoteUser.uid}>
+                                        <p className="video-username">{pairInfo.username}</p>
+                                        <RemoteUser user={remoteUser} playVideo={true} playAudio={true} />
+                                        <button id="follow-user" onClick={handleVideoFollow}>
+                                            {isFollowed ? 'unfollow' : 'Follow'}
+                                        </button>
+                                    </div>
+                                );
+                            }
+                        })
+                    ) : (
+                        <>
+                            <div className="videos cat-waiting" style={{ height: 300, width: 300 }}>
+                                <img src={userWaiting} alt="Cat informing we are waiting for a user to join" />
+                                <p>Waiting for user...</p>
+                            </div>
+                        </>
+                    )}
+                </div>
             </div>
 
             <div id="screen-share-container">

@@ -136,6 +136,6 @@
   flex-wrap: wrap;
   width: fit-content;
   max-width: 100%;
-  flex: 4;
+  flex: 1;
   position: relative;
 }

@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useAppSelector } from '../../hooks';
 import { useSocket } from '../../context/Socket';
-import VideoMain from './VideoChat';
-import StartVideoCall from './StartCall';
+import { AgoraRTCProvider } from 'agora-rtc-react';
 import useAgoraClient from '../../hooks/Agora/useAgoraClient';
 import useSocketListeners from '../../hooks/Sockets/useSocketListeners';
 import useFetchToken from '../../hooks/Agora/useFetchToken';
+import PairedChat from './PairedChat';
+import PairedVideos from './PairedVideos';
+import StartCall from './StartCall';
 import Footer from '../Footer';
 import './index.css';
 
@@ -17,6 +19,8 @@ const CodeCollab: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
 
     const agoraEngine = useAgoraClient();
+
+    console.log(')‹©»}‹⁽⁽©©‘=»', agoraEngine);
 
     useSocketListeners(socket, channelName, setChannelName, user);
     useFetchToken({ channelName, setJoined });
@@ -31,15 +35,20 @@ const CodeCollab: React.FC = () => {
         <>
             {joined ? (
                 <>
-                    <VideoMain
-                        channelName={channelName}
-                        agoraEngine={agoraEngine}
-                        leaveRoomHandler={() => setJoined(false)}
-                    />
+                    <main id="video-main-wrapper">
+                        <AgoraRTCProvider client={agoraEngine}>
+                            <PairedVideos
+                                channelName={channelName}
+                                leaveRoomHandler={() => setJoined(false)}
+                                agoraEngine={agoraEngine}
+                            />
+                            <PairedChat channelName={channelName} agoraEngine={agoraEngine} />
+                        </AgoraRTCProvider>
+                    </main>
                     <Footer />
                 </>
             ) : (
-                <StartVideoCall handleJoinClick={handleJoinClick} loading={loading} />
+                <StartCall handleJoinClick={handleJoinClick} loading={loading} />
             )}
         </>
     );

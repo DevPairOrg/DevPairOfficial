@@ -1,8 +1,4 @@
-import { useState } from 'react';
-import ShareScreenComponent from '../../AgoraManager/screenShare';
-import config from '../../AgoraManager/config';
-import { fetchRTCToken } from '../../hooks/Agora/fetchRTCToken';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
     // IAgoraRTC,
     RemoteVideoTrack,
@@ -11,12 +7,15 @@ import {
     useRemoteUsers,
     useRemoteVideoTracks,
 } from 'agora-rtc-react';
-import { useAppSelector } from '../../hooks';
-import RemoteAndLocalVolumeComponent from '../../AgoraManager/volumeControl';
-import shareScreenPlaceholder from '../../assets/images/share-screen-holder.webp';
-import IDE from '../CodeMirror';
-import { parseCode } from '../../utility/parseGeminiResponse';
-import { parsedData } from '../../interfaces/gemini';
+import { useAppSelector } from '../../../hooks';
+import config from '../../../AgoraManager/config';
+import { fetchRTCToken } from '../../../hooks/Agora/fetchRTCToken';
+import ShareScreenComponent from '../../../AgoraManager/screenShare';
+import RemoteAndLocalVolumeComponent from '../../../AgoraManager/volumeControl';
+import shareScreenPlaceholder from '../../../assets/images/share-screen-holder.webp';
+import IDE from '../../CodeMirror';
+import { parseCode } from '../../../utility/parseGeminiResponse';
+import { parsedData } from '../../../interfaces/gemini';
 
 function ScreenShare(props: { channelName: string }) {
     const { channelName } = props;
