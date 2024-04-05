@@ -144,7 +144,7 @@ export const acceptFriendRequest = createAsyncThunk<
 });
 
 export const cancelFriendRequest = createAsyncThunk<
-  User,
+  {requestId: number},
   number,
   { rejectValue: string }
 >("session/cancelFriendRequest", async (requestId, { rejectWithValue }) => {
@@ -309,10 +309,14 @@ const sessionSlice = createSlice({
         if (state.user) {
           delete state.user.receivedRequests[action.payload.requestId];
           state.user.friends.push(action.payload.friend);
+          state.user.totalPending--;
         }
       })
       .addCase(cancelFriendRequest.fulfilled, (state, action) => {
-        state.user = action.payload;
+        if (state.user) {
+            delete state.user.sentRequests[action.payload.requestId];
+            state.user.totalPending--;
+          }
       })
       .addCase(rejectFriendRequest.fulfilled, (state, action) => {
         state.user = action.payload;
@@ -321,7 +325,7 @@ const sessionSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(sendFriendRequest.fulfilled, (state, action) => {
-        if (state.user && state.user.sentRequests) {
+        if (state.user) {
           Object.assign(state.user.sentRequests, action.payload);
         }
       })

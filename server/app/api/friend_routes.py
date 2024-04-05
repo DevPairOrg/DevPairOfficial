@@ -1,7 +1,6 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint
 from flask_login import login_required, current_user
-from app.models import User, db, FriendRequest, FriendshipStatus
-from .auth_routes import validation_errors_to_error_messages
+from app.models import User, db, FriendRequest
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import and_
 from .utils import error_response
@@ -53,39 +52,36 @@ def send_friend_request(receiver_id):
     # Validate receiver ID
     if not isinstance(receiver_id, int):
         return error_response("Invalid receiver ID", 400)
+
+    # Validate and retrieve the receiver user
+    receiver = User.query.get(receiver_id)
+    if not receiver:
+        return error_response("User not found", 404)
+    
+    # Check for existing friendship
+    if current_user.is_friends(receiver):
+        return error_response("You are already friends with this user", 409)
+    
+    # Check for existing friend request 
+    existing_request = FriendRequest.query.filter(
+        and_(FriendRequest.sender_id == current_user.id, FriendRequest.receiver_id == receiver_id) |
+        and_(FriendRequest.sender_id == receiver_id, FriendRequest.receiver_id == current_user.id)
+    ).first()
+
+    if existing_request:
+        return error_response("Friend request already exists", 409)
     
     try:
-        # Validate and retrieve the receiver user
-        receiver = User.query.get(receiver_id)
-        if not receiver:
-            return error_response("User not found", 404)
-        
-        # Check for existing friendship
-        if current_user.is_friends(receiver):
-            return error_response("You are already friends with this user", 409)
-        
-        # Check for existing friend request 
-
-        existing_request = FriendRequest.query.filter(
-            and_(FriendRequest.sender_id == current_user.id, FriendRequest.receiver_id == receiver_id) |
-            and_(FriendRequest.sender_id == receiver_id, FriendRequest.receiver_id == current_user.id)
-        ).first()
-
-        if existing_request:
-            return error_response("Friend request already exists", 409)
-        
         # Create new friend request
         new_request = FriendRequest(sender=current_user, receiver=receiver)
         db.session.add(new_request)
         db.session.commit()
 
         return {new_request.id: new_request.receiver.to_dict(include_relationships=False)}, 201
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        return error_response("Failed to send friend request", 500)
     except Exception as e:
         db.session.rollback()
-        return error_response("Internal Server Error", 500)
+        return error_response("Failed to send friend request", 500)
+   
 
 @friend_routes.route('/request/<int:request_id>/accept', methods=["PUT"])
 @login_required
@@ -133,7 +129,6 @@ def accept_friend_request(request_id):
     if not isinstance(request_id, int):
         return error_response("Invalid request ID", 400)
 
-
     friend_request = FriendRequest.query.get(request_id)
 
     if not friend_request:
@@ -149,61 +144,68 @@ def accept_friend_request(request_id):
         db.session.delete(friend_request)
         db.session.commit()
         return {"requestId": request_id, "friend": friend_request.sender.to_dict(check_friend=True)}, 200
-    except SQLAlchemyError as e:
-        # undo any changes to db before the error
-        db.session.rollback()
-        return error_response("Failed to establish friendship. Please try again later.", 500)
     except Exception as e:
-        db.session.rollback()
-        return error_response("Internal Server Error", 500)
+        return error_response("Failed to establish friendship. Please try again later.", 500)
 
 @friend_routes.route('/request/<int:request_id>', methods=['DELETE'])
 @login_required
 def cancel_sent_request(request_id):
 
     """
-    @route DELETE /request/<int:request_id>
+    DELETE /api/friends/request/<int:request_id>
 
-    @summary Cancels a sent friend request.
+    Cancels a sent friend request.
 
-    @description Cancels a pending friend request sent by the logged-in user with the specified ID.
+    Requires login. 
+    Cancels a pending friend request sent by the logged-in user with the specified ID.
 
-    @param {int:request_id} ID of the friend request to cancel.
+    Args:
+        request_id (int): The ID of the friend request to cancel.
 
-    @returns {object} A dictionary with a success message:
-        - success (str): A message confirming successful request deletion.
+    Request Body:
+        None
 
-    @throws:
-        400 (Bad Request): 
-            - If the user tries to cancel a request they haven't sent.
-            - If the request has already been accepted, rejected, or canceled.
-        404 (Not Found): If the friend request with the provided ID is not found.
-        500 (Internal Server Error): If an unexpected error occurs during database operations.
+    Returns:
+        dict: A dictionary with either the canceled request id or an error message.
 
-    Example Response:
-    {
-    "success": "Request successfully deleted."
-    }
+    Raises:
+        400: If the user tries to cancel a request they haven't sent or the request has already been accepted, rejected, or canceled.
+        404: If the friend request with the provided ID is not found.
+        500: If an unexpected error occurs during database operations.
+
+    Examples:
+        Successful Response:
+        {
+            "requestId": <request_id>
+        }
+
+        Error Response:
+        {
+            "error": {
+                "code": 404,
+                "message": "Friend request not found"
+            }
+        }
     """
 
     # Validate request ID
     if not isinstance(request_id, int):
-        return {"error": "Invalid request ID"}, 400
+        return error_response("Invalid request ID", 400)
 
+    friend_request = FriendRequest.query.get(request_id)
+
+    if not friend_request:
+        return error_response("Friend request not found", 404)
+    if friend_request.sender != current_user:
+        return error_response("You can only cancel requests you have sent.", 400)
+    
     try:
-        friend_request = FriendRequest.query.get(request_id)
-
-        if not friend_request:
-            return {"error": "Friend request not found."}, 404
-        if friend_request.sender != current_user:
-            return {"error": "You can only cancel requests you have sent."}, 400
-        
         db.session.delete(friend_request)
         db.session.commit()
-        return current_user.to_dict(include_friend_requests=True), 200
-    except SQLAlchemyError as e:
+        return {"requestId": request_id}, 200
+    except Exception as e:
         db.session.rollback()
-        return {"error": "Failed to cancel request" + str(e)}, 500
+        return error_response("Failed to cancel request", 500)
 
 @friend_routes.route('/request/<int:request_id>/reject', methods=['DELETE'])
 @login_required
