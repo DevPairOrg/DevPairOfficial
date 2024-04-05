@@ -5,9 +5,10 @@ import { AgoraRTCProvider } from 'agora-rtc-react';
 import useAgoraClient from '../../hooks/Agora/useAgoraClient';
 import useSocketListeners from '../../hooks/Sockets/useSocketListeners';
 import useFetchToken from '../../hooks/Agora/useFetchToken';
+import StartCall from './StartCall';
 import PairedChat from './PairedChat';
 import PairedVideos from './PairedVideos';
-import StartCall from './StartCall';
+import PairedScreenShare from './PairedScreenShare';
 import Footer from '../Footer';
 import './index.css';
 
@@ -20,8 +21,6 @@ const CodeCollab: React.FC = () => {
 
     const agoraEngine = useAgoraClient();
 
-    console.log(')‹©»}‹⁽⁽©©‘=»', agoraEngine);
-
     useSocketListeners(socket, channelName, setChannelName, user);
     useFetchToken({ channelName, setJoined });
 
@@ -29,6 +28,10 @@ const CodeCollab: React.FC = () => {
         console.log('Join Button Clicked');
         setLoading(true);
         if (!socket) connectSocket();
+    };
+
+    const leaveRoomHandler = () => {
+        setJoined(false);
     };
 
     return (
@@ -39,9 +42,10 @@ const CodeCollab: React.FC = () => {
                         <AgoraRTCProvider client={agoraEngine}>
                             <PairedVideos
                                 channelName={channelName}
-                                leaveRoomHandler={() => setJoined(false)}
+                                leaveRoomHandler={leaveRoomHandler}
                                 agoraEngine={agoraEngine}
                             />
+                            <PairedScreenShare agoraEngine={agoraEngine} leaveRoomHandler={leaveRoomHandler} />
                             <PairedChat channelName={channelName} agoraEngine={agoraEngine} />
                         </AgoraRTCProvider>
                     </main>

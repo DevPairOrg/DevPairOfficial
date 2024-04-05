@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import AgoraRTC, {
+import {
     LocalVideoTrack,
     RemoteUser,
     useJoin,
@@ -7,26 +7,23 @@ import AgoraRTC, {
     useLocalMicrophoneTrack,
     usePublish,
     useRemoteUsers,
-    AgoraRTCScreenShareProvider,
     ICameraVideoTrack,
-    IAgoraRTCClient,
-    AgoraRTCProvider,
 } from 'agora-rtc-react';
-import { AgoraProvider } from '../../../AgoraManager/agoraManager';
 import config from '../../../AgoraManager/config';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
-import ScreenShare from '../PairedContent';
 import { pairFollow, pairUnfollow } from '../../../store/session';
 import userWaiting from '../../../assets/images/user-waiting.svg';
 import './index.css';
 
-function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void; agoraEngine: IAgoraRTCClient }) {
+function PairedVideos(props: { channelName: string }) {
     const user = useAppSelector((state) => state.session.user);
     const pairInfo = useAppSelector((state) => state.chatRoom.user);
-    const { channelName, leaveRoomHandler, agoraEngine } = props;
+    const { channelName } = props;
     const [myCameraTrack, setMyCameraTrack] = useState<ICameraVideoTrack | undefined>(undefined);
+
     const { isLoading: isLoadingMic, localMicrophoneTrack } = useLocalMicrophoneTrack();
     const { isLoading: isLoadingCam, localCameraTrack } = useLocalCameraTrack();
+
     const remoteUsers = useRemoteUsers();
     const [isFollowed, setIsFollowed] = useState<boolean>(false);
     const dispatch = useAppDispatch();
@@ -118,18 +115,6 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
                         </>
                     )}
                 </div>
-            </div>
-
-            <div id="screen-share-container">
-                <AgoraProvider
-                    localCameraTrack={localCameraTrack}
-                    localMicrophoneTrack={localMicrophoneTrack}
-                    leaveRoomHandler={leaveRoomHandler}
-                >
-                    <AgoraRTCScreenShareProvider client={agoraEngine}>
-                        <ScreenShare channelName={config.channelName} />
-                    </AgoraRTCScreenShareProvider>
-                </AgoraProvider>
             </div>
         </>
     );

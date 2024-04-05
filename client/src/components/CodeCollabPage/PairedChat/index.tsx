@@ -3,8 +3,7 @@ import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { useSocket } from '../../../context/Socket';
 import { clearChatMessages, receiveChatMessage } from '../../../store/chatRoom';
 import { PairedChatMessage } from '../../../interfaces/socket';
-import { IAgoraRTCClient, AgoraRTCProvider } from 'agora-rtc-react';
-import './index.css';
+import { IAgoraRTCClient } from 'agora-rtc-react';
 
 // Define the props interface for the PairedChat component
 interface PairedChatProps {

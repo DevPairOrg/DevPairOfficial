@@ -1,12 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-    // IAgoraRTC,
-    RemoteVideoTrack,
-    useClientEvent,
-    useRTCClient,
-    useRemoteUsers,
-    useRemoteVideoTracks,
-} from 'agora-rtc-react';
+import { RemoteVideoTrack, useClientEvent, useRTCClient, useRemoteUsers, useRemoteVideoTracks } from 'agora-rtc-react';
 import { useAppSelector } from '../../../hooks';
 import config from '../../../AgoraManager/config';
 import { fetchRTCToken } from '../../../hooks/Agora/fetchRTCToken';
@@ -49,22 +42,12 @@ function ScreenShare(props: { channelName: string }) {
         };
 
         fetchTokenFunction();
-
-        // console.log(
-        //   "😎screenSharing😎: ",
-        //   screenSharing ? screenSharing : screenSharing
-        // );
     }, [channelName, screenSharing]);
 
     useClientEvent(agoraEngine, 'user-left', (user) => {
         if (user.uid === pairInfo?.screenUid) {
             setIsRemoteScreen(false);
         }
-        // console.log(
-        //   "🦄🦄🦄🦄🦄🦄🦄🦄🦄 The user",
-        //   user.uid,
-        //   " has left the channel"
-        // );
     });
 
     useClientEvent(agoraEngine, 'user-published', (user, _) => {
