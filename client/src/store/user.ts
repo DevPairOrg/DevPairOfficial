@@ -42,12 +42,12 @@ const userSlice = createSlice({
   reducers: {
     changeIsFriend(state) {
       if (state.data) {
-        state.data.isFriend = false;
+        state.data.isFriend = !state.data.isFriend;
       }
     },
     changeAwaitingRequest(state) {
       if (state.data) {
-        state.data.awaitingRequest = true;
+        state.data.awaitingRequest = !state.data.awaitingRequest;
       }
     }
   },

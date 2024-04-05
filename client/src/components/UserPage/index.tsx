@@ -13,7 +13,11 @@ import {
   rejectFriendRequest,
   sendFriendRequest,
 } from "../../store/session";
-import { changeAwaitingRequest, getUser } from "../../store/user";
+import {
+  changeAwaitingRequest,
+  changeIsFriend,
+  getUser,
+} from "../../store/user";
 import OpenModalButton from "../OpenModalButton";
 import RemoveFriendModal from "./RemoveFriendModal";
 
@@ -47,19 +51,34 @@ function UserPage() {
   }, [userId]);
 
   const handleRequest = async (Id: number, action: string) => {
+    let actionResult;
+
     switch (action) {
       case "accept":
-        await dispatch(acceptFriendRequest(Id));
+        actionResult = await dispatch(acceptFriendRequest(Id));
+        if (
+          !isCurrentUserProfile &&
+          acceptFriendRequest.fulfilled.match(actionResult)
+        ) {
+          dispatch(changeIsFriend());
+        }
         break;
       case "cancel":
-        await dispatch(cancelFriendRequest(Id));
+        actionResult = await dispatch(cancelFriendRequest(Id));
+        if (
+          !isCurrentUserProfile &&
+          cancelFriendRequest.fulfilled.match(actionResult)
+        ) {
+          dispatch(changeAwaitingRequest());
+        }
+
         break;
       case "reject":
         await dispatch(rejectFriendRequest(Id));
         break;
       case "send":
-        const actionresult = await dispatch(sendFriendRequest(Id));
-        if (sendFriendRequest.fulfilled.match(actionresult)) {
+        actionResult = await dispatch(sendFriendRequest(Id));
+        if (sendFriendRequest.fulfilled.match(actionResult)) {
           dispatch(changeAwaitingRequest());
         }
         break;
