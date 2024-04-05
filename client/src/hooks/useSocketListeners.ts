@@ -18,7 +18,7 @@ const useSocketListeners = (
 
     useEffect(() => {
         if (!socket) return;
-        console.log('UseSocketListeners Socket Exists?', socket);
+        console.log('UseSocketListeners - Socket Exists', socket);
         socket.emit('join_room');
         socket.on('joined', (data: { room: string; users: UserDict[] }) => {
             console.log('Socket listening to "Joined"', data);
@@ -28,7 +28,7 @@ const useSocketListeners = (
             }
             if (data.users.length > 1) {
                 console.log('There is more than one user, a pair.');
-                const pair = data.users.find((duser) => duser.id !== user?.id);
+                const pair = data.users.find((pair) => pair.id !== user?.id);
                 if (pair) {
                     dispatch(receiveUser(pair as UserDict));
                 }

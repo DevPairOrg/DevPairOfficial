@@ -17,12 +17,10 @@ const PairedChat: React.FC<PairedChatProps> = ({ channelName }) => {
     const [chatInput, setChatInput] = useState<string>('');
     const dispatch = useAppDispatch();
 
-    if (error) console.log('errrrrror', error);
+    if (error) console.log('Error in Paired Chat Component: ', error);
 
     if (!socket) {
-        if (!socket) {
-            connectSocket();
-        }
+        connectSocket();
     }
 
     // Memoized callback for handling received chat messages

@@ -9,6 +9,7 @@ import AgoraRTC, {
     useRemoteUsers,
     AgoraRTCScreenShareProvider,
     ICameraVideoTrack,
+    // IAgoraRTC,
 } from 'agora-rtc-react';
 import { AgoraProvider } from '../../AgoraManager/agoraManager';
 import config from '../../AgoraManager/config';
@@ -28,9 +29,6 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
     const remoteUsers = useRemoteUsers();
     const [isFollowed, setIsFollowed] = useState<boolean>(false);
     const dispatch = useAppDispatch();
-
-    // Logging Parameters: 0 = DEBUG, 1 = INFO, 2 = WARNING, 3 = ERROR, 4. NONE
-    AgoraRTC.setLogLevel(3);
 
     useJoin({
         appid: config.appId,

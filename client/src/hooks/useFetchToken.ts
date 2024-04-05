@@ -13,8 +13,6 @@ const useFetchToken = ({ channelName, setJoined }: UseFetchTokenProps) => {
             if (config.serverUrl && channelName && !config.joined) {
                 try {
                     const token = await fetchRTCToken(channelName);
-                    console.log('THIS IS THE TOKEN', token);
-                    console.log('THIS IS THE CHANNEL NAME', channelName);
                     if (token) {
                         config.rtcToken = token;
                         config.channelName = channelName;

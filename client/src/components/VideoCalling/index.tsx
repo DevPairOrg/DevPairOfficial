@@ -21,10 +21,6 @@ const VideoCall: React.FC = () => {
     useSocketListeners(socket, channelName, setChannelName, setJoined, user);
     useFetchToken({ channelName, setJoined });
 
-    console.log('joined', joined);
-    console.log('channel', channelName);
-    console.log('loading', loading);
-
     const handleJoinClick = () => {
         console.log('Join Button Clicked');
         setLoading(true);
