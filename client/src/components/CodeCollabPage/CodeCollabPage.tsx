@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useAppSelector } from '../../hooks';
 import { useSocket } from '../../context/Socket';
-import VideoMain from './VideoMain';
-import StartVideoCall from './StartVideoCall';
+import VideoMain from './VideoChat';
+import StartVideoCall from './StartCall';
 import useAgoraClient from '../../hooks/useAgoraClient';
 import useSocketListeners from '../../hooks/useSocketListeners';
 import useFetchToken from '../../hooks/useFetchToken';
 import Footer from '../Footer';
 import './index.css';
 
-const VideoCall: React.FC = () => {
+const CodeCollab: React.FC = () => {
     const { connectSocket, socket } = useSocket();
     const user = useAppSelector((state) => state.session.user);
     const [joined, setJoined] = useState<boolean>(false);
@@ -45,4 +45,4 @@ const VideoCall: React.FC = () => {
     );
 };
 
-export default VideoCall;
+export default CodeCollab;

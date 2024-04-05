@@ -1,13 +1,13 @@
 import CatImage from '/src/assets/images/devpair-loading-screen.png';
 import Footer from '../Footer';
-import './index.css';
+import StartVideoCall from './StartCall';
 
-interface StartVideoCallProps {
+interface StartCallProps {
     handleJoinClick: () => void;
     loading: boolean;
 }
 
-const StartVideoCall: React.FC<StartVideoCallProps> = ({ handleJoinClick, loading }) => {
+const StartCall: React.FC<StartCallProps> = ({ handleJoinClick, loading }) => {
     return (
         <>
             <main id="video-main-wrapper">
@@ -32,4 +32,4 @@ const StartVideoCall: React.FC<StartVideoCallProps> = ({ handleJoinClick, loadin
     );
 };
 
-export default StartVideoCall;
+export default StartCall;

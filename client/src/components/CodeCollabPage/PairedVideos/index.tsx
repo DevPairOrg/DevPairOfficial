@@ -11,12 +11,12 @@ import AgoraRTC, {
     ICameraVideoTrack,
     // IAgoraRTC,
 } from 'agora-rtc-react';
-import { AgoraProvider } from '../../AgoraManager/agoraManager';
-import config from '../../AgoraManager/config';
-import { useAppDispatch, useAppSelector } from '../../hooks';
-import ScreenShare from '../ScreenShare';
-import { pairFollow, pairUnfollow } from '../../store/session';
-import userWaiting from '../../assets/images/user-waiting.svg';
+import { AgoraProvider } from '../../../AgoraManager/agoraManager';
+import config from '../../../AgoraManager/config';
+import { useAppDispatch, useAppSelector } from '../../../hooks';
+import ScreenShare from '../../ScreenShare';
+import { pairFollow, pairUnfollow } from '../../../store/session';
+import userWaiting from '../../../assets/images/user-waiting.svg';
 import './index.css';
 
 function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void }) {
