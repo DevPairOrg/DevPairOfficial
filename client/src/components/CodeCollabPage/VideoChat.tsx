@@ -15,7 +15,7 @@ const VideoChat: React.FC<VideoMainProps> = ({ channelName, agoraEngine, leaveRo
     <main id="video-main-wrapper">
         <AgoraRTCProvider client={agoraEngine}>
             <div className="video-wrapper">
-                <PairedVideos channelName={channelName} leaveRoomHandler={leaveRoomHandler} />
+                <PairedVideos channelName={channelName} leaveRoomHandler={leaveRoomHandler} agoraEngine={agoraEngine}/>
             </div>
             <div id="paired-chat-container">
                 <PairedChat channelName={channelName} />

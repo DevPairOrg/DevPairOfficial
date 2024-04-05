@@ -18,7 +18,7 @@ const CodeCollab: React.FC = () => {
 
     const agoraEngine = useAgoraClient();
 
-    useSocketListeners(socket, channelName, setChannelName, setJoined, user);
+    useSocketListeners(socket, channelName, setChannelName, user);
     useFetchToken({ channelName, setJoined });
 
     const handleJoinClick = () => {

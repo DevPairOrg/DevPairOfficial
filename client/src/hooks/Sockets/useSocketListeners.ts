@@ -11,7 +11,6 @@ const useSocketListeners = (
     socket: Socket | null,
     channelName: string | null,
     setChannelName: React.Dispatch<React.SetStateAction<string>>,
-    setJoined: React.Dispatch<React.SetStateAction<boolean>>,
     user: User | null
 ) => {
     const dispatch = useAppDispatch();
@@ -54,7 +53,7 @@ const useSocketListeners = (
             socket.off('joined');
             socket.off('user_left');
         };
-    }, [socket, setChannelName, setJoined, user, dispatch]);
+    }, [socket, setChannelName, user, dispatch]);
 };
 
 export default useSocketListeners;

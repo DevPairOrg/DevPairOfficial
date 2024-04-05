@@ -9,6 +9,7 @@ import AgoraRTC, {
     useRemoteUsers,
     AgoraRTCScreenShareProvider,
     ICameraVideoTrack,
+    IAgoraRTCClient
     // IAgoraRTC,
 } from 'agora-rtc-react';
 import { AgoraProvider } from '../../../AgoraManager/agoraManager';
@@ -19,10 +20,10 @@ import { pairFollow, pairUnfollow } from '../../../store/session';
 import userWaiting from '../../../assets/images/user-waiting.svg';
 import './index.css';
 
-function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void }) {
+function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void; agoraEngine: IAgoraRTCClient  }) {
     const user = useAppSelector((state) => state.session.user);
     const pairInfo = useAppSelector((state) => state.chatRoom.user);
-    const { channelName, leaveRoomHandler } = props;
+    const { channelName, leaveRoomHandler, agoraEngine } = props;
     const [myCameraTrack, setMyCameraTrack] = useState<ICameraVideoTrack | undefined>(undefined);
     const { isLoading: isLoadingMic, localMicrophoneTrack } = useLocalMicrophoneTrack();
     const { isLoading: isLoadingCam, localCameraTrack } = useLocalCameraTrack();
@@ -37,6 +38,7 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
         uid: user?.videoUid,
     });
 
+    // Cleanup function
     useEffect(() => {
         return () => {
             localCameraTrack?.close();
@@ -54,6 +56,7 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
 
     const deviceLoading = isLoadingMic || isLoadingCam;
 
+    // Needs refactoring to Friends
     const handleVideoFollow = async (e: React.MouseEvent<HTMLButtonElement>) => {
         e.preventDefault();
         e.stopPropagation();
@@ -114,13 +117,14 @@ function PairedVideos(props: { channelName: string; leaveRoomHandler: () => void
                     </>
                 )}
             </div>
+
             <div id="screen-share-container">
                 <AgoraProvider
                     localCameraTrack={localCameraTrack}
                     localMicrophoneTrack={localMicrophoneTrack}
                     leaveRoomHandler={leaveRoomHandler}
                 >
-                    <AgoraRTCScreenShareProvider client={AgoraRTC.createClient({ codec: 'vp8', mode: 'rtc' })}>
+                    <AgoraRTCScreenShareProvider client={agoraEngine}>
                         <ScreenShare channelName={config.channelName} />
                     </AgoraRTCScreenShareProvider>
                 </AgoraProvider>
