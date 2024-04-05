@@ -189,7 +189,7 @@ export const rejectFriendRequest = createAsyncThunk<
 });
 
 export const removeFriend = createAsyncThunk<
-  User,
+  { friendId: number },
   number,
   { rejectValue: string }
 >("session/removeFriend", async (friendId, { rejectWithValue }) => {
@@ -325,7 +325,11 @@ const sessionSlice = createSlice({
         }
       })
       .addCase(removeFriend.fulfilled, (state, action) => {
-        state.user = action.payload;
+        if (state.user) {
+          state.user.friends = state.user.friends.filter(
+            (friend) => +friend.id !== action.payload.friendId
+          );
+        }
       })
       .addCase(sendFriendRequest.fulfilled, (state, action) => {
         if (state.user) {

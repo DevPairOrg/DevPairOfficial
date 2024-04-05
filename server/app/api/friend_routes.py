@@ -134,7 +134,7 @@ def accept_friend_request(request_id):
     if not friend_request:
         return error_response("Friend request not found", 404)
     if friend_request.receiver != current_user:
-        return error_response("You can only accept requests you have received.", 400)
+        return error_response("You can only accept requests you have received.", 403)
     
     try:
         # Add users to each others friend lists
@@ -197,7 +197,7 @@ def cancel_sent_request(request_id):
     if not friend_request:
         return error_response("Friend request not found", 404)
     if friend_request.sender != current_user:
-        return error_response("You can only cancel requests you have sent.", 400)
+        return error_response("You can only cancel requests you have sent.", 403)
     
     try:
         db.session.delete(friend_request)
@@ -255,7 +255,7 @@ def reject_friend_request(request_id):
     if not friend_request:
         return error_response("Friend request not found", 404)
     if friend_request.receiver != current_user:
-        return error_response("You can only reject requests you have received.", 400)
+        return error_response("You can only reject requests you have received.", 403)
 
     try:
         db.session.delete(friend_request)
@@ -268,43 +268,60 @@ def reject_friend_request(request_id):
 @login_required
 def unfriend(friend_id):
     """
-    @route DELETE /<int:friend_id>
+    DELETE /api/friends/<int:friend_id>
 
-    @summary Unfriends another user.
+    Unfriends another user.
 
-    @description Removes the friendship between the logged-in user and the user with the specified ID.
-    This action deletes both the friend association and any pending friend requests (sent or received)
-    between the two users.
+    Requires login. 
+    Removes the friendship between the logged-in user and the user with the specified ID. This action deletes both the friend association and any pending friend requests (sent or received) between the two users.
 
-    @param {int:friend_id} ID of the user to unfriend.
+    Args:
+        friend_id (int): The ID of the user to unfriend.
 
-    @returns {object} A dictionary with a success message:
-        - success (str): A message confirming successful unfriending.
+    Request Body:
+        None
 
-    @throws:
-        400 (Bad Request): If the user tries to unfriend themself.
-        404 (Not Found): If the user with the provided ID is not found.
-        500 (Internal Server Error): If an unexpected error occurs during database operations.
+    Returns:
+        dict: A dictionary with either the removed friend id or an error message and code.
 
-    Example Response:
-    {
-    "success": "Successfully unfriended user."
-    }
+    Raises:
+        400: If the user tries to unfriend themself.
+        404: If the user with the provided ID is not found.
+        500: If an unexpected error occurs during database operations.
+
+    Examples:
+        Successful Response:
+        {
+            "friendId": "<friend_id>
+        }
+
+        Error Response:
+        {
+            "error": {
+                "code": 404,
+                "message": "User not found"
+            }
+        }
     """
-    try:
-        if friend_id == current_user.id:
-            return {"error": "You cannot unfriend yourself."}, 400
+    if not isinstance(friend_id, int):
+        return error_response("Invalid friend ID", 400)
+    
+    if friend_id == current_user.id:
+        return error_response("You cannot unfriend yourself", 400)
 
-        friend = User.query.get(friend_id)
-        if not friend:
-            return {"error": "User not found."}, 404
+    friend = User.query.get(friend_id)
+    if not friend:
+        return error_response("User not found", 404)
+    
+    if not current_user.is_friends(friend):
+        return error_response("You are not friends with this user", 409)
         
+    try:
         # Delete friend association (remove from each other's friend lists)
         current_user.friends.remove(friend)
         friend.friends.remove(current_user)
 
         db.session.commit()
-        return current_user.to_dict(include_friend_requests=True), 200
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        return {"error": "Failed to remove friend" + str(e)}, 500
+        return {"friendId": friend_id}, 200
+    except Exception as e:
+        return error_response("Failed to unfriend user", 500)
