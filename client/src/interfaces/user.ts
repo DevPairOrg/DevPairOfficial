@@ -27,7 +27,7 @@ export interface User {
     totalPending: number;
 
     isFriend?: boolean;
-    awaitingRequest?: boolean;
+    awaitingRequest?: boolean; // If the user is awaiting a response to sent request
     pendingRequest?: boolean;
 
     errors: string;

@@ -58,7 +58,7 @@ function UserPage() {
         await dispatch(rejectFriendRequest(Id));
         break;
       case "send":
-        const actionresult = await dispatch(sendFriendRequest(Id))
+        const actionresult = await dispatch(sendFriendRequest(Id));
         if (sendFriendRequest.fulfilled.match(actionresult)) {
           dispatch(changeAwaitingRequest());
         }
@@ -103,15 +103,17 @@ function UserPage() {
                     <div className="container2">
                       <div className="container_terminal"></div>
 
-                                            <a href="/code-collab">
-                                                <div className="terminal_toolbar">
-                                                    <div className="butt2">
-                                                        <button className="btn btn-color"></button>
-                                                        <button className="btn"></button>
-                                                        <button className="btn"></button>
-                                                    </div>
-                                                    <p className="user">{sessionUser.username}@admin: ~</p>
-                                                </div>
+                      <a href="/code-collab">
+                        <div className="terminal_toolbar">
+                          <div className="butt2">
+                            <button className="btn btn-color"></button>
+                            <button className="btn"></button>
+                            <button className="btn"></button>
+                          </div>
+                          <p className="user">
+                            {sessionUser.username}@admin: ~
+                          </p>
+                        </div>
 
                         <div className="terminal_body">
                           <div>
@@ -169,7 +171,9 @@ function UserPage() {
                             <OpenModalButton
                               className="profile-buttons"
                               buttonText="Remove Friend"
-                              modalComponent={<RemoveFriendModal user={friend} />}
+                              modalComponent={
+                                <RemoveFriendModal user={friend} />
+                              }
                             />
                           </>
                         );
@@ -302,8 +306,42 @@ function UserPage() {
                                   <RemoveFriendModal user={user} />
                                 }
                               />
+                            ) : user.awaitingRequest ? (
+                              <>
+                                <p>Friend Request Sent...</p>
+                                <button
+                                  className="profile-buttons"
+                                  onClick={() =>
+                                    handleRequest(+user.id, "cancel")
+                                  }
+                                >
+                                  Cancel
+                                </button>
+                              </>
+                            ) : user.pendingRequest ? (
+                              <>
+                                <button
+                                  className="profile-buttons"
+                                  onClick={() =>
+                                    handleRequest(+user.id, "accept")
+                                  }
+                                >
+                                  Accept
+                                </button>
+                                <button
+                                  className="profile-buttons"
+                                  onClick={() =>
+                                    handleRequest(+user.id, "reject")
+                                  }
+                                >
+                                  Reject
+                                </button>
+                              </>
                             ) : (
-                              <button className="profile-buttons" onClick={() => handleRequest(+user.id, "send")}>
+                              <button
+                                className="profile-buttons"
+                                onClick={() => handleRequest(+user.id, "send")}
+                              >
                                 Send Friend Request
                               </button>
                             )}
