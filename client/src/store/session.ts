@@ -120,7 +120,7 @@ export const editUser = createAsyncThunk<
 });
 
 export const acceptFriendRequest = createAsyncThunk<
-  User,
+  { requestId: number; friend: User },
   number,
   { rejectValue: string }
 >("session/acceptFriendRequest", async (requestId, { rejectWithValue }) => {
@@ -283,7 +283,6 @@ export const sendFriendRequest = createAsyncThunk<
   }
 });
 
-
 // Initial State
 const initialState: { user: User | null } = { user: null };
 
@@ -307,7 +306,10 @@ const sessionSlice = createSlice({
         state.user = action.payload;
       })
       .addCase(acceptFriendRequest.fulfilled, (state, action) => {
-        state.user = action.payload;
+        if (state.user) {
+          delete state.user.receivedRequests[action.payload.requestId];
+          state.user.friends.push(action.payload.friend);
+        }
       })
       .addCase(cancelFriendRequest.fulfilled, (state, action) => {
         state.user = action.payload;
@@ -320,8 +322,8 @@ const sessionSlice = createSlice({
       })
       .addCase(sendFriendRequest.fulfilled, (state, action) => {
         if (state.user && state.user.sentRequests) {
-            Object.assign(state.user.sentRequests, action.payload);
-          }
+          Object.assign(state.user.sentRequests, action.payload);
+        }
       })
       .addMatcher(
         (action) => {

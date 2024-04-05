@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.models import User, db, FriendRequest, FriendshipStatus
 from .auth_routes import validation_errors_to_error_messages
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy import and_
 from .utils import error_response
 
@@ -12,10 +12,12 @@ friend_routes = Blueprint('friends', __name__)
 @login_required
 def send_friend_request(receiver_id):
     """
+    POST /api/friends/request/<int:receiver_id>
+
     Sends a friend request to another user.
 
-    This is a route handler for POST /api/friends/request/<int:receiver_id>. It requires login.
-    It creates a new friend request from the logged-in user to the user identified by the provided receiver_id.
+    Requires login. 
+    Creates a new friend request from the logged-in user to the user identified by the provided receiver_id.
 
     Args:
         receiver_id (int): The ID of the user to whom the friend request is to be sent.
@@ -35,7 +37,9 @@ def send_friend_request(receiver_id):
     Examples:
         Successful Response:
         {
-            "message": "Friend request sent successfully"
+            <RequestId>: {
+                ...receiver data...
+            }
         }
 
         Error Response:
@@ -76,54 +80,66 @@ def send_friend_request(receiver_id):
         db.session.commit()
 
         return {new_request.id: new_request.receiver.to_dict(include_relationships=False)}, 201
-    except IntegrityError as e:
+    except SQLAlchemyError as e:
         db.session.rollback()
         return error_response("Failed to send friend request", 500)
     except Exception as e:
         db.session.rollback()
-        return error_response(str(e), 500)
+        return error_response("Internal Server Error", 500)
 
 @friend_routes.route('/request/<int:request_id>/accept', methods=["PUT"])
 @login_required
 def accept_friend_request(request_id):
     """
-    @route PUT /request/<int:request_id>/accept
+    PUT /api/friends/request/<int:request_id>/accept
 
-    @summary Accepts a pending friend request.
+    Accepts a pending friend request and establishes a friendship between the sender and receiver.
 
-    @description Accepts a pending friend request with the specified ID, updating the request status to 
-    Accepted and establishing a friendship between the sender and receiver.
+    Requires login. 
+    Accepts a friend request identified by the provided request_id and establishes a friendship between the sender and receiver.
 
-    @param {int:request_id} ID of the friend request to accept.
+    Args:
+        request_id (int): The ID of the friend request to be accepted.
 
-    @returns {object} A dictionary containing the information of the newly added friend:
-        - Friend {object}: A dictionary containing the friend's data.
+    Request Body:
+        None
 
-    @throws:
-        400 (Bad Request): 
-            - If the user tries to accept a request they haven't received.
-            - If the request has already been responded to (not pending).
-        404 (Not Found): If the friend request with the provided ID is not found.
-        500 (Internal Server Error): If an unexpected error occurs during database operations.
+    Returns:
+        dict: A dictionary with either the current user's data or an error message and code.
 
-    Example Response:
-    {
-    "Friend": {
-        ...friend data ...
-    }
-    }
+    Raises:
+        400: If the request_id is invalid or the user tried to accept a request they didn't receive.
+        404: If the friend request with the provided request_id is not found.
+        500: If an unexpected error occurs during database operations.
+
+    Examples:
+        Successful Response:
+        {
+            "requestId": <request_id>,
+            "friend": {
+                ...friend data...
+            }
+        }
+
+        Error Response:
+        {
+            "error": {
+                "code": 404,
+                "message": "Friend request not found"
+            }
+        }
     """
     # Validate request ID
     if not isinstance(request_id, int):
-        return {"error": "Invalid request ID"}, 400
+        return error_response("Invalid request ID", 400)
 
 
     friend_request = FriendRequest.query.get(request_id)
 
     if not friend_request:
-        return {"error": "Friend request not found."}, 404
+        return error_response("Friend request not found", 404)
     if friend_request.receiver != current_user:
-        return {"error": "You can only accept requests you have received."}, 400
+        return error_response("You can only accept requests you have received.", 400)
     
     try:
         # Add users to each others friend lists
@@ -132,11 +148,14 @@ def accept_friend_request(request_id):
 
         db.session.delete(friend_request)
         db.session.commit()
-        return current_user.to_dict(include_friend_requests=True), 200
-    except IntegrityError as e:
+        return {"requestId": request_id, "friend": friend_request.sender.to_dict(check_friend=True)}, 200
+    except SQLAlchemyError as e:
         # undo any changes to db before the error
         db.session.rollback()
-        return {"error": "Failed to establish friendship" + str(e)}, 500
+        return error_response("Failed to establish friendship. Please try again later.", 500)
+    except Exception as e:
+        db.session.rollback()
+        return error_response("Internal Server Error", 500)
 
 @friend_routes.route('/request/<int:request_id>', methods=['DELETE'])
 @login_required
@@ -182,7 +201,7 @@ def cancel_sent_request(request_id):
         db.session.delete(friend_request)
         db.session.commit()
         return current_user.to_dict(include_friend_requests=True), 200
-    except IntegrityError as e:
+    except SQLAlchemyError as e:
         db.session.rollback()
         return {"error": "Failed to cancel request" + str(e)}, 500
 
@@ -226,7 +245,7 @@ def reject_friend_request(request_id):
         db.session.delete(friend_request)
         db.session.commit()
         return current_user.to_dict(include_friend_requests=True), 200
-    except IntegrityError as e:
+    except SQLAlchemyError as e:
         db.session.rollback()
         return {"error": "Failed to reject request" + str(e)}, 500
 
@@ -271,6 +290,6 @@ def unfriend(friend_id):
 
         db.session.commit()
         return current_user.to_dict(include_friend_requests=True), 200
-    except IntegrityError as e:
+    except SQLAlchemyError as e:
         db.session.rollback()
         return {"error": "Failed to remove friend" + str(e)}, 500
