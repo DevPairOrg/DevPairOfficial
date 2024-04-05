@@ -4,6 +4,7 @@ from app.models import User, db, FriendRequest, FriendshipStatus
 from .auth_routes import validation_errors_to_error_messages
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import and_
+from .utils import error_response
 
 friend_routes = Blueprint('friends', __name__)
 
@@ -11,58 +12,53 @@ friend_routes = Blueprint('friends', __name__)
 @login_required
 def send_friend_request(receiver_id):
     """
-    @route POST /api/friends/request/<int:receiver_id>
-    @login_required
-    @summary Sends a friend request to another user.
+    Sends a friend request to another user.
 
-    @description Creates a new friend request for the logged-in user to the user identified by the provided username.
+    This is a route handler for POST /api/friends/request/<int:receiver_id>. It requires login.
+    It creates a new friend request from the logged-in user to the user identified by the provided receiver_id.
 
-    @param {object} JSON body containing a single field:
-    - username {str}: Username of the user to send the friend request to.
+    Args:
+        receiver_id (int): The ID of the user to whom the friend request is to be sent.
 
-    @returns {object} JSON response with the following structure:
-        - message {str}: A success message upon successful request creation.
-        - error (optional) {dict}: An error message and code if an error occurs.
+    Request Body:
+        None
 
-    @throws:
-        400 (Bad Request): If the request body is invalid (missing username).
-        404 (Not Found): If the user with the provided username is not found.
-        409 (Conflict): If a friend request already exists between the sender and receiver.
-        500 (Internal Server Error): If an unexpected error occurs during database operations.
+    Returns:
+        dict: A dictionary with either a success message or an error message and code.
 
-    Example Request Body:
-    {
-    "username": "friend_username"
-    }
+    Raises:
+        400: If the receiver_id is invalid.
+        404: If the user with the provided receiver_id is not found.
+        409: If a friend request already exists between the sender and receiver.
+        500: If an unexpected error occurs during database operations.
 
-    Example Response (Success):
-    {
-    "message": "Friend request sent successfully"
-    }
+    Examples:
+        Successful Response:
+        {
+            "message": "Friend request sent successfully"
+        }
 
-    Example Response (Error):
-    {
-    "error": {
-        "code": 404,
-        "message": "User not found"
-    }
-    }
+        Error Response:
+        {
+            "error": {
+                "code": 404,
+                "message": "User not found"
+            }
+        }
     """
-
     # Validate receiver ID
     if not isinstance(receiver_id, int):
-
-        return {"error": "Invalid receiver ID"}, 400
+        return error_response("Invalid receiver ID", 400)
     
     try:
         # Validate and retrieve the receiver user
         receiver = User.query.get(receiver_id)
         if not receiver:
-            return {"error": "User not found"}, 404
+            return error_response("User not found", 404)
         
         # Check for existing friendship
         if current_user.is_friends(receiver):
-            return {"error": "Already friends"}, 400
+            return error_response("You are already friends with this user", 409)
         
         # Check for existing friend request 
 
@@ -72,20 +68,20 @@ def send_friend_request(receiver_id):
         ).first()
 
         if existing_request:
-            return {"error": "Friend Request already exists"}, 400
+            return error_response("Friend request already exists", 409)
         
         # Create new friend request
         new_request = FriendRequest(sender=current_user, receiver=receiver)
         db.session.add(new_request)
         db.session.commit()
 
-        return current_user.to_dict(include_friend_requests=True), 201
+        return {new_request.id: new_request.receiver.to_dict(include_relationships=False)}, 201
     except IntegrityError as e:
         db.session.rollback()
-        return {"error": "Failed to send friend request: {}".format(str(e))}, 500
+        return error_response("Failed to send friend request", 500)
     except Exception as e:
         db.session.rollback()
-        return {"error": "Internal Server Error"}, 500
+        return error_response(str(e), 500)
 
 @friend_routes.route('/request/<int:request_id>/accept', methods=["PUT"])
 @login_required

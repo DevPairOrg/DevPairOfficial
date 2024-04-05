@@ -2,6 +2,10 @@ import { FollowingState } from './following';
 
 type UserWithoutFriends = Omit<User, 'friends'>;
 
+export interface Request {
+    [requestId: number]: UserWithoutFriends
+}
+
 export interface User {
     id: string;
     username: string;
@@ -18,8 +22,8 @@ export interface User {
     leetcode: string;
 
     friends: User[];
-    sentRequests: {[requestId: number]: UserWithoutFriends}; // User = user that the request is going to
-    receivedRequests: {[requestId: number]: UserWithoutFriends}; // User = user that sent YOU a request
+    sentRequests: Request; // User = user that the request is going to
+    receivedRequests: Request; // User = user that sent YOU a request
     totalPending: number;
 
     isFriend?: boolean;
@@ -28,6 +32,7 @@ export interface User {
 
     errors: string;
 }
+
 
 export interface TargetUserProps {
     targetUser: User;
