@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import SignupFormPage from './components/SignupFormPage';
-import LoginFormPage from './components/LoginFormPage';
-import Navigation from './components/Navigation';
+import SignupFormPage from './components/SignupFormPage/SignupFormPage';
+import LoginFormPage from './components/LoginFormPage/LoginFormPage';
+import Navigation from './components/Navigation/Navigation';
 import { authenticate } from './store/session';
 import { useAppDispatch, useAppSelector } from './hooks';
-import LandingPage from './components/LandingPage';
-import VideoCall from './components/CodeCollabPage/CodeCollabPage';
+import LandingPage from './components/LandingPage/LandingPage';
+import VideoCall from './components/PairedRoom/PairedRoom';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import UserPage from './components/UserPage/index';
 import RouteChangeListener from './components/RouteChangeListener/RouteChangeListener';

@@ -6,24 +6,23 @@ import { clearUser, receiveUser } from '../../store/chatRoom';
 import { UserDict } from '../../interfaces/socket';
 import config from '../../AgoraManager/config';
 import { User } from '../../interfaces/user';
+import { resetGeminiState } from '../../store/pairedContent';
 
 const useSocketListeners = (
     socket: Socket | null,
     channelName: string | null,
     setChannelName: React.Dispatch<React.SetStateAction<string>>,
-    setJoined: React.Dispatch<React.SetStateAction<boolean>>,
     user: User | null
 ) => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
         if (!socket) return;
-        console.log('UseSocketListeners - Socket Exists', socket);
         socket.emit('join_room');
         socket.on('joined', (data: { room: string; users: UserDict[] }) => {
             console.log('Socket listening to "Joined"', data);
             if (!config.channelName) {
-                console.log('Config has no channel name');
+                console.log(`Setting channel name to ${data.room}`);
                 setChannelName(data.room);
             }
             if (data.users.length > 1) {
@@ -40,6 +39,7 @@ const useSocketListeners = (
         const userLeftListener = () => {
             console.log('User leaving room');
             dispatch(clearUser());
+            dispatch(resetGeminiState());
             socket.removeAllListeners('joined');
             socket.removeAllListeners('user_left');
             socket.emit('leave_room', { room: channelName });
@@ -54,7 +54,7 @@ const useSocketListeners = (
             socket.off('joined');
             socket.off('user_left');
         };
-    }, [socket, setChannelName, setJoined, user, dispatch]);
+    }, [socket, setChannelName, user, dispatch]);
 };
 
 export default useSocketListeners;

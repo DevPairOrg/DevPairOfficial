@@ -4,8 +4,8 @@ import { useSelector } from 'react-redux';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks';
 import { RootState } from '../../store';
-import './LoginForm.css';
-import Footer from '../Footer';
+import './LoginFormPage.css';
+import Footer from '../Footer/Footer';
 
 function LoginFormPage() {
     const dispatch = useAppDispatch();

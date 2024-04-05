@@ -43,3 +43,14 @@ export interface TargetUserProps {
     userId?: string;
     handleFollow?: (e: React.MouseEvent<HTMLButtonElement>) => Promise<void>; // Define handleFollow property
 }
+
+export interface UserForm {
+    id: string;
+    username: string;
+    picUrl: File;
+    about: string;
+    github: string;
+    linkedin: string;
+    portfolio: string;
+    leetcode: string;
+}

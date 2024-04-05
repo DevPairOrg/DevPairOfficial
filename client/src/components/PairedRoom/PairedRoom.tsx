@@ -1,13 +1,16 @@
 import { useState } from 'react';
 import { useAppSelector } from '../../hooks';
 import { useSocket } from '../../context/Socket';
-import VideoMain from './VideoChat';
-import StartVideoCall from './StartCall';
+import { AgoraRTCProvider } from 'agora-rtc-react';
 import useAgoraClient from '../../hooks/Agora/useAgoraClient';
 import useSocketListeners from '../../hooks/Sockets/useSocketListeners';
 import useFetchToken from '../../hooks/Agora/useFetchToken';
-import Footer from '../Footer';
-import './index.css';
+import StartCall from './StartCall';
+import Chat from './Chat/Chat';
+import VideoCams from './VideoCams/VideoCams';
+import Footer from '../Footer/Footer';
+import Content from './Content/Content';
+import './PairedRoom.css';
 
 const CodeCollab: React.FC = () => {
     const { connectSocket, socket } = useSocket();
@@ -18,7 +21,7 @@ const CodeCollab: React.FC = () => {
 
     const agoraEngine = useAgoraClient();
 
-    useSocketListeners(socket, channelName, setChannelName, setJoined, user);
+    useSocketListeners(socket, channelName, setChannelName, user);
     useFetchToken({ channelName, setJoined });
 
     const handleJoinClick = () => {
@@ -27,19 +30,25 @@ const CodeCollab: React.FC = () => {
         if (!socket) connectSocket();
     };
 
+    const leaveRoomHandler = () => {
+        setJoined(false);
+    };
+
     return (
         <>
             {joined ? (
                 <>
-                    <VideoMain
-                        channelName={channelName}
-                        agoraEngine={agoraEngine}
-                        leaveRoomHandler={() => setJoined(false)}
-                    />
+                    <main id="video-main-wrapper">
+                        <AgoraRTCProvider client={agoraEngine}>
+                            <VideoCams channelName={channelName} />
+                            <Content agoraEngine={agoraEngine} leaveRoomHandler={leaveRoomHandler} />
+                            <Chat channelName={channelName} agoraEngine={agoraEngine} />
+                        </AgoraRTCProvider>
+                    </main>
                     <Footer />
                 </>
             ) : (
-                <StartVideoCall handleJoinClick={handleJoinClick} loading={loading} />
+                <StartCall handleJoinClick={handleJoinClick} loading={loading} />
             )}
         </>
     );

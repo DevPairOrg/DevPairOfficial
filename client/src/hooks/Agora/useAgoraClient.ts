@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import AgoraRTC, { IAgoraRTCClient } from 'agora-rtc-sdk-ng';
+import AgoraRTC, { IAgoraRTCClient } from 'agora-rtc-react';
 import config from '../../AgoraManager/config';
 
 AgoraRTC.setLogLevel(3);
