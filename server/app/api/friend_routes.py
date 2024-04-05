@@ -204,7 +204,6 @@ def cancel_sent_request(request_id):
         db.session.commit()
         return {"requestId": request_id}, 200
     except Exception as e:
-        db.session.rollback()
         return error_response("Failed to cancel request", 500)
 
 @friend_routes.route('/request/<int:request_id>/reject', methods=['DELETE'])
@@ -212,44 +211,58 @@ def cancel_sent_request(request_id):
 def reject_friend_request(request_id):
 
     """
-    @route DELETE /request/<int:request_id>/reject
+    DELETE /api/friends/request/<int:request_id>/reject
 
-    @summary Rejects a received friend request.
+    Rejects a received friend request.
 
-    @description Rejects a pending friend request received by the logged-in user with the specified ID,
-    removing it from both users' friend request lists.
+    Requires login. 
+    Rejects a pending friend request received by the logged-in user with the specified ID, removing it from both users' friend request lists.
 
-    @param {int:request_id} ID of the friend request to reject.
+    Args:
+        request_id (int): The ID of the friend request to reject.
 
-    @returns {object} A dictionary with a success message:
-        - success (str): A message confirming successful request rejection.
+    Request Body:
+        None
 
-    @throws:
-        400 (Bad Request): 
-            - If the user tries to reject a request they haven't received.
-            - If the request has already been accepted, rejected, or canceled.
-        404 (Not Found): If the friend request with the provided ID is not found.
-        500 (Internal Server Error): If an unexpected error occurs during database operations.
+    Returns:
+        dict: A dictionary with either the rejected request id or an error message and code.
 
-    Example Response:
-    {
-    "success": "Request successfully rejected."
-    }
+    Raises:
+        400: If the user tries to reject a request they haven't received or the request has already been accepted, rejected, or canceled.
+        404: If the friend request with the provided ID is not found.
+        500: If an unexpected error occurs during database operations.
+
+    Examples:
+        Successful Response:
+        {
+            "requestId": <request_id>
+        }
+
+        Error Response:
+        {
+            "error": {
+                "code": 404,
+                "message": "Friend request not found"
+            }
+        }
     """
+    # Validate request ID
+    if not isinstance(request_id, int):
+        return error_response("Invalid request ID", 400)
+    
+    friend_request = FriendRequest.query.get(request_id)
+
+    if not friend_request:
+        return error_response("Friend request not found", 404)
+    if friend_request.receiver != current_user:
+        return error_response("You can only reject requests you have received.", 400)
+
     try:
-        friend_request = FriendRequest.query.get(request_id)
-
-        if not friend_request:
-            return {"error": "Friend request not found."}, 404
-        if friend_request.receiver != current_user:
-            return {"error": "You can only reject requests sent to you."}, 400
-
         db.session.delete(friend_request)
         db.session.commit()
-        return current_user.to_dict(include_friend_requests=True), 200
-    except SQLAlchemyError as e:
-        db.session.rollback()
-        return {"error": "Failed to reject request" + str(e)}, 500
+        return {"requestId": request_id}, 200
+    except Exception as e:
+        return error_response("Failed to reject request", 500)
 
 @friend_routes.route('/<int:friend_id>', methods=['DELETE'])
 @login_required
