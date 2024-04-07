@@ -2,17 +2,17 @@ import React, { SetStateAction, useState } from 'react';
 import { useAgoraContext } from './agoraManager';
 import { useRemoteUsers } from 'agora-rtc-react';
 import './volumeControl.css';
-import { useAppSelector } from '../hooks';
+import { useAppSelector, useAppDispatch } from '../hooks';
+import { toggleScreenShare } from '../store/pairedContent';
 
-function RemoteAndLocalVolumeComponent(props: {
-    screenSharing: boolean;
-    setScreenSharing: React.Dispatch<SetStateAction<boolean>>;
-}) {
+function RemoteAndLocalVolumeComponent() {
     const agoraContext = useAgoraContext();
     const remoteUsers = useRemoteUsers();
-    const { screenSharing, setScreenSharing } = props;
+    const dispatch = useAppDispatch();
+    // const { screenSharing, setScreenSharing } = props;
     const [checked, setChecked] = useState<boolean>(true);
     const pairInfo = useAppSelector((state) => state.chatRoom.user);
+    const screenSharing = useAppSelector((state) => state.pairedContent.screenshare.isActive);
 
     const handleLocalAudioToggle = () => {
         const newVolume = checked === false ? 100 : 0;
@@ -87,7 +87,8 @@ function RemoteAndLocalVolumeComponent(props: {
             </label>
 
             <button
-                onClick={() => setScreenSharing(!screenSharing)}
+                // onClick={() => setScreenSharing(!screenSharing)}
+                onClick={() => dispatch(toggleScreenShare(!screenSharing))}
                 id={screenSharing ? 'stop-screen-share' : 'share-screen-button'}
                 aria-label={screenSharing ? 'Stop Screen Share' : 'Share Your Screen'}
             >

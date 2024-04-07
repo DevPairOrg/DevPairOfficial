@@ -8,8 +8,8 @@ import useFetchToken from '../../hooks/Agora/useFetchToken';
 import StartCall from './StartCall';
 import PairedChat from './PairedChat';
 import PairedVideos from './PairedVideos';
-import PairedScreenShare from './PairedScreenShare';
 import Footer from '../Footer';
+import PairedContent from './PairedContent/PairedContent';
 import './index.css';
 
 const CodeCollab: React.FC = () => {
@@ -40,12 +40,8 @@ const CodeCollab: React.FC = () => {
                 <>
                     <main id="video-main-wrapper">
                         <AgoraRTCProvider client={agoraEngine}>
-                            <PairedVideos
-                                channelName={channelName}
-                                leaveRoomHandler={leaveRoomHandler}
-                                agoraEngine={agoraEngine}
-                            />
-                            <PairedScreenShare agoraEngine={agoraEngine} leaveRoomHandler={leaveRoomHandler} />
+                            <PairedVideos channelName={channelName} />
+                            <PairedContent agoraEngine={agoraEngine} leaveRoomHandler={leaveRoomHandler} />
                             <PairedChat channelName={channelName} agoraEngine={agoraEngine} />
                         </AgoraRTCProvider>
                     </main>

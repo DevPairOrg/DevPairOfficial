@@ -4,6 +4,7 @@ import { useSocket } from '../../../context/Socket';
 import { clearChatMessages, receiveChatMessage } from '../../../store/chatRoom';
 import { PairedChatMessage } from '../../../interfaces/socket';
 import { IAgoraRTCClient } from 'agora-rtc-react';
+import './index.css';
 
 // Define the props interface for the PairedChat component
 interface PairedChatProps {
@@ -20,9 +21,11 @@ const PairedChat: React.FC<PairedChatProps> = ({ channelName, agoraEngine }) => 
 
     if (error) console.log('Error in Paired Chat Component: ', error);
 
-    if (!socket) {
-        connectSocket();
-    }
+    useEffect(() => {
+        if (!socket) {
+            connectSocket();
+        }
+    }, [socket, connectSocket]);
 
     // Memoized callback for handling received chat messages
     const handleTempMessageReceived = useCallback(
