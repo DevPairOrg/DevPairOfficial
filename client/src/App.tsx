@@ -6,7 +6,7 @@ import Navigation from './components/Navigation';
 import { authenticate } from './store/session';
 import { useAppDispatch, useAppSelector } from './hooks';
 import LandingPage from './components/LandingPage';
-import VideoCall from './components/CodeCollabPage/CodeCollabPage';
+import VideoCall from './components/PairedRoom/PairedRoom';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import UserPage from './components/UserPage/index';
 import RouteChangeListener from './components/RouteChangeListener/RouteChangeListener';

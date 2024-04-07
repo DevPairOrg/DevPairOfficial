@@ -4,15 +4,15 @@ import { useSocket } from '../../../context/Socket';
 import { clearChatMessages, receiveChatMessage } from '../../../store/chatRoom';
 import { PairedChatMessage } from '../../../interfaces/socket';
 import { IAgoraRTCClient } from 'agora-rtc-react';
-import './index.css';
+import './Chat.css';
 
 // Define the props interface for the PairedChat component
-interface PairedChatProps {
+interface ChatProps {
     channelName: string;
     agoraEngine: IAgoraRTCClient;
 }
 
-const PairedChat: React.FC<PairedChatProps> = ({ channelName, agoraEngine }) => {
+const PairedChat: React.FC<ChatProps> = ({ channelName, agoraEngine }) => {
     const { socket, connectSocket, error } = useSocket();
     const messagesStore = useAppSelector((state) => state.chatRoom.messages);
     const [messages, setMessages] = useState<PairedChatMessage[]>([]);

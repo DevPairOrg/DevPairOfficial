@@ -6,11 +6,11 @@ import useAgoraClient from '../../hooks/Agora/useAgoraClient';
 import useSocketListeners from '../../hooks/Sockets/useSocketListeners';
 import useFetchToken from '../../hooks/Agora/useFetchToken';
 import StartCall from './StartCall';
-import PairedChat from './PairedChat';
-import PairedVideos from './PairedVideos';
+import PairedChat from './PairedChat/Chat';
+import PairedVideos from './VideoCams/VideoCams';
 import Footer from '../Footer';
-import PairedContent from './PairedContent/PairedContent';
-import './index.css';
+import PairedContent from './PairedContent/Content';
+import './PairedRoom.css';
 
 const CodeCollab: React.FC = () => {
     const { connectSocket, socket } = useSocket();

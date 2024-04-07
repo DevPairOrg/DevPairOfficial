@@ -4,12 +4,12 @@ import config from '../../../AgoraManager/config';
 import { AgoraProvider } from '../../../AgoraManager/agoraManager';
 import ScreenShare from './ScreenShare';
 
-export interface PairedContentProps {
+export interface ContentProps {
     agoraEngine: IAgoraRTCClient;
     leaveRoomHandler: () => void;
 }
 
-const PairedScreenShare: React.FC<PairedContentProps> = ({ agoraEngine, leaveRoomHandler }) => {
+const PairedScreenShare: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }) => {
     return (
         <>
             <AgoraProvider localCameraTrack={null} localMicrophoneTrack={null} leaveRoomHandler={leaveRoomHandler}>

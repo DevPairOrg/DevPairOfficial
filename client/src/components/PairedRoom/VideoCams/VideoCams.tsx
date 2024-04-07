@@ -13,7 +13,7 @@ import config from '../../../AgoraManager/config';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { pairFollow, pairUnfollow } from '../../../store/session';
 import userWaiting from '../../../assets/images/user-waiting.svg';
-import './index.css';
+import './VideoCams.css';
 
 function PairedVideos(props: { channelName: string }) {
     const user = useAppSelector((state) => state.session.user);
