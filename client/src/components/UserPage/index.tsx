@@ -11,7 +11,7 @@ import { unfollow, postFollow } from '../../store/userFollowing';
 import TargetUserInfoBox from './targetUserInfoBox';
 import TargetUserAbout from './targetUserAbout';
 import './index.css';
-import Footer from '../Footer';
+import Footer from '../Footer/Footer';
 import EditUserPage from './editProfile';
 import PreviewProfile from './PreviewProfile';
 

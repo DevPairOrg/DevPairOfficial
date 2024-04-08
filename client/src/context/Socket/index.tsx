@@ -1,7 +1,8 @@
 import React, { createContext, useEffect, useState, useCallback, ReactNode, useContext } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { useAppSelector } from '../../hooks';
+import { useAppSelector, useAppDispatch } from '../../hooks';
 import { ServerToClientEvents, ClientToServerEvents } from '../../interfaces/socket';
+import { resetGeminiState } from '../../store/pairedContent';
 
 interface SocketContextProps {
     socket: Socket<ServerToClientEvents, ClientToServerEvents> | null;
@@ -26,6 +27,7 @@ export const useSocket = () => {
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const user = useAppSelector((state) => state.session.user);
     const location = useAppSelector((state) => state.userPath.currentPath);
+    const dispatch = useAppDispatch();
     const [socket, setSocket] = useState<Socket | null>(null);
     const [error, setError] = useState<string | null>(null);
 
@@ -42,10 +44,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
                 autoConnect: false, // Change to false to not auto-connect on instantiation
             });
 
+            console.log('Creating new socket', newSocket);
+
             newSocket.connect(); // Manually connect
 
             newSocket.on('connect', () => {
-                console.log('Socket connected');
+                console.log('Socket connected', newSocket);
                 setError(null);
             });
 
@@ -67,9 +71,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         // Define a cleanup function that disconnects the socket
         const disconnectOnLeave = () => {
             if (socket) {
-                console.log('Disconnecting due to route change');
+                console.log('Running disconnect cleanup function.');
                 socket.emit('user_leaving', { userId: user?.id });
                 socket.disconnect();
+                dispatch(resetGeminiState());
             }
         };
 
@@ -77,44 +82,21 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         return disconnectOnLeave;
     }, [socket, user?.id]); // Re-run this effect if socket or user ID changes
 
-    // Additionally, you can watch for specific route changes
+    // Disconnect based on specific route changes
     useEffect(() => {
-        // You can also place disconnect logic here if you want to
-        // disconnect based on specific route changes
-        // console.log('Route changed to', location);
-        // console.log('Route includes /code-collab?', location == '/code-collab');
-        // For example, if leaving the /code-collab route:
         if (location) {
             if (!location.includes('/code-collab')) {
-                console.log('Current Socket', socket);
                 if (socket) {
+                    socket.emit('user_leaving', { userId: user?.id });
                     socket.disconnect();
-                    console.log('Socket Exists, Disconnecting...');
+                    dispatch(resetGeminiState());
+                    console.log('Disconnecting user from socket due to route change...');
                 } else {
                     console.log('No existing socket, disconnect not necessary.');
                 }
             }
         }
     }, [location]);
-
-    // Adjust useEffect to handle cleanup only, remove socket instantiation logic from here
-    // useEffect(() => {
-    //     window.addEventListener('beforeunload', () => {
-    //         if (socket) {
-    //             socket.emit('user_leaving', { userId: user?.id });
-    //             console.log('🙄😶😶🙄🙄 USER DISCONNECTED');
-    //             socket.disconnect();
-    //         }
-    //     });
-
-    //     return () => {
-    //         if (socket) {
-    //             socket.emit('user_leaving', { userId: user?.id });
-    //             console.log('🙄😶😶🙄🙄 USER DISCONNECTED');
-    //             socket.disconnect();
-    //         }
-    //     };
-    // }, [socket, user]);
 
     return <SocketContext.Provider value={{ socket, error, connectSocket }}>{children}</SocketContext.Provider>;
 };

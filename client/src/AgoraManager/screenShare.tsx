@@ -1,17 +1,15 @@
 import React, { useEffect, useRef } from 'react';
 import AgoraRTC, { useJoin, usePublish, useLocalScreenTrack, useTrackEvent, LocalVideoTrack } from 'agora-rtc-react';
 import config from './config';
-import { useAppSelector } from '../hooks';
-
-// Logging Parameters: 0 = DEBUG, 1 = INFO, 2 = WARNING, 3 = ERROR, 4. NONE
-AgoraRTC.setLogLevel(3);
+import { useAppSelector, useAppDispatch } from '../hooks';
+import { toggleScreenShare } from '../store/pairedContent';
 
 const ShareScreenComponent: React.FC<{
-    setScreenSharing: React.Dispatch<React.SetStateAction<boolean>>;
     isRemoteScreen: boolean;
-}> = ({ isRemoteScreen, setScreenSharing }) => {
+}> = ({ isRemoteScreen }) => {
     const screenShareClient = useRef(AgoraRTC.createClient({ codec: 'vp8', mode: 'rtc' }));
     const user = useAppSelector((state) => state.session.user);
+    const dispatch = useAppDispatch();
 
     // Use the useLocalScreenTrack hook to get the screen sharing track
     const { screenTrack, isLoading, error } = useLocalScreenTrack(true, {}, 'disable', screenShareClient.current);
@@ -30,13 +28,13 @@ const ShareScreenComponent: React.FC<{
 
     // Handle the 'track-ended' event to stop screen sharing when the track ends
     useTrackEvent(screenTrack, 'track-ended', () => {
-        setScreenSharing(false);
+        dispatch(toggleScreenShare(false));
     });
 
     // Handle errors by stopping screen sharing
     useEffect(() => {
-        if (error) setScreenSharing(false);
-    }, [error, setScreenSharing]);
+        if (error) toggleScreenShare(false);
+    }, [error, dispatch]);
 
     // Publish the screen share track
     usePublish([screenTrack], screenTrack !== null, screenShareClient.current);

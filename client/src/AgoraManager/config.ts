@@ -1,4 +1,4 @@
-import { EncryptionMode, UID, SDK_MODE } from 'agora-rtc-sdk-ng';
+import { EncryptionMode, UID, SDK_MODE } from 'agora-rtc-react';
 
 const config: configType = {
     uid: 0,

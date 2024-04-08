@@ -1,3 +1,4 @@
+// This slice is to let the socket know when to disconnect a user. i.e. when they aren't on the url path /code-collab
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Define a type for the slice state
