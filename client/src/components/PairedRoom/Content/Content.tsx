@@ -7,7 +7,7 @@ import React from 'react';
 import { AgoraProvider } from '../../../AgoraManager/agoraManager';
 import GeminiDSA from './GeminiDSA';
 
-const PairedContent: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }) => {
+const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }) => {
     const { handleGeminiDSARequest } = useGeminiDSARequest();
     const screenSharing = useAppSelector((state) => state.pairedContent.screenshare.isActive);
     const geminiAPIRequest = useAppSelector((state) => state.pairedContent.gemini.isActive);
@@ -57,4 +57,4 @@ const PairedContent: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }
     }
 };
 
-export default PairedContent;
+export default Content;

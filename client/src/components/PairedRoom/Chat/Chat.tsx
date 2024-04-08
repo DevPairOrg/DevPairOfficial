@@ -12,7 +12,7 @@ interface ChatProps {
     agoraEngine: IAgoraRTCClient;
 }
 
-const PairedChat: React.FC<ChatProps> = ({ channelName, agoraEngine }) => {
+const Chat: React.FC<ChatProps> = ({ channelName, agoraEngine }) => {
     const { socket, connectSocket, error } = useSocket();
     const messagesStore = useAppSelector((state) => state.chatRoom.messages);
     const [messages, setMessages] = useState<PairedChatMessage[]>([]);
@@ -126,4 +126,4 @@ const PairedChat: React.FC<ChatProps> = ({ channelName, agoraEngine }) => {
     );
 };
 
-export default PairedChat;
+export default Chat;

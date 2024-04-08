@@ -1,5 +1,5 @@
 import { useAppSelector } from '../../../hooks';
-import IDE from '../../CodeMirror';
+import IDE from '../../CodeMirror/CodeMirror';
 
 
 const GeminiDSA = () => {

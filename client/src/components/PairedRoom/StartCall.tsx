@@ -1,5 +1,5 @@
 import CatImage from '/src/assets/images/devpair-loading-screen.png';
-import Footer from '../Footer';
+import Footer from '../Footer/Footer';
 
 interface StartCallProps {
     handleJoinClick: () => void;

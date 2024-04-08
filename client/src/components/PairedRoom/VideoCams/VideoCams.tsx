@@ -15,7 +15,7 @@ import { pairFollow, pairUnfollow } from '../../../store/session';
 import userWaiting from '../../../assets/images/user-waiting.svg';
 import './VideoCams.css';
 
-function PairedVideos(props: { channelName: string }) {
+function VideoCams(props: { channelName: string }) {
     const user = useAppSelector((state) => state.session.user);
     const pairInfo = useAppSelector((state) => state.chatRoom.user);
     const { channelName } = props;
@@ -120,4 +120,4 @@ function PairedVideos(props: { channelName: string }) {
     );
 }
 
-export default PairedVideos;
+export default VideoCams;

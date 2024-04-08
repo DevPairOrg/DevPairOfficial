@@ -5,7 +5,7 @@ import { signUp } from '../../store/session';
 import { useAppDispatch } from '../../hooks';
 import { RootState } from '../../store';
 import './SignupForm.css';
-import Footer from '../Footer';
+import Footer from '../Footer/Footer';
 
 type ErrorState = {
     email: string | null;

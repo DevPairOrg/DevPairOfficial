@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
-import "./index.css"
+import './ScrambleText.css';
 
 // Define a type for your props if needed
 type PageHeaderProps = {
@@ -53,21 +53,28 @@ const PageHeader: React.FC<PageHeaderProps> = React.memo((props) => {
         }
     }
 
-    useGSAP(() => {
-        appearTitle(titleParent, 0.2);
-    }, {scope: titleParent});
+    useGSAP(
+        () => {
+            appearTitle(titleParent, 0.2);
+        },
+        { scope: titleParent }
+    );
 
     return (
         <>
-            <h1 ref={titleParent} id="welcome-message" >
+            <h1 ref={titleParent} id="welcome-message">
                 Welcome to
                 {props.title.split('').map((el, i) => (
                     <span key={i} className="span-par">
                         <span
-                            style={i === 0 ? {
-                                marginLeft: '0.8rem',
-                                color: 'var(--primary)'
-                            }: {color: 'var(--primary)'}}
+                            style={
+                                i === 0
+                                    ? {
+                                          marginLeft: '0.8rem',
+                                          color: 'var(--primary)',
+                                      }
+                                    : { color: 'var(--primary)' }
+                            }
                         >
                             {el}
                         </span>
