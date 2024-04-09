@@ -13,7 +13,7 @@ import Content from './Content/Content';
 import { AgoraProvider } from '../../AgoraManager/agoraManager';
 import './PairedRoom.css';
 
-const CodeCollab: React.FC = () => {
+const PairedRoom: React.FC = () => {
     const { connectSocket, socket } = useSocket();
     const user = useAppSelector((state) => state.session.user);
     const [joined, setJoined] = useState<boolean>(false);
@@ -57,4 +57,4 @@ const CodeCollab: React.FC = () => {
     );
 };
 
-export default CodeCollab;
+export default PairedRoom;

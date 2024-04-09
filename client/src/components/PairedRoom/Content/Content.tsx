@@ -5,11 +5,18 @@ import { useAppSelector } from '../../../hooks';
 import PairedScreenShare, { ContentProps } from '../ScreenShare/ScreenShareContainer';
 import React from 'react';
 import GeminiDSA from './GeminiDSA';
+import { useAppDispatch } from '../../../hooks';
+import { resetGeminiState } from '../../../store/pairedContent';
 
 const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }) => {
     const { handleGeminiDSARequest } = useGeminiDSARequest();
+    const dispatch = useAppDispatch();
     const screenSharing = useAppSelector((state) => state.pairedContent.agora.screenshare.isActive);
     const geminiAPIRequest = useAppSelector((state) => state.pairedContent.gemini.isActive);
+
+    const handleLeaveGemini = async () => {
+        dispatch(resetGeminiState());
+    };
 
     const renderContent = () => {
         if (screenSharing) {
@@ -22,6 +29,11 @@ const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }) => {
             return (
                 <>
                     <GeminiDSA />
+
+                    {/* Temporary button to reset gemini active state */}
+                    <button onClick={handleLeaveGemini} style={{ color: 'white', backgroundColor: 'red' }}>
+                        Exit
+                    </button>
                 </>
             );
         } else {
