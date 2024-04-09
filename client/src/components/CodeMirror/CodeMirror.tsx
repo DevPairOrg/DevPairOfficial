@@ -1,4 +1,4 @@
-import { useState, useCallback, MouseEventHandler, useEffect } from 'react';
+import { useState, useCallback, MouseEventHandler } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';

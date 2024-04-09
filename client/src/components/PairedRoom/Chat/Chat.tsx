@@ -12,7 +12,7 @@ interface ChatProps {
     agoraEngine: IAgoraRTCClient;
 }
 
-const Chat: React.FC<ChatProps> = ({ channelName, agoraEngine }) => {
+const Chat: React.FC<ChatProps> = ({ channelName }) => {
     const { socket, connectSocket, error } = useSocket();
     const messagesStore = useAppSelector((state) => state.chatRoom.messages);
     const [messages, setMessages] = useState<PairedChatMessage[]>([]);
