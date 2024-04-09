@@ -32,3 +32,6 @@ friends_association = db.Table(
     db.Column('friend_id', db.Integer, ForeignKey(add_prefix_for_prod('users.id')), primary_key=True),
     # Additional columns if needed (e.g., date_added)
 )
+
+if environment == "production":
+    friends_association.schema = {'schema': SCHEMA}
