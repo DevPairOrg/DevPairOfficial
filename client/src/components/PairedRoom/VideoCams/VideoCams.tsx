@@ -13,9 +13,11 @@ import config from '../../../AgoraManager/config';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { pairFollow, pairUnfollow } from '../../../store/session';
 import userWaiting from '../../../assets/images/user-waiting.svg';
+import { useAgoraContext } from '../../../AgoraManager/agoraManager';
 import './VideoCams.css';
 
 function VideoCams(props: { channelName: string }) {
+    const { setLocalCameraTrack, setLocalMicrophoneTrack } = useAgoraContext();
     const user = useAppSelector((state) => state.session.user);
     const pairInfo = useAppSelector((state) => state.chatRoom.user);
     const { channelName } = props;
@@ -35,8 +37,8 @@ function VideoCams(props: { channelName: string }) {
         uid: user?.videoUid,
     });
 
-    // Cleanup function
     useEffect(() => {
+        // Setup cleanup to close tracks when the component unmounts
         return () => {
             localCameraTrack?.close();
             localMicrophoneTrack?.close();
@@ -44,10 +46,13 @@ function VideoCams(props: { channelName: string }) {
     }, []);
 
     useEffect(() => {
-        if (localCameraTrack) {
+        if (localCameraTrack && localMicrophoneTrack) {
+            localMicrophoneTrack.setMuted(true);
             setMyCameraTrack(localCameraTrack);
+            setLocalCameraTrack(localCameraTrack);
+            setLocalMicrophoneTrack(localMicrophoneTrack);
         }
-    }, [localCameraTrack]);
+    }, [localCameraTrack, localMicrophoneTrack]);
 
     usePublish([localMicrophoneTrack, localCameraTrack]);
 

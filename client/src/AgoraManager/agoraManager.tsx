@@ -7,50 +7,53 @@ const agoraEngine = useRTCClient(AgoraRTC.createClient({ codec: 'vp8', mode: con
     <AgoraManager config={config} children={undefined}></AgoraManager>
 </AgoraRTCProvider>;
 */
-import {
-    // LocalVideoTrack,
-    // RemoteUser,
-    // useJoin,
-    // useLocalCameraTrack,
-    // useLocalMicrophoneTrack,
-    // usePublish,
-    // useRTCClient,
-    // useRemoteUsers,
-    // useClientEvent,
-    IMicrophoneAudioTrack,
-    ICameraVideoTrack,
-} from 'agora-rtc-react';
+import { IMicrophoneAudioTrack, ICameraVideoTrack } from 'agora-rtc-react';
 
-import React, { createContext, useContext } from 'react';
-// import { configType } from "./config";
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import './agoraManager.css';
 
 // Define the shape of the Agora context
 interface AgoraContextType {
     localCameraTrack: ICameraVideoTrack | null;
+    setLocalCameraTrack: (track: ICameraVideoTrack | null) => void;
     localMicrophoneTrack: IMicrophoneAudioTrack | null;
+    setLocalMicrophoneTrack: (track: IMicrophoneAudioTrack | null) => void;
+    leaveRoomHandler: () => void;
+}
+
+const defaultState: AgoraContextType = {
+    localCameraTrack: null,
+    setLocalCameraTrack: () => {},
+    localMicrophoneTrack: null,
+    setLocalMicrophoneTrack: () => {},
+    leaveRoomHandler: () => {},
+};
+
+const AgoraContext = createContext<AgoraContextType>(defaultState);
+
+interface AgoraProviderProps {
     children: React.ReactNode;
     leaveRoomHandler: () => void;
 }
 
-// Create the Agora context
-const AgoraContext = createContext<AgoraContextType | null>(null);
+export const AgoraProvider: React.FC<AgoraProviderProps> = ({ children, leaveRoomHandler }) => {
+    const [localCameraTrack, setLocalCameraTrack] = useState<ICameraVideoTrack | null>(null);
+    const [localMicrophoneTrack, setLocalMicrophoneTrack] = useState<IMicrophoneAudioTrack | null>(null);
 
-// AgoraProvider component to provide the Agora context to its children
-export const AgoraProvider: React.FC<AgoraContextType> = ({
-    children,
-    localCameraTrack,
-    localMicrophoneTrack,
-    leaveRoomHandler,
-}) => (
-    <AgoraContext.Provider value={{ localCameraTrack, localMicrophoneTrack, children, leaveRoomHandler }}>
-        {children}
-    </AgoraContext.Provider>
-);
+    useEffect(() => {
+        console.log('local mic context', localMicrophoneTrack);
+    });
+
+    const value = {
+        localCameraTrack,
+        setLocalCameraTrack,
+        localMicrophoneTrack,
+        setLocalMicrophoneTrack,
+        leaveRoomHandler,
+    };
+
+    return <AgoraContext.Provider value={value}>{children}</AgoraContext.Provider>;
+};
 
 // Custom hook to access the Agora context
-export const useAgoraContext = () => {
-    const context = useContext(AgoraContext);
-    if (!context) throw new Error('useAgoraContext must be used within an AgoraProvider');
-    return context;
-};
+export const useAgoraContext = () => useContext(AgoraContext);
