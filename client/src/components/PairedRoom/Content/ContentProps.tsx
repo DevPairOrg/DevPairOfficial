@@ -1,7 +1,6 @@
 import { IAgoraRTCClient } from 'agora-rtc-react';
-import { VideoCamsProps } from '../VideoCams/VideoCamsProps';
 
-export interface ContentProps extends VideoCamsProps {
+export interface ContentProps {
     agoraEngine: IAgoraRTCClient;
     leaveRoomHandler?: () => void;
 }
