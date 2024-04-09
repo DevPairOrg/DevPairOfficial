@@ -34,4 +34,4 @@ friends_association = db.Table(
 )
 
 if environment == "production":
-    friends_association.schema = {'schema': SCHEMA}
+    friends_association.schema = SCHEMA
