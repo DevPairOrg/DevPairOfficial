@@ -10,6 +10,7 @@ import Chat from './Chat/Chat';
 import VideoCams from './VideoCams/VideoCams';
 import Footer from '../Footer/Footer';
 import Content from './Content/Content';
+import { AgoraProvider } from '../../AgoraManager/agoraManager';
 import './PairedRoom.css';
 
 const CodeCollab: React.FC = () => {
@@ -40,9 +41,11 @@ const CodeCollab: React.FC = () => {
                 <>
                     <main id="video-main-wrapper">
                         <AgoraRTCProvider client={agoraEngine}>
-                            <VideoCams channelName={channelName} />
-                            <Content agoraEngine={agoraEngine} leaveRoomHandler={leaveRoomHandler} />
-                            <Chat channelName={channelName} agoraEngine={agoraEngine} />
+                            <AgoraProvider leaveRoomHandler={leaveRoomHandler}>
+                                <VideoCams channelName={channelName} />
+                                <Content agoraEngine={agoraEngine} leaveRoomHandler={leaveRoomHandler} />
+                                <Chat channelName={channelName} agoraEngine={agoraEngine} />
+                            </AgoraProvider>
                         </AgoraRTCProvider>
                     </main>
                     <Footer />

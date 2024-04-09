@@ -58,6 +58,8 @@ const pairedContentSlice = createSlice({
             state.gemini.isActive = false;
             state.gemini.generatedProblem = null;
         },
+
+        // NOT USING THESE TWO BECAUSE YOU CANNOT STORE NON-SERIALIZABLE DATA IN REDUX - BAD PRACTICE. SOLUTION: SETUP CONTEXT PROVIDER TO ALLOW HIGHER UP COMPONENTS TO CONSUME IT
         setLocalCamMic: (
             state,
             action: PayloadAction<{

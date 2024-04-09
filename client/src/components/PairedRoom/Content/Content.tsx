@@ -4,17 +4,13 @@ import useGeminiDSARequest from '../../../hooks/Gemini/useGeminiDSARequest';
 import { useAppSelector } from '../../../hooks';
 import PairedScreenShare, { ContentProps } from '../ScreenShare/ScreenShareContainer';
 import React from 'react';
-import { AgoraProvider } from '../../../AgoraManager/agoraManager';
 import GeminiDSA from './GeminiDSA';
 
 const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }) => {
     const { handleGeminiDSARequest } = useGeminiDSARequest();
     const screenSharing = useAppSelector((state) => state.pairedContent.agora.screenshare.isActive);
     const geminiAPIRequest = useAppSelector((state) => state.pairedContent.gemini.isActive);
-    const localMicrophoneTrack = useAppSelector((state) => state.pairedContent.agora.media.localMicrophoneTrack);
-    console.log('alskdjflkajk', localMicrophoneTrack);
-    // console.log('screenSharing state', screenSharing);
-    // console.log('geminiAPIRequest state', geminiAPIRequest);
+
     const renderContent = () => {
         if (screenSharing) {
             return (
@@ -49,13 +45,8 @@ const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }) => {
         <>
             <div id="screen-share-container">
                 {renderContent()}
-                <AgoraProvider
-                    localCameraTrack={null}
-                    localMicrophoneTrack={localMicrophoneTrack}
-                    leaveRoomHandler={leaveRoomHandler}
-                >
-                    <RemoteAndLocalVolumeComponent />
-                </AgoraProvider>
+
+                <RemoteAndLocalVolumeComponent />
             </div>
         </>
     );
