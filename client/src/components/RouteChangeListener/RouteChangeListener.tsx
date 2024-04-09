@@ -12,7 +12,7 @@ const RouteChangeListener = () => {
         if (location.pathname !== prevLocation) {
             setPrevLocation(location.pathname);
             dispatch(updateCurrentPath(location.pathname));
-            console.log('RouteChangeListener Updated Location Successfully: ', location);
+            // console.log('RouteChangeListener Updated Location Successfully: ', location);
         }
     }, [location, dispatch]);
 

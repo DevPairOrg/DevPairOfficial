@@ -25,7 +25,7 @@ const CodeCollab: React.FC = () => {
     useFetchToken({ channelName, setJoined });
 
     const handleJoinClick = () => {
-        console.log('Join Button Clicked');
+        // console.log('Join Button Clicked');
         setLoading(true);
         if (!socket) connectSocket();
     };

@@ -38,7 +38,7 @@ function IDE(props: parsedData) {
             }
 
             const data = await response.json();
-            console.log('response from backend', data);
+            // console.log('response from backend', data);
 
             if (data.testResults && typeof data.testResults === 'object') {
                 const testResultsArray = Object.values(data.testResults);
@@ -56,9 +56,9 @@ function IDE(props: parsedData) {
         }
     };
 
-    useEffect(() => {
-        console.log('userResults', userResults);
-    });
+    // useEffect(() => {
+    //     console.log('userResults', userResults);
+    // });
 
     // Python or Javascript User Options
     const handlePythonButton: MouseEventHandler<HTMLButtonElement> = (e) => {

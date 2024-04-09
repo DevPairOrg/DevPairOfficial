@@ -44,12 +44,12 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
                 autoConnect: false, // Change to false to not auto-connect on instantiation
             });
 
-            console.log('Creating new socket', newSocket);
+            // console.log('Creating new socket', newSocket);
 
             newSocket.connect(); // Manually connect
 
             newSocket.on('connect', () => {
-                console.log('Socket connected', newSocket);
+                // console.log('Socket connected', newSocket);
                 setError(null);
             });
 

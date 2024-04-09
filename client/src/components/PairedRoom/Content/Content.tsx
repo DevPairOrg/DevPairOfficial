@@ -12,8 +12,8 @@ const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }) => {
     const screenSharing = useAppSelector((state) => state.pairedContent.screenshare.isActive);
     const geminiAPIRequest = useAppSelector((state) => state.pairedContent.gemini.isActive);
 
-    console.log('screenSharing state', screenSharing);
-    console.log('geminiAPIRequest state', geminiAPIRequest);
+    // console.log('screenSharing state', screenSharing);
+    // console.log('geminiAPIRequest state', geminiAPIRequest);
 
     if (screenSharing) {
         return (

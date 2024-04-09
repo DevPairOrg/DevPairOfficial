@@ -20,24 +20,24 @@ const useSocketListeners = (
         if (!socket) return;
         socket.emit('join_room');
         socket.on('joined', (data: { room: string; users: UserDict[] }) => {
-            console.log('Socket listening to "Joined"', data);
+            // console.log('Socket listening to "Joined"', data);
             if (!config.channelName) {
-                console.log(`Setting channel name to ${data.room}`);
+                // console.log(`Setting channel name to ${data.room}`);
                 setChannelName(data.room);
             }
             if (data.users.length > 1) {
-                console.log('There is more than one user, a pair.');
+                // console.log('There is more than one user, a pair.');
                 const pair = data.users.find((pair) => pair.id !== user?.id);
                 if (pair) {
                     dispatch(receiveUser(pair as UserDict));
                 }
             }
-            console.log(`Setting channelName to ${data.room} and setting joined to true`);
+            // console.log(`Setting channelName to ${data.room} and setting joined to true`);
             setChannelName(data.room);
         });
 
         const userLeftListener = () => {
-            console.log('User leaving room');
+            // console.log('User leaving room');
             dispatch(clearUser());
             dispatch(resetGeminiState());
             socket.removeAllListeners('joined');
