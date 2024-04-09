@@ -1,4 +1,4 @@
-import config from '../AgoraManager/config';
+import config from '../../AgoraManager/config';
 
 // Fetch Token from Server - Use an HTTP request to retrieve an authentication token for a specific channel from the token server.
 export async function fetchRTCToken(channelName: string) {

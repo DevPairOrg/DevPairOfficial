@@ -1,36 +1,39 @@
-import React, { createContext, useEffect, useState, ReactNode } from 'react';
+import React, { createContext, useEffect, useState, useCallback, ReactNode, useContext } from 'react';
 import { io, Socket } from 'socket.io-client';
-import { useAppSelector } from '../../hooks';
+import { useAppSelector, useAppDispatch } from '../../hooks';
 import { ServerToClientEvents, ClientToServerEvents } from '../../interfaces/socket';
+import { resetGeminiState } from '../../store/pairedContent';
 
-// Define the context type
 interface SocketContextProps {
     socket: Socket<ServerToClientEvents, ClientToServerEvents> | null;
+    connectSocket: () => void; // Method to initiate the connection
+    error?: string | null;
 }
 
-// Create the context
-export const SocketContext = createContext<SocketContextProps | undefined>(undefined);
-
-// Define socket provider props type
 interface SocketProviderProps {
     children: ReactNode;
 }
 
-// Create the provider component
+const SocketContext = createContext<SocketContextProps | undefined>(undefined);
+
+export const useSocket = () => {
+    const context = useContext(SocketContext);
+    if (!context) {
+        throw new Error('useSocket must be used within a SocketProvider');
+    }
+    return context;
+};
+
 export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const user = useAppSelector((state) => state.session.user);
-
+    const location = useAppSelector((state) => state.userPath.currentPath);
+    const dispatch = useAppDispatch();
     const [socket, setSocket] = useState<Socket | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
-    // const handleBeforeUnload = () => {
-    //     if (user && socket && socket.connected) {
-    //         socket.emit('user_leaving', { userId: user.id });
-    //         socket.disconnect();
-    //         setSocket(null);
-    //     }
-    // };
+    // console.log('Socket Provider Updated Location', location);
 
-    useEffect(() => {
+    const connectSocket = useCallback(() => {
         if (user && user.id && !socket) {
             const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
                 transports: ['websocket', 'polling'],
@@ -38,30 +41,62 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
                 reconnectionAttempts: 5,
                 reconnectionDelay: 2000,
                 reconnectionDelayMax: 5000,
-                autoConnect: true,
+                autoConnect: false, // Change to false to not auto-connect on instantiation
             });
+
+            // console.log('Creating new socket', newSocket);
+
+            newSocket.connect(); // Manually connect
+
+            newSocket.on('connect', () => {
+                // console.log('Socket connected', newSocket);
+                setError(null);
+            });
+
+            newSocket.on('custom_error', (error) => {
+                console.error('Socket error:', error);
+                setError(error.error);
+            });
+
+            newSocket.on('disconnect', (reason) => {
+                console.log('Socket disconnected:', reason);
+                setSocket(null);
+            });
+
             setSocket(newSocket);
         }
-
-        // window.addEventListener('beforeunload', handleBeforeUnload);
-        return () => {
-            // window.removeEventListener('beforeunload', handleBeforeUnload);
-            if (socket) {
-                // console.log('Disconnecting new socket...');
-                socket.disconnect();
-                setSocket(null);
-            }
-        };
     }, [user, socket]);
 
     useEffect(() => {
-        // Disconnect the socket if the user logs out or their session ends
-        if (!user && socket && socket.connected) {
-            // console.log('User logged out, disconnecting socket...');
-            socket.disconnect();
-            setSocket(null);
-        }
-    }, [user, socket]);
+        // Define a cleanup function that disconnects the socket
+        const disconnectOnLeave = () => {
+            if (socket) {
+                console.log('Running disconnect cleanup function.');
+                socket.emit('user_leaving', { userId: user?.id });
+                socket.disconnect();
+                dispatch(resetGeminiState());
+            }
+        };
 
-    return <SocketContext.Provider value={{ socket }}>{children}</SocketContext.Provider>;
+        // Call disconnectOnLeave when the component unmounts
+        return disconnectOnLeave;
+    }, [socket, user?.id]); // Re-run this effect if socket or user ID changes
+
+    // Disconnect based on specific route changes
+    useEffect(() => {
+        if (location) {
+            if (!location.includes('/code-collab')) {
+                if (socket) {
+                    socket.emit('user_leaving', { userId: user?.id });
+                    socket.disconnect();
+                    dispatch(resetGeminiState());
+                    console.log('Disconnecting user from socket due to route change...');
+                } else {
+                    console.log('No existing socket, disconnect not necessary.');
+                }
+            }
+        }
+    }, [location]);
+
+    return <SocketContext.Provider value={{ socket, error, connectSocket }}>{children}</SocketContext.Provider>;
 };

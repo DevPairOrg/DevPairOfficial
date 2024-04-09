@@ -17,13 +17,16 @@ def authenticated_only(f):
     """
         Defines authenticated only wrapper that will check if a user is authenticated before calling the original function. If not authenticated it will disconnect the user from the socket.
     """
-    @functools.wraps(f)
-    def wrapped(*args, **kwargs):
-        if not current_user.is_authenticated:
-            disconnect()
-        else:
-            return f(*args, **kwargs)
-    return wrapped
+    try:
+        @functools.wraps(f)
+        def wrapped(*args, **kwargs):
+            if not current_user.is_authenticated:
+                disconnect()
+            else:
+                return f(*args, **kwargs)
+        return wrapped
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
 
 
 @socketio.on("join_room")
@@ -61,6 +64,7 @@ def handle_join_room():
     except Exception as e:
         # Handle exceptions (e.g., room not found, socket connection issue)
         socketio.emit("join_room_error", {"error": str(e)}, to=user.id)
+        socketio.emit('custom_error', {'error': str(e)})
 
 
 @socketio.on("leave_room")
@@ -74,15 +78,18 @@ def handle_leave_room(data):
             "room": "example_room_name"
         }
     """
-    if len(socket_rooms[data["room"]]["current_users"]) == 1:
-        del socket_rooms[data["room"]]
-        close_room(data["room"])
-    else:
-        leave_room(data["room"])
-        socket_rooms[data["room"]]["current_users"] = [user for user in socket_rooms[data["room"]]["current_users"] if user["id"] != current_user.id]
-        emit(
-            "user_left", f"{current_user.username} has exited the room!", to=data["room"]
-        )
+    try:
+        if len(socket_rooms[data["room"]]["current_users"]) == 1:
+            del socket_rooms[data["room"]]
+            close_room(data["room"])
+        else:
+            leave_room(data["room"])
+            socket_rooms[data["room"]]["current_users"] = [user for user in socket_rooms[data["room"]]["current_users"] if user["id"] != current_user.id]
+            emit(
+                "user_left", f"{current_user.username} has exited the room!", to=data["room"]
+            )
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
 
 
 @socketio.on("temp_chat_message")
@@ -97,23 +104,32 @@ def handle_temp_chat(data):
             "room": "example_room_name"
         }
     """
+    try:
+        response = {
+            "from": current_user.to_dict(),
+            "message": data["message"],
+            "created_at": datetime.datetime.utcnow().strftime("%m/%d/%Y, %H:%M:%S"),
+        }
 
-    response = {
-        "from": current_user.to_dict(),
-        "message": data["message"],
-        "created_at": datetime.datetime.utcnow().strftime("%m/%d/%Y, %H:%M:%S"),
-    }
-
-    emit("temp_message_received", response, to=data["room"])
+        emit("temp_message_received", response, to=data["room"])
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
 
 @socketio.on('user_leaving')
 @authenticated_only
 def handle_user_leaving(data):
-    response = {
-        "user": data['userId'],
-        "reason": 'Refreshed, Reloaded, or Closed Tab'
-    }
-    disconnect()
+    try:
+        response = {
+            "user": data['userId'],
+            "reason": 'Refreshed, Reloaded, or Closed Tab'
+        }
+        disconnect()
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
+
+@socketio.on('custom_error')
+def epipe_error(e):
+    logging.error(f"🤬🤬🤬🤬🤬🤬🤬SocketIO Error🤬🤬🤬🤬🤬🤬🤬: {e}")
 
 @socketio.on_error()
 def error_handler(e):

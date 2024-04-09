@@ -20,9 +20,9 @@ export interface User {
     following: FollowingObject[];
     followers: FollowingObject[];
 
-    friends: User[]
-    sentRequests: {requestId: UserWithoutFriends} // User = user that the request is going to
-    receivedRequests: {requestId: UserWithoutFriends} // User = user that sent YOU a request
+    friends: User[];
+    sentRequests: { requestId: UserWithoutFriends }; // User = user that the request is going to
+    receivedRequests: { requestId: UserWithoutFriends }; // User = user that sent YOU a request
 
     errors: string;
 }
@@ -35,4 +35,15 @@ export interface TargetUserProps {
     setIsFollowed?: React.Dispatch<React.SetStateAction<boolean>>;
     userId?: string;
     handleFollow?: (e: React.MouseEvent<HTMLButtonElement>) => Promise<void>; // Define handleFollow property
+}
+
+export interface UserForm {
+    id: string;
+    username: string;
+    picUrl: File;
+    about: string;
+    github: string;
+    linkedin: string;
+    portfolio: string;
+    leetcode: string;
 }

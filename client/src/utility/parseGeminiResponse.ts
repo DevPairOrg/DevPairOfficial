@@ -113,13 +113,13 @@ export function parseCode(code: string) {
   pythonUnitTest = pythonUnitTest;
   jsUnitTest = jsUnitTest;
 
-  console.log("Problem Name:\n", problemName);
-  console.log("Problem Prompt:\n", problemPrompt);
-  console.log("Empty Python Function:\n", defaultPythonFn);
-  console.log("Empty JavaScript Function:\n", defaultJsFn);
-  console.log("Test Cases:\n", testCases);
-  console.log("Python Unit Test:\n", pythonUnitTest);
-  console.log("JavaScript Unit Test:\n", jsUnitTest);
+  // console.log("Problem Name:\n", problemName);
+  // console.log("Problem Prompt:\n", problemPrompt);
+  // console.log("Empty Python Function:\n", defaultPythonFn);
+  // console.log("Empty JavaScript Function:\n", defaultJsFn);
+  // console.log("Test Cases:\n", testCases);
+  // console.log("Python Unit Test:\n", pythonUnitTest);
+  // console.log("JavaScript Unit Test:\n", jsUnitTest);
 
   return {
     problemName,
