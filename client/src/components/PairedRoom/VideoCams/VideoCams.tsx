@@ -13,6 +13,7 @@ import config from '../../../AgoraManager/config';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { pairFollow, pairUnfollow } from '../../../store/session';
 import userWaiting from '../../../assets/images/user-waiting.svg';
+import { clearLocalCamMic, setLocalCamMic } from '../../../store/pairedContent';
 import './VideoCams.css';
 
 function VideoCams(props: { channelName: string }) {
@@ -40,14 +41,18 @@ function VideoCams(props: { channelName: string }) {
         return () => {
             localCameraTrack?.close();
             localMicrophoneTrack?.close();
+            dispatch(clearLocalCamMic());
         };
     }, []);
 
     useEffect(() => {
-        if (localCameraTrack) {
+        if (localCameraTrack && localMicrophoneTrack) {
             setMyCameraTrack(localCameraTrack);
+            dispatch(
+                setLocalCamMic({ localCameraTrack: localCameraTrack, localMicrophoneTrack: localMicrophoneTrack })
+            );
         }
-    }, [localCameraTrack]);
+    }, [localCameraTrack, localMicrophoneTrack]);
 
     usePublish([localMicrophoneTrack, localCameraTrack]);
 

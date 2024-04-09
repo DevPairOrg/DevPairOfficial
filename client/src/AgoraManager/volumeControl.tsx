@@ -12,7 +12,7 @@ function RemoteAndLocalVolumeComponent() {
     // const { screenSharing, setScreenSharing } = props;
     const [checked, setChecked] = useState<boolean>(true);
     const pairInfo = useAppSelector((state) => state.chatRoom.user);
-    const screenSharing = useAppSelector((state) => state.pairedContent.screenshare.isActive);
+    const screenSharing = useAppSelector((state) => state.pairedContent.agora.screenshare.isActive);
 
     const handleLocalAudioToggle = () => {
         const newVolume = checked === false ? 100 : 0;
