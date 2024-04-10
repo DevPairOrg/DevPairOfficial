@@ -6,6 +6,7 @@ interface ChatRoomState {
     messages: PairedChatMessage[] | null // chat log messages
 }
 
+
 const initialState: ChatRoomState = { user: null, messages: [] }
 
 const chatRoomSlice = createSlice({
@@ -13,6 +14,11 @@ const chatRoomSlice = createSlice({
     initialState,
     reducers: {
         // Reducer function for handling the "receiveChatMessage" action
+        unfriendUser: (state) => {
+            if (state.user) {
+                state.user.isFriend = false;
+            }
+        },
         receiveUser: (state, action: PayloadAction<UserDict>) => {
             state.user = action.payload;
         },
@@ -36,7 +42,7 @@ const chatRoomSlice = createSlice({
 });
 
 // Export actions
-export const { receiveUser, clearUser, receiveChatMessage, clearChatMessages } = chatRoomSlice.actions;
+export const { unfriendUser, receiveUser, clearUser, receiveChatMessage, clearChatMessages } = chatRoomSlice.actions;
 
 // Export reducer
 export default chatRoomSlice.reducer;

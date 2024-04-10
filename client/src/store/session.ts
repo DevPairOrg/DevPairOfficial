@@ -290,7 +290,17 @@ const initialState: { user: User | null } = { user: null };
 const sessionSlice = createSlice({
   name: "session",
   initialState,
-  reducers: {},
+  reducers: {
+    // Reducer function for handling a user being unfriended during video pairing session
+    friendRemoved: (state, action: PayloadAction<number>) => {
+      if (state.user) {
+        state.user.friends = state.user.friends.filter(
+          (friend) => +friend.id !== action.payload
+        );
+      }
+    }
+
+  },
   extraReducers: (builder) => {
     builder
       .addCase(logout.fulfilled, (state) => {
@@ -350,5 +360,7 @@ const sessionSlice = createSlice({
       );
   },
 });
+export const { friendRemoved } = sessionSlice.actions;
+
 
 export default sessionSlice.reducer;

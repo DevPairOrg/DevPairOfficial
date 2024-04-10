@@ -115,6 +115,25 @@ def handle_temp_chat(data):
     except Exception as e:
         emit('custom_error', {'error': str(e)})
 
+@socketio.on("removed_friend")
+@authenticated_only
+def handle_removed_friend(data):
+    """
+        Emits a message to the specified room that the friendship between users has been removed.
+
+        Expected data:
+        {
+            "room": "example_room_name",
+            "userId": "example_user_id"
+        }
+    """
+    try:
+        emit(
+            "friend_removed", {"userId": data["userId"]}, to=data["room"], include_self=False
+        )
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
+
 @socketio.on('user_leaving')
 @authenticated_only
 def handle_user_leaving(data):

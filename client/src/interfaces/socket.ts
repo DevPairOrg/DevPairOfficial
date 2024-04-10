@@ -5,6 +5,7 @@ export interface UserDict {
     email: string;
     videoUid: string;
     screenUid: string;
+    isFriend?: boolean;
 }
 
 export interface JoinedEventData {
@@ -24,6 +25,7 @@ export interface ServerToClientEvents {
     user_left: (data: string) => void;
     temp_message_received: (data: PairedChatMessage) => void;
     custom_error?: (error: { error: string }) => void;
+    friend_removed: (data: { userId: string }) => void;
 }
 
 // Type for information sent to the server
@@ -32,4 +34,5 @@ export interface ClientToServerEvents {
     leave_room: (data: { room: string }) => void;
     temp_chat_message: (data: { message: string; room: string }) => void;
     user_leaving: (data: { userId: string }) => void;
+    removed_friend: (data: { userId: string; room: string }) => void;
 }
