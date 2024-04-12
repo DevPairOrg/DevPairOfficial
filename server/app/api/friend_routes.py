@@ -1,169 +1,327 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint
 from flask_login import login_required, current_user
-from app.models import User, db, FriendRequest, FriendshipStatus
-from .auth_routes import validation_errors_to_error_messages
+from app.models import User, db, FriendRequest
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy import and_
+from .utils import error_response
 
 friend_routes = Blueprint('friends', __name__)
-
-@friend_routes.route('/<int:UserId>')
-def get_user_friends(UserId):
-
-    """
-    @route GET /api/friends/<int:UserId>
-
-    @summary Retrieves a user's friends (accepted) and pending friend requests.
-
-    @description Returns a dictionary containing friend data for current friends and pending requests (sent and received).
-
-    @param {int:UserId} ID of the user to retrieve connections for.
-
-    @returns {object} Friend list, sent & received friend requests (pending).
-
-    @throws {404} User not found.
-
-    Example Response:
-    {
-    "Friends": {...},
-    "Sent": {...},
-    "Received": {...},
-    }
-    """
-    user = User.query.get(UserId)
-
-
-    if not user:
-        return {"error": "User not found"}, 404
-    
-    friends = {friend.id: friend.to_dict() for friend in user.friends.all()}
-    sent_requests = {friend.receiver.id: friend.receiver.to_dict() for friend in user.sent_friend_requests if friend.status == FriendshipStatus.PENDING}
-    received_requests = {friend.sender.id: friend.sender.to_dict() for friend in user.received_friend_requests if friend.status == FriendshipStatus.PENDING}
-
-    return {"Friends": friends, "Sent": sent_requests, "Received": received_requests}
 
 @friend_routes.route('/request/<int:receiver_id>', methods=["POST"])
 @login_required
 def send_friend_request(receiver_id):
     """
-    @route POST /api/friends/request/<int:receiver_id>
-    @login_required
-    @summary Sends a friend request to another user.
+    POST /api/friends/request/<int:receiver_id>
 
-    @description Creates a new friend request for the logged-in user to the user identified by the provided username.
+    Sends a friend request to another user.
 
-    @param {object} JSON body containing a single field:
-    - username {str}: Username of the user to send the friend request to.
+    Requires login. 
+    Creates a new friend request from the logged-in user to the user identified by the provided receiver_id.
 
-    @returns {object} JSON response with the following structure:
-        - message {str}: A success message upon successful request creation.
-        - error (optional) {dict}: An error message and code if an error occurs.
+    Args:
+        receiver_id (int): The ID of the user to whom the friend request is to be sent.
 
-    @throws:
-        400 (Bad Request): If the request body is invalid (missing username).
-        404 (Not Found): If the user with the provided username is not found.
-        409 (Conflict): If a friend request already exists between the sender and receiver.
-        500 (Internal Server Error): If an unexpected error occurs during database operations.
+    Request Body:
+        None
 
-    Example Request Body:
-    {
-    "username": "friend_username"
-    }
+    Returns:
+        dict: A dictionary with either a success message or an error message and code.
 
-    Example Response (Success):
-    {
-    "message": "Friend request sent successfully"
-    }
+    Raises:
+        400: If the receiver_id is invalid.
+        404: If the user with the provided receiver_id is not found.
+        409: If a friend request already exists between the sender and receiver.
+        500: If an unexpected error occurs during database operations.
 
-    Example Response (Error):
-    {
-    "error": {
-        "code": 404,
-        "message": "User not found"
-    }
-    }
+    Examples:
+        Successful Response:
+        {
+            <RequestId>: {
+                ...receiver data...
+            }
+        }
+
+        Error Response:
+        {
+            "error": {
+                "code": 404,
+                "message": "User not found"
+            }
+        }
     """
+    # Validate receiver ID
+    if not isinstance(receiver_id, int):
+        return error_response("Invalid receiver ID", 400)
 
     # Validate and retrieve the receiver user
     receiver = User.query.get(receiver_id)
     if not receiver:
-        return {"error": "User not found"}, 404
+        return error_response("User not found", 404)
+    
+    # Check for existing friendship
+    if current_user.is_friends(receiver):
+        return error_response("You are already friends with this user", 409)
     
     # Check for existing friend request 
     existing_request = FriendRequest.query.filter(
-    (FriendRequest.sender == current_user) & (FriendRequest.receiver == receiver) |
-    (FriendRequest.sender == receiver) & (FriendRequest.receiver == current_user)
+        and_(FriendRequest.sender_id == current_user.id, FriendRequest.receiver_id == receiver_id) |
+        and_(FriendRequest.sender_id == receiver_id, FriendRequest.receiver_id == current_user.id)
     ).first()
+
     if existing_request:
-        return {"error": "Friend Request already exists"}, 409
+        return error_response("Friend request already exists", 409)
     
-    # Create new friend request
-    new_request = FriendRequest(sender=current_user, receiver=receiver)
-    db.session.add(new_request)
-    db.session.commit()
+    try:
+        # Create new friend request
+        new_request = FriendRequest(sender=current_user, receiver=receiver)
+        db.session.add(new_request)
+        db.session.commit()
 
-    return {"success": "Friend request successfully sent!"}, 201
+        return {new_request.id: new_request.receiver.to_dict(include_relationships=False)}, 201
+    except Exception as e:
+        db.session.rollback()
+        return error_response("Failed to send friend request", 500)
+   
 
-@friend_routes.route('/request/accept/<int:request_id>', methods=["PUT"])
+@friend_routes.route('/request/<int:request_id>/accept', methods=["PUT"])
 @login_required
 def accept_friend_request(request_id):
     """
-    @route PUT /request/accept/<int:request_id>
+    PUT /api/friends/request/<int:request_id>/accept
 
-    @summary Accepts a pending friend request.
+    Accepts a pending friend request and establishes a friendship between the sender and receiver.
 
-    @description Accepts a pending friend request with the specified ID, updating the request status to 
-    Accepted and establishing a friendship between the sender and receiver.
+    Requires login. 
+    Accepts a friend request identified by the provided request_id and establishes a friendship between the sender and receiver.
 
-    @param {int:request_id} ID of the friend request to accept.
+    Args:
+        request_id (int): The ID of the friend request to be accepted.
 
-    @returns {object} A dictionary containing the information of the newly added friend:
-        - Friend {object}: A dictionary containing the friend's data.
+    Request Body:
+        None
 
-    @throws:
-        400 (Bad Request): 
-            - If the user tries to accept a request they haven't received.
-            - If the request has already been responded to (not pending).
-        404 (Not Found): If the friend request with the provided ID is not found.
-        500 (Internal Server Error): If an unexpected error occurs during database operations.
+    Returns:
+        dict: A dictionary with either the current user's data or an error message and code.
 
-    Example Response:
-    {
-    "Friend": {
-        ...friend data ...
-    }
-    }
+    Raises:
+        400: If the request_id is invalid or the user tried to accept a request they didn't receive.
+        404: If the friend request with the provided request_id is not found.
+        500: If an unexpected error occurs during database operations.
+
+    Examples:
+        Successful Response:
+        {
+            "requestId": <request_id>,
+            "friend": {
+                ...friend data...
+            }
+        }
+
+        Error Response:
+        {
+            "error": {
+                "code": 404,
+                "message": "Friend request not found"
+            }
+        }
     """
+    # Validate request ID
+    if not isinstance(request_id, int):
+        return error_response("Invalid request ID", 400)
 
     friend_request = FriendRequest.query.get(request_id)
 
     if not friend_request:
-        return {"error": "Friend request not found."}, 404
+        return error_response("Friend request not found", 404)
     if friend_request.receiver != current_user:
-        return {"error": "You can only accept requests you have received."}, 400
-    if friend_request.status != FriendshipStatus.PENDING:
-        return {"error": "You have already responded to this friend request."}, 400
+        return error_response("You can only accept requests you have received.", 403)
     
-    # Update friend request status
-    friend_request.status = FriendshipStatus.ACCEPTED
-    # Add users to each others friend lists
-    friend_request.sender.friends.append(friend_request.receiver)
-    friend_request.receiver.friends.append(friend_request.sender)
+    try:
+        # Add users to each others friend lists
+        friend_request.sender.friends.append(friend_request.receiver)
+        friend_request.receiver.friends.append(friend_request.sender)
 
-    db.session.commit()
-    return {"Friend": friend_request.sender.to_dict()}, 200
+        db.session.delete(friend_request)
+        db.session.commit()
+        return {"requestId": request_id, "friend": friend_request.sender.to_dict(check_friend=True)}, 200
+    except Exception as e:
+        return error_response("Failed to establish friendship. Please try again later.", 500)
 
-@friend_routes.route('/request/cancel/<int:request_id>', methods=['DELETE'])
+@friend_routes.route('/request/<int:request_id>', methods=['DELETE'])
 @login_required
 def cancel_sent_request(request_id):
 
+    """
+    DELETE /api/friends/request/<int:request_id>
+
+    Cancels a sent friend request.
+
+    Requires login. 
+    Cancels a pending friend request sent by the logged-in user with the specified ID.
+
+    Args:
+        request_id (int): The ID of the friend request to cancel.
+
+    Request Body:
+        None
+
+    Returns:
+        dict: A dictionary with either the canceled request id or an error message.
+
+    Raises:
+        400: If the user tries to cancel a request they haven't sent or the request has already been accepted, rejected, or canceled.
+        404: If the friend request with the provided ID is not found.
+        500: If an unexpected error occurs during database operations.
+
+    Examples:
+        Successful Response:
+        {
+            "requestId": <request_id>
+        }
+
+        Error Response:
+        {
+            "error": {
+                "code": 404,
+                "message": "Friend request not found"
+            }
+        }
+    """
+
+    # Validate request ID
+    if not isinstance(request_id, int):
+        return error_response("Invalid request ID", 400)
+
     friend_request = FriendRequest.query.get(request_id)
 
     if not friend_request:
-        return {"error": "Friend request not found."}, 404
+        return error_response("Friend request not found", 404)
     if friend_request.sender != current_user:
-        return {"error": "You can only cancel requests you have sent."}, 400
-    if friend_request.status != FriendshipStatus.PENDING:
-        return {"error": "This friend request has already been accepted or rejected."}, 400
+        return error_response("You can only cancel requests you have sent.", 403)
     
-    db.session.delete(friend_request)
-    db.session.commit()
-    return {"success": "Request successfully deleted."}, 200
+    try:
+        db.session.delete(friend_request)
+        db.session.commit()
+        return {"requestId": request_id}, 200
+    except Exception as e:
+        return error_response("Failed to cancel request", 500)
+
+@friend_routes.route('/request/<int:request_id>/reject', methods=['DELETE'])
+@login_required
+def reject_friend_request(request_id):
+
+    """
+    DELETE /api/friends/request/<int:request_id>/reject
+
+    Rejects a received friend request.
+
+    Requires login. 
+    Rejects a pending friend request received by the logged-in user with the specified ID, removing it from both users' friend request lists.
+
+    Args:
+        request_id (int): The ID of the friend request to reject.
+
+    Request Body:
+        None
+
+    Returns:
+        dict: A dictionary with either the rejected request id or an error message and code.
+
+    Raises:
+        400: If the user tries to reject a request they haven't received or the request has already been accepted, rejected, or canceled.
+        404: If the friend request with the provided ID is not found.
+        500: If an unexpected error occurs during database operations.
+
+    Examples:
+        Successful Response:
+        {
+            "requestId": <request_id>
+        }
+
+        Error Response:
+        {
+            "error": {
+                "code": 404,
+                "message": "Friend request not found"
+            }
+        }
+    """
+    # Validate request ID
+    if not isinstance(request_id, int):
+        return error_response("Invalid request ID", 400)
+    
+    friend_request = FriendRequest.query.get(request_id)
+
+    if not friend_request:
+        return error_response("Friend request not found", 404)
+    if friend_request.receiver != current_user:
+        return error_response("You can only reject requests you have received.", 403)
+
+    try:
+        db.session.delete(friend_request)
+        db.session.commit()
+        return {"requestId": request_id}, 200
+    except Exception as e:
+        return error_response("Failed to reject request", 500)
+
+@friend_routes.route('/<int:friend_id>', methods=['DELETE'])
+@login_required
+def unfriend(friend_id):
+    """
+    DELETE /api/friends/<int:friend_id>
+
+    Unfriends another user.
+
+    Requires login. 
+    Removes the friendship between the logged-in user and the user with the specified ID. This action deletes both the friend association and any pending friend requests (sent or received) between the two users.
+
+    Args:
+        friend_id (int): The ID of the user to unfriend.
+
+    Request Body:
+        None
+
+    Returns:
+        dict: A dictionary with either the removed friend id or an error message and code.
+
+    Raises:
+        400: If the user tries to unfriend themself.
+        404: If the user with the provided ID is not found.
+        500: If an unexpected error occurs during database operations.
+
+    Examples:
+        Successful Response:
+        {
+            "friendId": "<friend_id>
+        }
+
+        Error Response:
+        {
+            "error": {
+                "code": 404,
+                "message": "User not found"
+            }
+        }
+    """
+    if not isinstance(friend_id, int):
+        return error_response("Invalid friend ID", 400)
+    
+    if friend_id == current_user.id:
+        return error_response("You cannot unfriend yourself", 400)
+
+    friend = User.query.get(friend_id)
+    if not friend:
+        return error_response("User not found", 404)
+    
+    if not current_user.is_friends(friend):
+        return error_response("You are not friends with this user", 409)
+        
+    try:
+        # Delete friend association (remove from each other's friend lists)
+        current_user.friends.remove(friend)
+        friend.friends.remove(current_user)
+
+        db.session.commit()
+        return {"friendId": friend_id}, 200
+    except Exception as e:
+        return error_response("Failed to unfriend user", 500)

@@ -28,7 +28,17 @@ const useSocketListeners = (
             if (data.users.length > 1) {
                 // console.log('There is more than one user, a pair.');
                 const pair = data.users.find((pair) => pair.id !== user?.id);
+                
                 if (pair) {
+                    pair.isFriend = user?.friends.some(friend => +friend.id === +pair.id) || false;
+                    if (user && user.receivedRequests) {
+                        pair.isPending = Object.values(user.receivedRequests).some(pending => +pending.id === +pair.id) || false;
+
+                    }
+                    if (user && user.sentRequests) {
+                        pair.isAwaiting = Object.values(user.sentRequests).some(pending => +pending.id === +pair.id) || false;
+
+                    }
                     dispatch(receiveUser(pair as UserDict));
                 }
             }

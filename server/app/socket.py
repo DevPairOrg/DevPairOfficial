@@ -3,6 +3,8 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, di
 from flask_login import current_user
 import random, time, functools, datetime, logging
 
+from app.models import FriendRequest
+
 origins = []
 
 # socketio = SocketIO(logger=True, engineio_logger=True, cors_allowed_origins=origins) # this is for error-handling, remove this so you dont get stacks of logs
@@ -112,6 +114,103 @@ def handle_temp_chat(data):
         }
 
         emit("temp_message_received", response, to=data["room"])
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
+
+@socketio.on("removed_friend")
+@authenticated_only
+def handle_removed_friend(data):
+    """
+        Emits a message to the specified room that the friendship between users has been removed.
+
+        Expected data:
+        {
+            "room": "example_room_name",
+            "userId": "example_user_id"
+        }
+    """
+    try:
+        emit(
+            "friend_removed", {"userId": data["userId"]}, to=data["room"], include_self=False
+        )
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
+
+@socketio.on("accepted_request")
+@authenticated_only
+def handle_accepted_request(data):
+    """
+        Emits a message to the specified room that the friendship between users has been accepted.
+
+        Expected data:
+        {
+            "room": "example_room_name",
+            "userId": "example_user_id"
+            "requestId": "example_request_id"
+        }
+    """
+    try:
+        emit(
+            "friend_added", {"friend": current_user.to_dict(), "requestId": data["requestId"]}, to=data["room"], include_self=False
+        )
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
+
+@socketio.on("rejected_request")
+@authenticated_only
+def handle_rejected_request(data):
+    """
+        Emits a message to the specified room that the friendship between users has been rejected.
+
+        Expected data:
+        {
+            "room": "example_room_name",
+            "requestId": "example_request_id"
+        }
+    """
+    try:
+        emit(
+            "friend_rejected", {"requestId": data["requestId"]}, to=data["room"], include_self=False
+        )
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
+
+@socketio.on("request_canceled")
+@authenticated_only
+def handle_request_cancelled(data):
+    """
+        Emits a message to the specified room that the friendship request has been cancelled.
+
+        Expected data:
+        {
+            "room": "example_room_name",
+            "requestId": "example_request_id"
+        }
+    """
+    try:
+        emit(
+            "cancelled_request", {"requestId": data["requestId"]}, to=data["room"], include_self=False
+        )
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
+
+@socketio.on("sent_request")
+@authenticated_only
+def handle_sent_request(data):
+    """
+        Emits a message to the specified room that a friendship request has been sent.
+
+        Expected data:
+        {
+            "room": "example_room_name",
+            "requestId": "example_request_id"
+        }
+    """
+    try:
+        request = FriendRequest.query.get(data["requestId"])
+        emit(
+            "received_request", {"request": {request.id: request.sender.to_dict(include_relationships=False)}}, to=data["room"], include_self=False
+        )
     except Exception as e:
         emit('custom_error', {'error': str(e)})
 

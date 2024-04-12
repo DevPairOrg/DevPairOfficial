@@ -27,7 +27,7 @@ def user(id):
     Query for a user by id and returns that user in a dictionary
     """
     user = User.query.get(id)
-    return user.to_dict()
+    return user.to_dict(check_friend=True, other_user=current_user)
 
 @user_routes.route('/edit', methods=['PUT'])
 @login_required
