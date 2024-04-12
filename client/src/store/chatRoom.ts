@@ -19,6 +19,33 @@ const chatRoomSlice = createSlice({
                 state.user.isFriend = false;
             }
         },
+        acceptFriend: (state) => {
+            if (state.user) {
+                state.user.isFriend = true;
+                state.user.isPending = false;
+            }
+        },
+        rejectFriend: (state) => {
+            if (state.user) {
+                state.user.isPending = false;
+            }
+        },
+        cancelRequest: (state) => {
+            if (state.user) {
+                state.user.isAwaiting = false;
+            }
+        },
+        sentRequest: (state) => {
+            if (state.user) {
+                state.user.isAwaiting = true;
+            }
+        },
+        receivedRequest: (state) => {
+            if (state.user) {
+                state.user.isPending = true;
+            }
+        },
+
         receiveUser: (state, action: PayloadAction<UserDict>) => {
             state.user = action.payload;
         },
@@ -42,7 +69,7 @@ const chatRoomSlice = createSlice({
 });
 
 // Export actions
-export const { unfriendUser, receiveUser, clearUser, receiveChatMessage, clearChatMessages } = chatRoomSlice.actions;
+export const { cancelRequest, rejectFriend, sentRequest, acceptFriend, unfriendUser, receiveUser, clearUser, receiveChatMessage, clearChatMessages } = chatRoomSlice.actions;
 
 // Export reducer
 export default chatRoomSlice.reducer;

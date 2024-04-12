@@ -31,6 +31,14 @@ const useSocketListeners = (
                 
                 if (pair) {
                     pair.isFriend = user?.friends.some(friend => +friend.id === +pair.id) || false;
+                    if (user && user.receivedRequests) {
+                        pair.isPending = Object.values(user.receivedRequests).some(pending => +pending.id === +pair.id) || false;
+
+                    }
+                    if (user && user.sentRequests) {
+                        pair.isAwaiting = Object.values(user.sentRequests).some(pending => +pending.id === +pair.id) || false;
+
+                    }
                     dispatch(receiveUser(pair as UserDict));
                 }
             }

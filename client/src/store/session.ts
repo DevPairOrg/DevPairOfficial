@@ -298,6 +298,31 @@ const sessionSlice = createSlice({
           (friend) => +friend.id !== action.payload
         );
       }
+    },
+    requestAccepted: (state, action: PayloadAction<{friend: User; requestId: number}>) => {
+      if (state.user) {
+        state.user.friends.push(action.payload.friend);
+        delete state.user.sentRequests[action.payload.requestId];
+        state.user.totalPending--;
+      }
+    },
+    requestRejected: (state, action: PayloadAction<number>) => {
+      if (state.user) {
+        delete state.user.sentRequests[action.payload];
+        state.user.totalPending--;
+      }
+    },
+    requestCancelled: (state, action: PayloadAction<number>) => {
+      if (state.user) {
+        delete state.user.receivedRequests[action.payload];
+        state.user.totalPending--;
+      }
+    },
+    receiveRequest: (state, action: PayloadAction<Request>) => {
+      if (state.user) {
+        Object.assign(state.user.receivedRequests, action.payload);
+        state.user.totalPending++;
+      }
     }
 
   },
@@ -360,7 +385,7 @@ const sessionSlice = createSlice({
       );
   },
 });
-export const { friendRemoved } = sessionSlice.actions;
+export const { receiveRequest, requestCancelled, requestRejected, friendRemoved, requestAccepted } = sessionSlice.actions;
 
 
 export default sessionSlice.reducer;
