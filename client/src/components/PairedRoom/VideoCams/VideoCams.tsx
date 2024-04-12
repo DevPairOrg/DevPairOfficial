@@ -34,6 +34,7 @@ import {
 import { useSocket } from "../../../context/Socket";
 import RemoveFriendModal from "../../RemoveFriendModal";
 import OpenModalButton from "../../OpenModalButton/OpenModalButton";
+import { useAgoraContext } from "../../../AgoraManager/agoraManager";
 
 function VideoCams(props: { channelName: string }) {
     const { setLocalCameraTrack, setLocalMicrophoneTrack } = useAgoraContext();
