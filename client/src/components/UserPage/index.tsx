@@ -20,7 +20,7 @@ import {
   getUser,
 } from "../../store/user";
 import OpenModalButton from "../OpenModalButton/OpenModalButton";
-import RemoveFriendModal from "./RemoveFriendModal";
+import RemoveFriendModal from "../RemoveFriendModal";
 
 function UserPage() {
   const { userId } = useParams();
@@ -197,7 +197,7 @@ function UserPage() {
                               className="profile-buttons"
                               buttonText="Remove Friend"
                               modalComponent={
-                                <RemoveFriendModal user={friend} />
+                                <RemoveFriendModal user={friend} realtime={false} channelName={undefined}/>
                               }
                             />
                           </>
@@ -328,7 +328,7 @@ function UserPage() {
                                 className="profile-buttons"
                                 buttonText="Remove Friend"
                                 modalComponent={
-                                  <RemoveFriendModal user={user} />
+                                  <RemoveFriendModal user={user} realtime={false} channelName={undefined} />
                                 }
                               />
                             ) : user.awaitingRequest ? (
