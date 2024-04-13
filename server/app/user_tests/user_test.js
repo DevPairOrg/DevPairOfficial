@@ -1,25 +1,27 @@
-function isPalindrome(x) {
+function findPeakElement(nums) {
     // Your code goes here
-   if (x < 0) return false;
-    let reverse = 0, y = x;
-    while (y > 0) {
-        const lastDigit = y % 10;
-        reverse = (reverse * 10) + lastDigit;
-        y = Math.floor(y / 10);
-    }
-    console.log('test', reverse)
-    return x === reverse;
+  return '5'
 }
 
+function runTests() {
 
-const testCases = [
-    { input: 121, expected: true },
-    { input: -121, expected: false },
-    { input: 10, expected: false }
-];
+    const testResults = {}
 
-testCases.forEach(({ input, expected }, index) => {
-    const result = isPalindrome(input);
-    console.assert(result === expected, `Test case ${index + 1} failed`);
-    console.log(`Test case ${index + 1}`, result === expected);
-});
+    const testCases = [
+        {input: {nums: [1,2,3,1]}, expected: 2},
+        {input: {nums: [1,2,1,3,5,6,4]}, expected: 5},
+        {input: {nums: [1,2,3]}, expected: 2}
+    ];
+
+    testCases.forEach(({ input, expected }, index) => {
+        const result = findPeakElement(input.nums);
+        testResults[`testCase${index + 1}`] = {userOutput: result, expected: expected, assert: result === expected};
+    });
+
+    return testResults
+
+}
+
+const testResults = runTests()
+
+console.log(`${testResults["testCase1"]["userOutput"]} NEXT ELEMENT ${testResults["testCase1"]["expected"]} NEXT ELEMENT ${testResults["testCase1"]["assert"]} NEXT ELEMENT ${testResults["testCase1"]["userOutput"]} NEXT ELEMENT ${testResults["testCase2"]["expected"]} NEXT ELEMENT ${testResults["testCase3"]["assert"]} NEXT ELEMENT ${testResults["testCase1"]["userOutput"]} NEXT ELEMENT ${testResults["testCase2"]["expected"]} NEXT ELEMENT ${testResults["testCase3"]["assert"]} NEXT ELEMENT`);

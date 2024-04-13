@@ -98,9 +98,13 @@ export function parseCode(code: string) {
         break;
       case "pythonUnitTest":
         pythonUnitTest += line + "\n";
+        console.log("PYTHON UNIT TEST SECTION ---------------------------------------------------------------------------------------------->")
+        console.log(pythonUnitTest)
         break;
       case "jsUnitTest":
         jsUnitTest += line + "\n";
+        console.log("JAVASCRIPT UNIT TEST SECTION ------------------------------------------------------------------------------------------>")
+        console.log(jsUnitTest)
         break;
       default:
         break;

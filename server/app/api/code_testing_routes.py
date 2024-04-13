@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from flask_login import current_user, login_required
 from io import StringIO
 import subprocess, sys, asyncio, pathlib, os, unittest, json
+import pprint
 
 code_testing_routes = Blueprint('problem', __name__)
 
@@ -42,22 +43,39 @@ def unit_test():
     try:
         test_output = subprocess.check_output([testing_language, file_path], stderr=subprocess.STDOUT).decode('utf-8')
         print('🐔 Test Output', test_output)
-        for line in test_output.split('\n'):
-            parts = line.split()  # Split the line into parts by whitespace
-            if len(parts) >= 3:
-                # Handle 'Assertion failed' similarly in Python and JavaScript
-                if parts[0] == 'Assertion' and parts[1] == 'failed:':
-                    # Construct the key without 'Assertion failed:'
-                    key = " ".join(parts[2:-1])
-                else:
-                    key = " ".join(parts[:-1])
 
-                result = parts[-1].lower() == 'true'
-                test_result[key.strip()] = result
-            elif line.strip():  # Check if the line is not just empty or whitespace
-                print(f"Warning: Line does not conform to expected format and will be skipped: '{line}'")
+        test_result = {
+            "testCase1": {"userOutput": None, "expected": None, "assert": None},
+            "testCase2": {"userOutput": None, "expected": None, "assert": None},
+            "testCase3": {"userOutput": None, "expected": None, "assert": None}
+        }
 
-        print('😋😋😋😋😋😋😋😋 test_result: ', test_result)
+        for index, line in enumerate(test_output.split('NEXT ELEMENT')):
+            if index == 0:
+                test_result["testCase1"]["userOutput"] = line.strip()
+            elif index == 1:
+                test_result["testCase1"]["expected"] = line.strip()
+            elif index == 2:
+                test_result["testCase1"]["assert"] = line.strip()
+
+            elif index == 3:
+                test_result["testCase2"]["userOutput"] = line.strip()
+            elif index == 4:
+                test_result["testCase2"]["expected"] = line.strip()
+            elif index == 5:
+                test_result["testCase2"]["assert"] = line.strip()
+
+            elif index == 6:
+                test_result["testCase3"]["userOutput"] = line.strip()
+            elif index == 7:
+                test_result["testCase3"]["expected"] = line.strip()
+            elif index == 8:
+                test_result["testCase3"]["assert"] = line.strip()
+
+        print("TEST RESULTS 😈😈😈😈😈😈😈😈😈😈😈😈😈😈")
+        pretty_output = pprint.pformat(test_result)
+        print(pretty_output)
+
 
     except subprocess.CalledProcessError as e:
         # Handle process errors, for example, when the test script itself fails

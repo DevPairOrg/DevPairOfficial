@@ -162,30 +162,32 @@ def getLeetCodeResponseBits(id):
             Follow the following example format:
 
             PYTHON UNIT TESTING:
+            testResults = {{}}
+
             class SolutionTest:
                 @staticmethod
-                def run_test_case(input, expected):
-                    result = nameOfFunction(input)
-                    return result == expected
+                def run_test_case(input, expected, index):
+                    result = input
+                    testResults[f'testResults{{index}}'] = {{ "userOutput": result, "expected": expected, "assert": result == expected }}
 
-            def run_all_tests():
-                test_suite = SolutionTest()
-                test_results = []
-                test_cases = [
-                    {{'input': [First input], 'expected': [Expected output]}},
-                    {{'input': [Second input], 'expected': [Expected output]}},
-                    {{'input': [Third input], 'expected': [Expected output]}}
-                ]
-                for i, test_case in enumerate(test_cases, start=1):
-                    input, expected = test_case['input'], test_case['expected']
-                    result = test_suite.run_test_case(input, expected)
-                    test_results.append((f"Test case {{i}}", result))
-                return test_results
+                def run_all_tests():
+                    test_suite = SolutionTest()
+                    test_cases = [
+                        {{'input': [First input], 'expected': [Expected output]}},
+                        {{'input': [Second input], 'expected': [Expected output]}},
+                        {{'input': [Third input], 'expected': [Expected output]}}
+                    ]
 
-            if __name__ == '__main__':
-                results = run_all_tests()
-                for test_case, result in results:
-                    print(f"{{test_case}}: {{True if result else False}}")
+                    for i, test_case in enumerate(test_cases, start=1):
+                        input, expected = test_case['input'], test_case['expected']
+                        test_suite.run_test_case(input, expected, i)
+
+                    return testResults
+
+            testResults = SolutionTest.run_all_tests()
+
+            (DO NOT INCLUDE THIS LINE: print statement provided below must be in the exact format provided)
+            print(f'{{testResults["testResults1"]["userOutput"]}} NEXT ELEMENT {{testResults["testResults1"]["expected"]}} NEXT ELEMENT {{testResults["testResults1"]["assert"]}} NEXT ELEMENT {{testResults["testResults2"]["userOutput"]}} NEXT ELEMENT {{testResults["testResults2"]["expected"]}} NEXT ELEMENT {{testResults["testResults2"]["assert"]}} NEXT ELEMENT {{testResults["testResults3"]["userOutput"]}} NEXT ELEMENT {{testResults["testResults3"]["expected"]}} NEXT ELEMENT {{testResults["testResults3"]["assert"]}}')
         """
     )
 
@@ -219,22 +221,34 @@ def getLeetCodeResponseBits(id):
 
             (do not include this line: these test cases should be pulled from leetcode)
             JAVASCRIPT UNIT TESTING:
-            const testCases = [
-                {{input: [First input], expected: [Expected output]}},
-                {{input: [Second input], expected: [Expected output]}},
-                {{input: [Third input], expected: [Expected output]}}
-            ];
+            function runTests() {{
 
-            (do not include this line: this test function below is explicitly an example for array comparisons for test cases. otherwise use a standard test case. if dealing with subarrays, implement a proper method for comparing the the subarray results to the expected results)
-            testCases.forEach(({{ input, expected }}, index) => {{
-                const result = nameOfFunction(input.nums, input.target);
-                console.assert(arraysEqual(result, expected), `Test case ${{index + 1}} failed`);
-                console.log(`Test case ${{index + 1}}`, JSON.stringify(expected) === JSON.stringify(result));
-            }});
+                const testResults = {{}}
 
-            function arraysEqual(a, b) {{
-                return a.length === b.length && a.every((value, index) => value === b[index]);
+                const testCases = [
+                    {{input: [First input], expected: [Expected output]}},
+                    {{input: [Second input], expected: [Expected output]}},
+                    {{input: [Third input], expected: [Expected output]}}
+                ];
+
+                function arraysEqual(a, b) {{
+                    return a.length === b.length && a.every((value, index) => value === b[index]);
+                }}
+
+                (DO NOT INCLUDE THIS LINE: this test function below is explicitly an example for array comparisons for test cases. otherwise use a standard test case for the assert key. if dealing with subarrays, implement a proper method for comparing the the subarray results to the expected results)
+                testCases.forEach(({{ input, expected }}, index) => {{
+                    const result = nameOfFunction(input.nums, input.target);
+                    {{testResults[`testCase${{index + 1}}`] = {{userOutput: result, expected: expected, assert: arraysEqual(result, expected)}}}}
+                }});
+
+                return testResults
+
             }}
+
+            const testResults = runTests()
+
+            (DO NOT INCLUDE THIS LINE: console log statement below must appear in the exact format provided)
+            console.log(`${{testResults["testCase1"]["userOutput"]}} NEXT ELEMENT ${{testResults["testCase1"]["expected"]}} NEXT ELEMENT ${{testResults["testCase1"]["assert"]}} NEXT ELEMENT ${{testResults["testCase1"]["userOutput"]}} NEXT ELEMENT ${{testResults["testCase2"]["expected"]}} NEXT ELEMENT ${{testResults["testCase3"]["assert"]}} NEXT ELEMENT ${{testResults["testCase1"]["userOutput"]}} NEXT ELEMENT ${{testResults["testCase2"]["expected"]}} NEXT ELEMENT ${{testResults["testCase3"]["assert"]}} NEXT ELEMENT`);
         """
     )
 
