@@ -16,7 +16,6 @@ def unit_test():
     code = request_data.get('code')
     language = request_data.get('language')
     problem_unit_test = request_data.get('problemUnitTest')
-    test_result = {}
 
     print('😚😉😎🙂☺🙂🤗😋', '\n', problem_unit_test)
 
@@ -42,46 +41,19 @@ def unit_test():
     # Execute the tests
     try:
         test_output = subprocess.check_output([testing_language, file_path], stderr=subprocess.STDOUT).decode('utf-8')
-        print('🐔 Test Output', test_output)
+        # print('🐔🐔🐔🐔🐔 Test Output', test_output)
 
-        test_result = {
-            "testCase1": {"userOutput": None, "expected": None, "assert": None},
-            "testCase2": {"userOutput": None, "expected": None, "assert": None},
-            "testCase3": {"userOutput": None, "expected": None, "assert": None}
-        }
-
-        for index, line in enumerate(test_output.split('NEXT ELEMENT')):
-            if index == 0:
-                test_result["testCase1"]["userOutput"] = line.strip()
-            elif index == 1:
-                test_result["testCase1"]["expected"] = line.strip()
-            elif index == 2:
-                test_result["testCase1"]["assert"] = line.strip()
-
-            elif index == 3:
-                test_result["testCase2"]["userOutput"] = line.strip()
-            elif index == 4:
-                test_result["testCase2"]["expected"] = line.strip()
-            elif index == 5:
-                test_result["testCase2"]["assert"] = line.strip()
-
-            elif index == 6:
-                test_result["testCase3"]["userOutput"] = line.strip()
-            elif index == 7:
-                test_result["testCase3"]["expected"] = line.strip()
-            elif index == 8:
-                test_result["testCase3"]["assert"] = line.strip()
-
-        print("TEST RESULTS 😈😈😈😈😈😈😈😈😈😈😈😈😈😈")
-        pretty_output = pprint.pformat(test_result)
-        print(pretty_output)
+        if testing_language == 'python': # If testing in python, you can simply convert the JSON into an object and return
+            final_result = json.loads(test_output)
+        else:
+            final_result = test_output # if testing in JavaScript, will need to use JSON.parse() on frontend before attempting any additional logic
 
 
     except subprocess.CalledProcessError as e:
         # Handle process errors, for example, when the test script itself fails
-        test_result = {'error': e.output.decode('utf-8')}
+        final_result = {'error': e.output.decode('utf-8')}
 
     return jsonify({
         'message': 'Unit test results',
-        'testResults': test_result
+        'testResults': final_result
     })

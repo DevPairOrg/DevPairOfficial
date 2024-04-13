@@ -4,13 +4,14 @@ import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { parsedData } from '../../interfaces/gemini';
+import { checkResponseData, TestResults } from './util';
 import './CodeMirror.css';
 
 function IDE(props: parsedData) {
     const { problemName, problemPrompt, testCases, pythonUnitTest, jsUnitTest, defaultPythonFn, defaultJsFn } = props;
 
     const [value, setValue] = useState<string | undefined>(defaultPythonFn);
-    const [userResults, setUserResults] = useState<boolean[]>([]);
+    const [userResults, setUserResults] = useState<TestResults | null>(null);
     const [language, setLanguage] = useState<string>('python');
 
     const onChange = useCallback((val: string) => {
@@ -37,20 +38,26 @@ function IDE(props: parsedData) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            const data = await response.json();
-            console.log('response from backend', data);
+            const data: any = await response.json();
+            let testResults: any
 
-            if (data.testResults && typeof data.testResults === 'object') {
-                const testResultsArray = Object.values(data.testResults);
-
-                // Ensure all elements are boolean before setting the state
-                const areAllBooleans = testResultsArray.every((result) => typeof result === 'boolean');
-                if (areAllBooleans) {
-                    setUserResults(testResultsArray as boolean[]);
-                } else {
-                    console.error('Not all test results are booleans.');
-                }
+            if(language !== 'python') {
+                testResults = JSON.parse(data.testResults) // additional conversion needed for JavaScript
+            } else {
+                testResults = data.testResults;
             }
+
+            console.log("TEST RESULTS")
+            console.log(testResults)
+
+            const hasDigestibleResults = checkResponseData(testResults);
+
+            if (hasDigestibleResults) {
+                setUserResults(testResults);
+            } else {
+                console.error('An error occured generating test result data');
+            }
+
         } catch (error) {
             console.error('An error occurred:', error);
         }
@@ -90,17 +97,18 @@ function IDE(props: parsedData) {
                         }}
                     >
                         <div id="user-results">
-                            {userResults && userResults[0] === true ? (
+                            {/* // TODO add this back in */}
+                            {userResults && userResults.testCase1.assert === true ? (
                                 <div>✔ Test Case 1</div>
                             ) : (
                                 <div>❌ Test Case 1</div>
                             )}
-                            {userResults && userResults[1] === true ? (
+                            {userResults && userResults.testCase2.assert === true ? (
                                 <div>✔ Test Case 2</div>
                             ) : (
                                 <div>❌ Test Case 2</div>
                             )}
-                            {userResults && userResults[2] === true ? (
+                            {userResults && userResults.testCase3.assert === true ? (
                                 <div>✔ Test Case 3</div>
                             ) : (
                                 <div>❌ Test Case 3</div>

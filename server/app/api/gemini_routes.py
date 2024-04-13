@@ -162,13 +162,14 @@ def getLeetCodeResponseBits(id):
             Follow the following example format:
 
             PYTHON UNIT TESTING:
+            import json
             testResults = {{}}
 
             class SolutionTest:
                 @staticmethod
                 def run_test_case(input, expected, index):
                     result = input
-                    testResults[f'testResults{{index}}'] = {{ "userOutput": result, "expected": expected, "assert": result == expected }}
+                    testResults[f'testCase{{index}}'] = {{ "userOutput": result, "expected": expected, "assert": result == expected }}
 
                 def run_all_tests():
                     test_suite = SolutionTest()
@@ -182,12 +183,11 @@ def getLeetCodeResponseBits(id):
                         input, expected = test_case['input'], test_case['expected']
                         test_suite.run_test_case(input, expected, i)
 
-                    return testResults
+                    return json.dumps(testResults)
 
-            testResults = SolutionTest.run_all_tests()
+            test_output = SolutionTest.run_all_tests()
+            print(test_output)
 
-            (DO NOT INCLUDE THIS LINE: print statement provided below must be in the exact format provided)
-            print(f'{{testResults["testResults1"]["userOutput"]}} NEXT ELEMENT {{testResults["testResults1"]["expected"]}} NEXT ELEMENT {{testResults["testResults1"]["assert"]}} NEXT ELEMENT {{testResults["testResults2"]["userOutput"]}} NEXT ELEMENT {{testResults["testResults2"]["expected"]}} NEXT ELEMENT {{testResults["testResults2"]["assert"]}} NEXT ELEMENT {{testResults["testResults3"]["userOutput"]}} NEXT ELEMENT {{testResults["testResults3"]["expected"]}} NEXT ELEMENT {{testResults["testResults3"]["assert"]}}')
         """
     )
 
@@ -241,14 +241,13 @@ def getLeetCodeResponseBits(id):
                     {{testResults[`testCase${{index + 1}}`] = {{userOutput: result, expected: expected, assert: arraysEqual(result, expected)}}}}
                 }});
 
-                return testResults
+                return JSON.stringify(testResults)
 
             }}
 
             const testResults = runTests()
+            console.log(testResults)
 
-            (DO NOT INCLUDE THIS LINE: console log statement below must appear in the exact format provided)
-            console.log(`${{testResults["testCase1"]["userOutput"]}} NEXT ELEMENT ${{testResults["testCase1"]["expected"]}} NEXT ELEMENT ${{testResults["testCase1"]["assert"]}} NEXT ELEMENT ${{testResults["testCase1"]["userOutput"]}} NEXT ELEMENT ${{testResults["testCase2"]["expected"]}} NEXT ELEMENT ${{testResults["testCase3"]["assert"]}} NEXT ELEMENT ${{testResults["testCase1"]["userOutput"]}} NEXT ELEMENT ${{testResults["testCase2"]["expected"]}} NEXT ELEMENT ${{testResults["testCase3"]["assert"]}} NEXT ELEMENT`);
         """
     )
 
