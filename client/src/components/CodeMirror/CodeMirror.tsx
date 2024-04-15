@@ -1,10 +1,10 @@
-import { useState, useCallback, MouseEventHandler, useEffect } from 'react';
+import { useState, MouseEventHandler, useEffect } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { parsedData } from '../../interfaces/gemini';
-import { checkResponseData, TestResults } from './util';
+import { checkResponseData, TestResults, extractConsoleLogsJavaScriptOnly } from './util';
 import { useModal, Modal } from '../../context/Modal/Modal';
 import './CodeMirror.css';
 
@@ -14,21 +14,25 @@ function IDE(props: parsedData) {
     const [value, setValue] = useState<string | undefined>(defaultPythonFn);
     const [language, setLanguage] = useState<string>('python');
     const [userResults, setUserResults] = useState<TestResults | null>(null);
-    const [testCaseView, setTestCaseView] = useState<number | null>(null)
+    const [testCaseView, setTestCaseView] = useState<number | null>(null);
+    const [logs, setLogs] = useState<string[] | null>(null); // stoudt console.log statements
 
-    const onChange = useCallback((val: string) => {
-        // console.log('val:', val);
-        setValue(val);
-    }, []);
+    const onChange = (val: string) => {
+        setValue(val)
+
+        // extract evaluated console.log statements here (only when language is JavaScript)
+        if(language !== 'python') {
+            const evaluatedLogStatements = extractConsoleLogsJavaScriptOnly(val)
+            setLogs(evaluatedLogStatements)
+        }
+
+    };
 
     useEffect(() => { // change modal content when changing test case view and/or on submission
         if(userResults && testCaseView) {
             openModal()
         }
     }, [testCaseView, userResults]);
-
-    console.log("PROBLEM FN")
-    console.log(defaultPythonFn)
 
     const { setModalContent } = useModal();
 
@@ -67,13 +71,25 @@ function IDE(props: parsedData) {
                         {testCaseView === 2 && <p>{userResults?.testCase2.expected}</p>}
                         {testCaseView === 3 && <p>{userResults?.testCase3.expected}</p>}
                     </div>
+
+                    <div>
+                        <p>Stoudt:</p>
+                        { (logs && logs.length !== 0) && <p>{logs}</p> }
+                    </div>
                 </div>
 
             </div>
         );
     };
 
-    const handleSubmission = async () => {
+    const handleSubmission = async (val: string | undefined) => {
+
+        let valWithoutLogs;
+        if (language === 'javascript' && val) {
+            // Remove console.log statements from the function definition for JavaScript
+            valWithoutLogs = val.replace(/console\.log\s*\([^]*?\)\s*;?/g, '')
+        }
+
         try {
             const response = await fetch('/api/problem/test', {
                 method: 'POST',
@@ -82,7 +98,7 @@ function IDE(props: parsedData) {
                     Accept: 'application/json',
                 },
                 body: JSON.stringify({
-                    code: value,
+                    code: language !== 'python' ? valWithoutLogs : value, // do not pass console.log to backend if your using JavaScript IDE
                     language: language,
                     problemUnitTest: language === 'python' ? pythonUnitTest : jsUnitTest,
                 }),
@@ -183,7 +199,7 @@ function IDE(props: parsedData) {
                         onChange={onChange}
                         theme={dracula}
                     />
-                    <button onClick={handleSubmission} id="ide-submit-button">
+                    <button onClick={() => handleSubmission(value || undefined)} id="ide-submit-button">
                         Submit Code
                     </button>
                     {userResults && <button onClick={openModal} className='show-stoudt-results'>Show Results...</button>}

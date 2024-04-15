@@ -1,6 +1,6 @@
-function twoSum(nums, target) {
+function addTwoNumbers(l1, l2) {
     // Your code goes here
-  return [0,1]
+    return [7,0,8]
 }
 
 
@@ -8,9 +8,9 @@ function runTests() {
     const testResults = {}
 
     const testCases = [
-        {input: {nums: [2,7,11,15], target: 9}, expected: [0,1]},
-        {input: {nums: [3,2,4], target: 6}, expected: [1,2]},
-        {input: {nums: [3,3], target: 6}, expected: [0,1]}
+        {input: [[2,4,3], [5,6,4]], expected: [7,0,8]},
+        {input: [[0], [0]], expected: [0]},
+        {input: [[9,9,9,9,9,9,9], [9,9,9,9]], expected: [8,9,9,9,0,0,0,1]}
     ];
 
     function arraysEqual(a, b) {
@@ -18,8 +18,8 @@ function runTests() {
     }
 
     testCases.forEach(({ input, expected }, index) => {
-        const result = twoSum(input.nums, input.target);
-        testResults[`testCase${index + 1}`] = {userOutput: result, expected: expected, assert: arraysEqual(result, expected)};
+        const result = addTwoNumbers(...input);
+        testResults[`testCase${index + 1}`] = {userOutput: result, expected: expected, assert: arraysEqual(result, expected)}
     });
 
     return JSON.stringify(testResults)

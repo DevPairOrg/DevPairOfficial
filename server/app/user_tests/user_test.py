@@ -1,6 +1,6 @@
-def twoSum(nums, target):
-    # Your code goes here
-    return [0,1]
+def addTwoNumbers(l1, l2):
+  print("ASDASDASDGGGG")
+  return "ASDASDASDASDTTT"
 
 
 import json
@@ -9,15 +9,15 @@ testResults = {}
 class SolutionTest:
     @staticmethod
     def run_test_case(input, expected, index):
-        result = twoSum(input["nums"], input["target"])
+        result = addTwoNumbers(input[0], input[1])
         testResults[f'testCase{index}'] = { "userOutput": result, "expected": expected, "assert": result == expected }
 
     def run_all_tests():
         test_suite = SolutionTest()
         test_cases = [
-            {'input': {"nums": [2,7,11,15], "target": 9}, 'expected': [0,1]},
-            {'input': {"nums": [3,2,4], "target": 6}, 'expected': [1,2]},
-            {'input': {"nums": [3,3], "target": 6}, 'expected': [0,1]}
+            {'input': [[2,4,3], [5,6,4]], 'expected': [7,0,8]},
+            {'input': [[0], [0]], 'expected': [0]},
+            {'input': [[9,9,9,9,9,9,9], [9,9,9,9]], 'expected': [1,0,0,0,0,0,0,0]}
         ]
 
         for i, test_case in enumerate(test_cases, start=1):

@@ -29,47 +29,32 @@ export function isTestCase(data: any) {
 }
 
 
+// Extact Console Logs
+export const extractConsoleLogsJavaScriptOnly = (functionDefinition: string) => {
+    try {
+        // Define an array to store evaluated console.log() statements
+        const evaluatedLogs: string[] = [];
 
-// SETUP FOR CSS
+        // Construct a real function using the function string
+        const func = Function(`return (${functionDefinition})`)();
 
-function parseParams(input: string) {
-    // Remove brackets and split by comma
-    return input ? input.substring(1, input.length - 1).split(",") : [];
+        const originalConsoleLog = console.log; //! CRUCIAL -- DO NOT TOUCH... this stores the normal behavior of the global console.log function
+        //* Override console.log to capture its output
+        console.log = function(...args: any[]) {
+            evaluatedLogs.push(args.join(' '));
+            // originalConsoleLog.apply(console, args);
+        };
+
+        // Execute the function
+        func();
+
+        console.log = originalConsoleLog; //! CRUCIAL -- DO NOT TOUCH... Restores the original console.log function
+
+        // Now, evaluatedLogs array contains the evaluated console.log() statements
+        return evaluatedLogs
+    } catch (error) {
+        // console.error('Error evaluating function string:', error);
+        //? commented out because its going to send out an error each time the IDE has any syntax error. But can uncomment for debugging
+        return null
+    }
 }
-
-function setupTestParams(inputString: string) {
-    const inputs = inputString.split("- INPUT: ");
-    const testParams: any = {};
-
-    inputs.forEach((input, index) => {
-        if (index === 0) return; // Skip the first empty string
-        const lines = input.trim().split("\n");
-        if (lines.length < 2) return; // Skip if there's not enough lines
-        const inputParams = parseParams(lines[0].split(": ")[1]);
-        const outputParams = parseParams(lines[1].split(": ")[1]);
-        const testParamsIndex = "testParams" + index;
-
-        testParams[testParamsIndex] = {};
-
-        inputParams.forEach((param, paramIndex) => {
-            testParams[testParamsIndex][paramIndex] = param === "null" ? null : param;
-        });
-
-        testParams[testParamsIndex]['output'] = outputParams.map(param => param === "null" ? null : param);
-    });
-
-    return testParams;
-}
-
-// Example usage:
-const inputString = `
-- INPUT: [1,3,2,5],[2,1,3,null,4,null,7]
-- OUTPUT: [3,4,5,5,4,null,7]
-- INPUT: [1],[1,2]
-- OUTPUT: [2,2]
-- INPUT: null,null
-- OUTPUT: []
-`;
-
-const testParams = setupTestParams(inputString);
-console.log("ASDASDASD", testParams);
