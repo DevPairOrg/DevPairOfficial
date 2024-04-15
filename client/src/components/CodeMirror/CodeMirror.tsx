@@ -6,84 +6,61 @@ import { dracula } from '@uiw/codemirror-theme-dracula';
 import { parsedData } from '../../interfaces/gemini';
 import { checkResponseData, TestResults, extractConsoleLogsJavaScriptOnly } from './util';
 import { useModal, Modal } from '../../context/Modal/Modal';
+import ConsoleOutput from './ConsoleOutput';
 import './CodeMirror.css';
 
 function IDE(props: parsedData) {
     const { problemName, problemPrompt, testCases, pythonUnitTest, jsUnitTest, defaultPythonFn, defaultJsFn } = props;
+    const { setModalContent } = useModal();
 
     const [value, setValue] = useState<string | undefined>(defaultPythonFn);
     const [language, setLanguage] = useState<string>('python');
+
     const [userResults, setUserResults] = useState<TestResults | null>(null);
     const [testCaseView, setTestCaseView] = useState<number | null>(null);
     const [logs, setLogs] = useState<string[] | null>(null); // stoudt console.log statements
 
-    const onChange = (val: string) => {
-        setValue(val)
-
-        // extract evaluated console.log statements here (only when language is JavaScript)
-        if(language !== 'python') {
-            const evaluatedLogStatements = extractConsoleLogsJavaScriptOnly(val)
-            setLogs(evaluatedLogStatements)
-        }
-
-    };
-
-    useEffect(() => { // change modal content when changing test case view and/or on submission
+    useEffect(() => { // update modal content when needed
         if(userResults && testCaseView) {
-            openModal()
+            openConsoleOutputModal()
         }
     }, [testCaseView, userResults]);
 
-    const { setModalContent } = useModal();
 
-    const openModal = () => {
+    const openConsoleOutputModal = () => { // opens the console output
         setModalContent(
-            <div id='stoudt-container'>
-                <p className={userResults?.testCase1.assert && userResults.testCase2.assert && userResults.testCase3.assert ? 'stoudt-pass' : 'stoudt-fail' }>
-                    {userResults?.testCase1.assert && userResults.testCase2.assert && userResults.testCase3.assert ? 'Accepted' : 'Wrong Answer' }
-                </p>
-
-                <div id='test-case-swap'>
-                    <button onClick={() => setTestCaseView(1)} className="test-case-button" id={testCaseView === 1 ? 'selected-test-case-button' : ''}>
-                        <span className={userResults?.testCase1.assert === true ? 'pass-green' : 'fail-red'}>·</span>Case 1
-                    </button>
-
-                    <button onClick={() => setTestCaseView(2)} className="test-case-button" id={testCaseView === 2 ? 'selected-test-case-button' : ''}>
-                        <span className={userResults?.testCase2.assert === true ? 'pass-green' : 'fail-red'}>·</span>Case 2
-                    </button>
-
-                    <button onClick={() => setTestCaseView(3)} className="test-case-button" id={testCaseView === 3 ? 'selected-test-case-button' : ''}>
-                        <span className={userResults?.testCase3.assert === true ? 'pass-green' : 'fail-red'}>·</span>Case 3
-                    </button>
-                </div>
-
-                <div>
-                    <div>
-                        <p>Output:</p>
-                        {testCaseView === 1 && <p>{userResults?.testCase1.userOutput}</p>}
-                        {testCaseView === 2 && <p>{userResults?.testCase2.userOutput}</p>}
-                        {testCaseView === 3 && <p>{userResults?.testCase3.userOutput}</p>}
-                    </div>
-
-                    <div>
-                        <p>Expected:</p>
-                        {testCaseView === 1 && <p>{userResults?.testCase1.expected}</p>}
-                        {testCaseView === 2 && <p>{userResults?.testCase2.expected}</p>}
-                        {testCaseView === 3 && <p>{userResults?.testCase3.expected}</p>}
-                    </div>
-
-                    <div>
-                        <p>Stoudt:</p>
-                        { (logs && logs.length !== 0) && <p>{logs}</p> }
-                    </div>
-                </div>
-
-            </div>
+            <ConsoleOutput
+                userResults={userResults}
+                testCaseView={testCaseView}
+                logs={logs}
+                setTestCaseView={setTestCaseView}
+            />
         );
     };
 
-    const handleSubmission = async (val: string | undefined) => {
+    const onChange = (value: string) => { // NOTE* onChange function for react code mirror automatically takes in value param which is the IDE value string
+        setValue(value)
 
+        // extract evaluated console.log statements here (only when language is JavaScript)
+        if(language !== 'python' && value) {
+            const evaluatedLogStatements = extractConsoleLogsJavaScriptOnly(value)
+            setLogs(evaluatedLogStatements)
+        }
+    };
+
+    // Python or Javascript User Options
+    const handlePythonButton: MouseEventHandler<HTMLButtonElement> = (e) => {
+        e.preventDefault();
+        setLanguage('python');
+        setValue(defaultPythonFn);
+    };
+    const handleJavascriptButton: MouseEventHandler<HTMLButtonElement> = (e) => {
+        e.preventDefault();
+        setLanguage('javascript');
+        setValue(defaultJsFn);
+    };
+
+    const handleSubmission = async (val: string | undefined) => {
         let valWithoutLogs;
         if (language === 'javascript' && val) {
             // Remove console.log statements from the function definition for JavaScript
@@ -117,15 +94,12 @@ function IDE(props: parsedData) {
                 testResults = data.testResults;
             }
 
-            console.log("TEST RESULTS")
-            console.log(testResults)
-
             const hasDigestibleResults = checkResponseData(testResults);
 
             if (hasDigestibleResults) {
                 setUserResults(testResults);
                 setTestCaseView(1)
-                openModal()
+                openConsoleOutputModal()
             } else {
                 console.error('An error occured generating test result data');
             }
@@ -135,22 +109,10 @@ function IDE(props: parsedData) {
         }
     };
 
-    // Python or Javascript User Options
-    const handlePythonButton: MouseEventHandler<HTMLButtonElement> = (e) => {
-        e.preventDefault();
-        setLanguage('python');
-        setValue(defaultPythonFn);
-    };
-    const handleJavascriptButton: MouseEventHandler<HTMLButtonElement> = (e) => {
-        e.preventDefault();
-        setLanguage('javascript');
-        setValue(defaultJsFn);
-    };
-
     return (
         <>
             <div id="ide-container">
-                <Modal></Modal>
+                <Modal></Modal> {/* This is needed for the Modal UI to render in */}
                 <div>
                     <div>Problem Name: {problemName && problemName}</div>
                     <div>Prompt: {problemPrompt && problemPrompt}</div>
@@ -202,10 +164,11 @@ function IDE(props: parsedData) {
                     <button onClick={() => handleSubmission(value || undefined)} id="ide-submit-button">
                         Submit Code
                     </button>
-                    {userResults && <button onClick={openModal} className='show-stoudt-results'>Show Results...</button>}
+                    {userResults && <button onClick={openConsoleOutputModal} className='show-stoudt-results'>Show Results...</button>}
                 </div>
             </div>
         </>
     );
 }
+
 export default IDE;

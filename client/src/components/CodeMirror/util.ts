@@ -1,3 +1,6 @@
+
+// HANDLE CODE SUBMISSION HELPERS ----------------------------------------------------------------------------
+
 export interface TestResults {
     testCase1: {assert: boolean, expected: any, userOutput: any}
     testCase2: {assert: boolean, expected: any, userOutput: any}
@@ -28,8 +31,13 @@ export function isTestCase(data: any) {
     );
 }
 
+// -----------------------------------------------------------------------------------------------------------
 
-// Extact Console Logs
+
+
+
+// STOUDT & IDE RELATED --------------------------------------------------------------------------------------------
+
 export const extractConsoleLogsJavaScriptOnly = (functionDefinition: string) => {
     try {
         // Define an array to store evaluated console.log() statements
@@ -58,3 +66,5 @@ export const extractConsoleLogsJavaScriptOnly = (functionDefinition: string) => 
         return null
     }
 }
+
+// -----------------------------------------------------------------------------------------------------------

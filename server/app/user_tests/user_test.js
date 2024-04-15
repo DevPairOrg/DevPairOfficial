@@ -1,6 +1,6 @@
-function addTwoNumbers(l1, l2) {
+function mergeTwoLists(l1, l2) {
     // Your code goes here
-    return [7,0,8]
+    return "STDFS"
 }
 
 
@@ -8,9 +8,9 @@ function runTests() {
     const testResults = {}
 
     const testCases = [
-        {input: [[2,4,3], [5,6,4]], expected: [7,0,8]},
-        {input: [[0], [0]], expected: [0]},
-        {input: [[9,9,9,9,9,9,9], [9,9,9,9]], expected: [8,9,9,9,0,0,0,1]}
+        {input: {l1: [1,2,4], l2: [1,3,4]}, expected: [1,1,2,3,4,4]},
+        {input: {l1: [], l2: []}, expected: []},
+        {input: {l1: [], l2: [0]}, expected: [0]}
     ];
 
     function arraysEqual(a, b) {
@@ -18,8 +18,8 @@ function runTests() {
     }
 
     testCases.forEach(({ input, expected }, index) => {
-        const result = addTwoNumbers(...input);
-        testResults[`testCase${index + 1}`] = {userOutput: result, expected: expected, assert: arraysEqual(result, expected)}
+        const result = mergeTwoLists(input.l1, input.l2);
+        testResults[`testCase${index + 1}`] = {userOutput: result, expected: expected, assert: arraysEqual(result, expected)};
     });
 
     return JSON.stringify(testResults)
