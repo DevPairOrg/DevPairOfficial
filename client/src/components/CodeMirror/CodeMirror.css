@@ -16,8 +16,103 @@
     background-color: green;
     height: 3.5rem;
     font-size: 1.5rem;
+    width: 200px;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
 
 .cm-theme {
     height: auto !important;
+}
+
+
+/* Modal Stylings */
+
+.show-stoudt-results {
+    background-color: orange;
+    height: 3.5rem;
+    font-size: 1.5rem;
+    margin-left: 10px;
+    color: black;
+    width: 200px;
+}
+
+.stoudt-pass {
+    color: green;
+}
+.stoudt-fail {
+    color: rgb(203, 31, 31);
+}
+
+#stoudt-container {
+    width: 50vw;
+    height: 20vw;
+    background-color: #282A36;
+
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+
+}
+#stoudt-container > p {
+    font-size: 24px;
+    font-weight: 500;
+}
+
+#test-case-swap {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+    margin-bottom: 18px;
+}
+
+#selected-test-case-button {
+    background-color: #ffffff24;
+}
+
+.test-case-button {
+    padding-left: 10px;
+    padding-right: 10px;
+    display: flex;
+    gap: 10px;
+    font-weight: 500;
+    color: white;
+    background-color: #282A36;
+    border-radius: .5rem;
+    border: none;
+    align-items: center;
+}
+.test-case-button:hover {
+    --tw-text-opacity: 1;
+    color: rgb(255 255 255 / var(--tw-text-opacity));
+    background-color: #ffffff24;
+    cursor: pointer;
+}
+
+
+#stoudt-container > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+#stoudt-container > div:last-child > div {
+    background-color: #ffffff24;
+    border-radius: .5rem;
+    padding: 10px;
+}
+
+.pass-green {
+    color: green;
+    font-size: 30px;
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
+}
+.fail-red {
+    color: red;
+    font-size: 30px;
+    padding: 0px;
+    margin: 0px;
+    text-align: center;
 }

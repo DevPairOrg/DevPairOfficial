@@ -159,9 +159,10 @@ def getLeetCodeResponseBits(id):
             Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
             Maintain proper formatting for test case inputs and outputs.
 
-            Follow the following example format:
+            Follow the following example format below:
 
             PYTHON UNIT TESTING:
+
             import json
             testResults = {{}}
 
@@ -217,14 +218,14 @@ def getLeetCodeResponseBits(id):
             Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
             Maintain proper formatting for test case inputs and outputs.
 
-            Follow the following example format:
+            Follow the following example format below:
 
-            (do not include this line: these test cases should be pulled from leetcode)
             JAVASCRIPT UNIT TESTING:
-            function runTests() {{
 
+            function runTests() {{
                 const testResults = {{}}
 
+                (DO NOT INCLUDE THIS LINE: these test cases should be pulled from leetcode)
                 const testCases = [
                     {{input: [First input], expected: [Expected output]}},
                     {{input: [Second input], expected: [Expected output]}},
@@ -242,12 +243,10 @@ def getLeetCodeResponseBits(id):
                 }});
 
                 return JSON.stringify(testResults)
-
             }}
 
             const testResults = runTests()
             console.log(testResults)
-
         """
     )
 
