@@ -1,6 +1,6 @@
-function mergeTwoLists(l1, l2) {
+function removeDuplicates(array) {
     // Your code goes here
-    return "STDFS"
+    return "ASDFASDASD"
 }
 
 
@@ -8,9 +8,9 @@ function runTests() {
     const testResults = {}
 
     const testCases = [
-        {input: {l1: [1,2,4], l2: [1,3,4]}, expected: [1,1,2,3,4,4]},
-        {input: {l1: [], l2: []}, expected: []},
-        {input: {l1: [], l2: [0]}, expected: [0]}
+        {input: [1,1,2], expected: 2},
+        {input: [0,0,1,1,1,2,2,3,3,4], expected: 5},
+        {input: [1,2,3], expected: 3}
     ];
 
     function arraysEqual(a, b) {
@@ -18,8 +18,8 @@ function runTests() {
     }
 
     testCases.forEach(({ input, expected }, index) => {
-        const result = mergeTwoLists(input.l1, input.l2);
-        testResults[`testCase${index + 1}`] = {userOutput: result, expected: expected, assert: arraysEqual(result, expected)};
+        const result = removeDuplicates(input);
+        testResults[`testCase${index + 1}`] = {userOutput: result, expected: expected, assert: arraysEqual(result, expected)}
     });
 
     return JSON.stringify(testResults)

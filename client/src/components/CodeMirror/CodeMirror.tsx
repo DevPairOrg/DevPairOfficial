@@ -4,7 +4,7 @@ import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { parsedData } from '../../interfaces/gemini';
-import { checkResponseData, TestResults, extractConsoleLogsJavaScriptOnly } from './util';
+import { TestResults, extractConsoleLogsJavaScriptOnly, handleCodeSubmission } from './util';
 import { useModal, Modal } from '../../context/Modal/Modal';
 import ConsoleOutput from './ConsoleOutput';
 import './CodeMirror.css';
@@ -60,55 +60,6 @@ function IDE(props: parsedData) {
         setValue(defaultJsFn);
     };
 
-    const handleSubmission = async (val: string | undefined) => {
-        let valWithoutLogs;
-        if (language === 'javascript' && val) {
-            // Remove console.log statements from the function definition for JavaScript
-            valWithoutLogs = val.replace(/console\.log\s*\([^]*?\)\s*;?/g, '')
-        }
-
-        try {
-            const response = await fetch('/api/problem/test', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                },
-                body: JSON.stringify({
-                    code: language !== 'python' ? valWithoutLogs : value, // do not pass console.log to backend if your using JavaScript IDE
-                    language: language,
-                    problemUnitTest: language === 'python' ? pythonUnitTest : jsUnitTest,
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data: any = await response.json();
-            let testResults: any
-
-            if(language !== 'python') {
-                testResults = JSON.parse(data.testResults) // additional conversion needed for JavaScript
-            } else {
-                testResults = data.testResults;
-            }
-
-            const hasDigestibleResults = checkResponseData(testResults);
-
-            if (hasDigestibleResults) {
-                setUserResults(testResults);
-                setTestCaseView(1)
-                openConsoleOutputModal()
-            } else {
-                console.error('An error occured generating test result data');
-            }
-
-        } catch (error) {
-            console.error('An error occurred:', error);
-        }
-    };
-
     return (
         <>
             <div id="ide-container">
@@ -161,7 +112,17 @@ function IDE(props: parsedData) {
                         onChange={onChange}
                         theme={dracula}
                     />
-                    <button onClick={() => handleSubmission(value || undefined)} id="ide-submit-button">
+                    <button onClick={ async() => {
+                        handleCodeSubmission(
+                            (value || undefined),
+                            (jsUnitTest || undefined),
+                            language,
+                            (pythonUnitTest || undefined),
+                            setUserResults,
+                            setTestCaseView,
+                            openConsoleOutputModal
+                            )
+                        } } id="ide-submit-button">
                         Submit Code
                     </button>
                     {userResults && <button onClick={openConsoleOutputModal} className='show-stoudt-results'>Show Results...</button>}

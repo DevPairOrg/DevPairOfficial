@@ -1,4 +1,71 @@
 
+// HANDLE CODE SUBMISSION FETCH FUNCTION ----------------------------------------------------------------------
+
+export const handleCodeSubmission = async (
+    value: string | undefined,
+    jsUnitTest: string | undefined,
+    language: string,
+    pythonUnitTest: string | undefined,
+    setUserResults: React.Dispatch<React.SetStateAction<TestResults | null>>,
+    setTestCaseView: React.Dispatch<React.SetStateAction<number | null>>,
+    openConsoleOutputModal: () => void
+
+    ) => {
+    let valWithoutLogs;
+    if (language === 'javascript' && value) {
+        // Remove console.log statements from the function definition for JavaScript
+        valWithoutLogs = value.replace(/console\.log\s*\([^]*?\)\s*;?/g, '')
+    }
+
+    try {
+        const response = await fetch('/api/problem/test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                code: language !== 'python' ? valWithoutLogs : value, // do not pass console.log to backend if your using JavaScript IDE
+                language: language,
+                problemUnitTest: language === 'python' ? pythonUnitTest : jsUnitTest,
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data: any = await response.json();
+        let testResults: any
+
+        if(language !== 'python') {
+            testResults = JSON.parse(data.testResults) // additional conversion needed for JavaScript
+        } else {
+            testResults = data.testResults;
+        }
+
+        const hasDigestibleResults = checkResponseData(testResults);
+
+        if (hasDigestibleResults) {
+            setUserResults(testResults);
+            setTestCaseView(1)
+            openConsoleOutputModal()
+        } else {
+            console.error('An error occured generating test result data');
+        }
+
+    } catch (error) {
+        console.error('An error occurred:', error);
+    }
+};
+
+// -----------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
 // HANDLE CODE SUBMISSION HELPERS ----------------------------------------------------------------------------
 
 export interface TestResults {
@@ -9,7 +76,7 @@ export interface TestResults {
 
 
 // Function to perform type assertion
-export function checkResponseData(data: any): data is TestResults {
+function checkResponseData(data: any): data is TestResults {
     return (
         // Check if test cases exist and have the correct structure
         data.hasOwnProperty('testCase1') &&
@@ -23,7 +90,7 @@ export function checkResponseData(data: any): data is TestResults {
 }
 
 
-export function isTestCase(data: any) {
+function isTestCase(data: any) {
     return (
         typeof data.assert === 'boolean' &&
         typeof data.expected !== 'undefined' &&
@@ -32,6 +99,8 @@ export function isTestCase(data: any) {
 }
 
 // -----------------------------------------------------------------------------------------------------------
+
+
 
 
 
