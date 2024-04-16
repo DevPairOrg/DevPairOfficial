@@ -1,4 +1,5 @@
 import { useAppSelector } from '../../../hooks';
+import { ModalProvider } from '../../../context/Modal/Modal';
 import IDE from '../../CodeMirror/CodeMirror';
 
 
@@ -8,15 +9,17 @@ const GeminiDSA = () => {
     return (
         <>
             <div id="ide-main-container">
-                <IDE
-                    problemName={geminiProblem?.problemName}
-                    problemPrompt={geminiProblem?.problemPrompt}
-                    testCases={geminiProblem?.testCases}
-                    pythonUnitTest={geminiProblem?.pythonUnitTest}
-                    jsUnitTest={geminiProblem?.jsUnitTest}
-                    defaultPythonFn={geminiProblem?.defaultPythonFn}
-                    defaultJsFn={geminiProblem?.defaultJsFn}
-                />
+                <ModalProvider>
+                    <IDE
+                        problemName={geminiProblem?.problemName}
+                        problemPrompt={geminiProblem?.problemPrompt}
+                        testCases={geminiProblem?.testCases}
+                        pythonUnitTest={geminiProblem?.pythonUnitTest}
+                        jsUnitTest={geminiProblem?.jsUnitTest}
+                        defaultPythonFn={geminiProblem?.defaultPythonFn}
+                        defaultJsFn={geminiProblem?.defaultJsFn}
+                    />
+                </ModalProvider>
             </div>
         </>
     );

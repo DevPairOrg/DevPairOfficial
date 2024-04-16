@@ -1,80 +1,57 @@
-import { useState, useCallback, MouseEventHandler } from 'react';
+import { useState, useEffect } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { parsedData } from '../../interfaces/gemini';
+import { TestResults, extractConsoleLogsJavaScriptOnly, handleCodeSubmission, handleJavascriptButton, handlePythonButton } from './util';
+import { useModal, Modal } from '../../context/Modal/Modal';
+import ConsoleOutput from './ConsoleOutput';
 import './CodeMirror.css';
 
 function IDE(props: parsedData) {
     const { problemName, problemPrompt, testCases, pythonUnitTest, jsUnitTest, defaultPythonFn, defaultJsFn } = props;
+    const { setModalContent } = useModal();
 
-    const [value, setValue] = useState<string | undefined>(defaultPythonFn);
-    const [userResults, setUserResults] = useState<boolean[]>([]);
-    const [language, setLanguage] = useState<string>('python');
+    const [value, setValue] = useState<string | undefined>(defaultPythonFn); // value of user code inside of IDE
+    const [language, setLanguage] = useState<string>('python'); // language for IDE
 
-    const onChange = useCallback((val: string) => {
-        // console.log('val:', val);
-        setValue(val);
-    }, []);
+    const [userResults, setUserResults] = useState<TestResults | null>(null); // user results object on submission
+    const [testCaseView, setTestCaseView] = useState<number | null>(null); // switch which test case your looking at
+    const [logs, setLogs] = useState<string[] | null>(null); // stoudt console.log statements
 
-    const handleSubmission = async () => {
-        try {
-            const response = await fetch('/api/problem/test', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                },
-                body: JSON.stringify({
-                    code: value,
-                    language: language,
-                    problemUnitTest: language === 'python' ? pythonUnitTest : jsUnitTest,
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            // console.log('response from backend', data);
-
-            if (data.testResults && typeof data.testResults === 'object') {
-                const testResultsArray = Object.values(data.testResults);
-
-                // Ensure all elements are boolean before setting the state
-                const areAllBooleans = testResultsArray.every((result) => typeof result === 'boolean');
-                if (areAllBooleans) {
-                    setUserResults(testResultsArray as boolean[]);
-                } else {
-                    console.error('Not all test results are booleans.');
-                }
-            }
-        } catch (error) {
-            console.error('An error occurred:', error);
+    useEffect(() => { // update modal content when needed
+        if(userResults && testCaseView) {
+            openConsoleOutputModal()
         }
+    }, [testCaseView, userResults]);
+
+
+    const openConsoleOutputModal = () => { // opens the console output modal
+        setModalContent(
+            <ConsoleOutput
+                userResults={userResults}
+                testCaseView={testCaseView}
+                logs={logs}
+                setTestCaseView={setTestCaseView}
+            />
+        );
     };
 
-    // useEffect(() => {
-    //     console.log('userResults', userResults);
-    // });
+    const onChange = (value: string) => { // NOTE* onChange function for react code mirror automatically takes in value param which is the IDE value string
+        setValue(value)
 
-    // Python or Javascript User Options
-    const handlePythonButton: MouseEventHandler<HTMLButtonElement> = (e) => {
-        e.preventDefault();
-        setLanguage('python');
-        setValue(defaultPythonFn);
-    };
-    const handleJavascriptButton: MouseEventHandler<HTMLButtonElement> = (e) => {
-        e.preventDefault();
-        setLanguage('javascript');
-        setValue(defaultJsFn);
+        // extract evaluated console.log statements here (only when language is JavaScript)
+        if(language !== 'python' && value) {
+            const evaluatedLogStatements = extractConsoleLogsJavaScriptOnly(value)
+            setLogs(evaluatedLogStatements)
+        }
     };
 
     return (
         <>
             <div id="ide-container">
+                <Modal></Modal> {/* This is needed for the Modal UI to render in */}
                 <div>
                     <div>Problem Name: {problemName && problemName}</div>
                     <div>Prompt: {problemPrompt && problemPrompt}</div>
@@ -90,17 +67,17 @@ function IDE(props: parsedData) {
                         }}
                     >
                         <div id="user-results">
-                            {userResults && userResults[0] === true ? (
+                            {userResults && userResults.testCase1.assert === true ? (
                                 <div>✔ Test Case 1</div>
                             ) : (
                                 <div>❌ Test Case 1</div>
                             )}
-                            {userResults && userResults[1] === true ? (
+                            {userResults && userResults.testCase2.assert === true ? (
                                 <div>✔ Test Case 2</div>
                             ) : (
                                 <div>❌ Test Case 2</div>
                             )}
-                            {userResults && userResults[2] === true ? (
+                            {userResults && userResults.testCase3.assert === true ? (
                                 <div>✔ Test Case 3</div>
                             ) : (
                                 <div>❌ Test Case 3</div>
@@ -108,10 +85,10 @@ function IDE(props: parsedData) {
                         </div>
                         <div style={{ display: 'flex', gap: '5px' }}>
                             <div>Language: </div>
-                            <button onClick={handlePythonButton} id="python-button">
+                            <button onClick={(e) => handlePythonButton(e, setLanguage, setValue, defaultPythonFn)} id="python-button">
                                 Python
                             </button>
-                            <button onClick={handleJavascriptButton} id="javascript-button">
+                            <button onClick={(e) => handleJavascriptButton(e, setLanguage, setValue, defaultJsFn)} id="javascript-button">
                                 JavaScript
                             </button>
                         </div>
@@ -123,12 +100,24 @@ function IDE(props: parsedData) {
                         onChange={onChange}
                         theme={dracula}
                     />
-                    <button onClick={handleSubmission} id="ide-submit-button">
-                        Submit!
+                    <button onClick={ async() => {
+                        handleCodeSubmission(
+                            (value || undefined),
+                            (jsUnitTest || undefined),
+                            language,
+                            (pythonUnitTest || undefined),
+                            setUserResults,
+                            setTestCaseView,
+                            openConsoleOutputModal
+                            )
+                        } } id="ide-submit-button">
+                        Submit Code
                     </button>
+                    {userResults && <button onClick={openConsoleOutputModal} className='show-stoudt-results'>Show Results...</button>}
                 </div>
             </div>
         </>
     );
 }
+
 export default IDE;

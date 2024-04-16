@@ -159,33 +159,36 @@ def getLeetCodeResponseBits(id):
             Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
             Maintain proper formatting for test case inputs and outputs.
 
-            Follow the following example format:
+            Follow the following example format below:
 
             PYTHON UNIT TESTING:
+
+            import json
+            testResults = {{}}
+
             class SolutionTest:
                 @staticmethod
-                def run_test_case(input, expected):
-                    result = nameOfFunction(input)
-                    return result == expected
+                def run_test_case(input, expected, index):
+                    result = input
+                    testResults[f'testCase{{index}}'] = {{ "userOutput": result, "expected": expected, "assert": result == expected }}
 
-            def run_all_tests():
-                test_suite = SolutionTest()
-                test_results = []
-                test_cases = [
-                    {{'input': [First input], 'expected': [Expected output]}},
-                    {{'input': [Second input], 'expected': [Expected output]}},
-                    {{'input': [Third input], 'expected': [Expected output]}}
-                ]
-                for i, test_case in enumerate(test_cases, start=1):
-                    input, expected = test_case['input'], test_case['expected']
-                    result = test_suite.run_test_case(input, expected)
-                    test_results.append((f"Test case {{i}}", result))
-                return test_results
+                def run_all_tests():
+                    test_suite = SolutionTest()
+                    test_cases = [
+                        {{'input': [First input], 'expected': [Expected output]}},
+                        {{'input': [Second input], 'expected': [Expected output]}},
+                        {{'input': [Third input], 'expected': [Expected output]}}
+                    ]
 
-            if __name__ == '__main__':
-                results = run_all_tests()
-                for test_case, result in results:
-                    print(f"{{test_case}}: {{True if result else False}}")
+                    for i, test_case in enumerate(test_cases, start=1):
+                        input, expected = test_case['input'], test_case['expected']
+                        test_suite.run_test_case(input, expected, i)
+
+                    return json.dumps(testResults)
+
+            test_output = SolutionTest.run_all_tests()
+            print(test_output)
+
         """
     )
 
@@ -215,26 +218,35 @@ def getLeetCodeResponseBits(id):
             Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
             Maintain proper formatting for test case inputs and outputs.
 
-            Follow the following example format:
+            Follow the following example format below:
 
-            (do not include this line: these test cases should be pulled from leetcode)
             JAVASCRIPT UNIT TESTING:
-            const testCases = [
-                {{input: [First input], expected: [Expected output]}},
-                {{input: [Second input], expected: [Expected output]}},
-                {{input: [Third input], expected: [Expected output]}}
-            ];
 
-            (do not include this line: this test function below is explicitly an example for array comparisons for test cases. otherwise use a standard test case. if dealing with subarrays, implement a proper method for comparing the the subarray results to the expected results)
-            testCases.forEach(({{ input, expected }}, index) => {{
-                const result = nameOfFunction(input.nums, input.target);
-                console.assert(arraysEqual(result, expected), `Test case ${{index + 1}} failed`);
-                console.log(`Test case ${{index + 1}}`, JSON.stringify(expected) === JSON.stringify(result));
-            }});
+            function runTests() {{
+                const testResults = {{}}
 
-            function arraysEqual(a, b) {{
-                return a.length === b.length && a.every((value, index) => value === b[index]);
+                (DO NOT INCLUDE THIS LINE: these test cases should be pulled from leetcode)
+                const testCases = [
+                    {{input: [First input], expected: [Expected output]}},
+                    {{input: [Second input], expected: [Expected output]}},
+                    {{input: [Third input], expected: [Expected output]}}
+                ];
+
+                function arraysEqual(a, b) {{
+                    return a.length === b.length && a.every((value, index) => value === b[index]);
+                }}
+
+                (DO NOT INCLUDE THIS LINE: this test function below is explicitly an example for array comparisons for test cases. otherwise use a standard test case for the assert key. if dealing with subarrays, implement a proper method for comparing the the subarray results to the expected results)
+                testCases.forEach(({{ input, expected }}, index) => {{
+                    const result = nameOfFunction(input.nums, input.target);
+                    {{testResults[`testCase${{index + 1}}`] = {{userOutput: result, expected: expected, assert: arraysEqual(result, expected)}}}}
+                }});
+
+                return JSON.stringify(testResults)
             }}
+
+            const testResults = runTests()
+            console.log(testResults)
         """
     )
 
