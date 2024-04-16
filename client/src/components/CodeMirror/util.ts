@@ -64,8 +64,6 @@ export const handleCodeSubmission = async (
 
 
 
-
-
 // HANDLE CODE SUBMISSION HELPERS ----------------------------------------------------------------------------
 
 export interface TestResults {
@@ -103,9 +101,7 @@ function isTestCase(data: any) {
 
 
 
-
-
-// STOUDT & IDE RELATED --------------------------------------------------------------------------------------------
+// STOUDT & IDE RELATED --------------------------------------------------------------------------------------
 
 export const extractConsoleLogsJavaScriptOnly = (functionDefinition: string) => {
     try {
@@ -136,4 +132,28 @@ export const extractConsoleLogsJavaScriptOnly = (functionDefinition: string) => 
     }
 }
 
-// -----------------------------------------------------------------------------------------------------------
+// Python or Javascript User Options ----------------------------------------------------------------------------
+
+    export const handlePythonButton = (
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+        setLanguage: React.Dispatch<React.SetStateAction<string>>,
+        setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
+        defaultPythonFn: string | undefined
+        ) => {
+        e.preventDefault();
+        setLanguage('python');
+        setValue(defaultPythonFn);
+    };
+    export const handleJavascriptButton = (
+        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+        setLanguage: React.Dispatch<React.SetStateAction<string>>,
+        setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
+        defaultJsFn: string | undefined
+        ) => {
+        e.preventDefault();
+        setLanguage('javascript');
+        setValue(defaultJsFn);
+    };
+
+
+// -------------------------------------------------------------------------------------------------------------

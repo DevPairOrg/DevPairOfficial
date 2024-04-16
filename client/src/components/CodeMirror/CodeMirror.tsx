@@ -1,10 +1,10 @@
-import { useState, MouseEventHandler, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { parsedData } from '../../interfaces/gemini';
-import { TestResults, extractConsoleLogsJavaScriptOnly, handleCodeSubmission } from './util';
+import { TestResults, extractConsoleLogsJavaScriptOnly, handleCodeSubmission, handleJavascriptButton, handlePythonButton } from './util';
 import { useModal, Modal } from '../../context/Modal/Modal';
 import ConsoleOutput from './ConsoleOutput';
 import './CodeMirror.css';
@@ -13,11 +13,11 @@ function IDE(props: parsedData) {
     const { problemName, problemPrompt, testCases, pythonUnitTest, jsUnitTest, defaultPythonFn, defaultJsFn } = props;
     const { setModalContent } = useModal();
 
-    const [value, setValue] = useState<string | undefined>(defaultPythonFn);
-    const [language, setLanguage] = useState<string>('python');
+    const [value, setValue] = useState<string | undefined>(defaultPythonFn); // value of user code inside of IDE
+    const [language, setLanguage] = useState<string>('python'); // language for IDE
 
-    const [userResults, setUserResults] = useState<TestResults | null>(null);
-    const [testCaseView, setTestCaseView] = useState<number | null>(null);
+    const [userResults, setUserResults] = useState<TestResults | null>(null); // user results object on submission
+    const [testCaseView, setTestCaseView] = useState<number | null>(null); // switch which test case your looking at
     const [logs, setLogs] = useState<string[] | null>(null); // stoudt console.log statements
 
     useEffect(() => { // update modal content when needed
@@ -27,7 +27,7 @@ function IDE(props: parsedData) {
     }, [testCaseView, userResults]);
 
 
-    const openConsoleOutputModal = () => { // opens the console output
+    const openConsoleOutputModal = () => { // opens the console output modal
         setModalContent(
             <ConsoleOutput
                 userResults={userResults}
@@ -46,18 +46,6 @@ function IDE(props: parsedData) {
             const evaluatedLogStatements = extractConsoleLogsJavaScriptOnly(value)
             setLogs(evaluatedLogStatements)
         }
-    };
-
-    // Python or Javascript User Options
-    const handlePythonButton: MouseEventHandler<HTMLButtonElement> = (e) => {
-        e.preventDefault();
-        setLanguage('python');
-        setValue(defaultPythonFn);
-    };
-    const handleJavascriptButton: MouseEventHandler<HTMLButtonElement> = (e) => {
-        e.preventDefault();
-        setLanguage('javascript');
-        setValue(defaultJsFn);
     };
 
     return (
@@ -97,10 +85,10 @@ function IDE(props: parsedData) {
                         </div>
                         <div style={{ display: 'flex', gap: '5px' }}>
                             <div>Language: </div>
-                            <button onClick={handlePythonButton} id="python-button">
+                            <button onClick={(e) => handlePythonButton(e, setLanguage, setValue, defaultPythonFn)} id="python-button">
                                 Python
                             </button>
-                            <button onClick={handleJavascriptButton} id="javascript-button">
+                            <button onClick={(e) => handleJavascriptButton(e, setLanguage, setValue, defaultJsFn)} id="javascript-button">
                                 JavaScript
                             </button>
                         </div>
