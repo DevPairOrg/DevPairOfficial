@@ -2,6 +2,7 @@ from flask import Blueprint, request
 from ..gemini import initGlobalGeminiConvo
 from app.models import User, db
 import json
+from .utils import error_response
 
 gemini_routes = Blueprint('gemini', __name__)
 
@@ -143,17 +144,28 @@ def getLeetCodeResponseBits(id):
     ]
     })
     
+    for _ in range(5):
 
-    convo.send_message(f"""
-        Context: Generate a LeetCode-style problem of user specified difficulty that involves data structures and algorithms. If specified, do not generate any problems in the list specified by the user indicated with 'user_solved_problems: <example comma separated list>' The problem should simulate a real-world scenario and include a comprehensive description, detailed constraints, and examples. It should also consider edge cases that necessitate careful thought and extensive testing. Provide empty Python and JavaScript function signatures. Include a set of test cases that cover both standard and edge cases. Avoid using markdown formatting such as bold or code blocks in the entire structured response. Follow the response template provided and return json string using the header, ex. PROBLEM NAME: as the key. ENSURE PROPER FORMATTING FOR PYTHON AND JAVASCRIPT UNIT TESTS. Follow the example response provided. For proper formatting in python ensure any keys in objects are in single quotes.
+        try:
+            convo.send_message(f"""
+                Context: Generate a LeetCode-style problem of user specified difficulty that involves data structures and algorithms. If specified, do not generate any problems in the list specified by the user indicated with 'user_solved_problems: <example comma separated list>' The problem should simulate a real-world scenario and include a comprehensive description, detailed constraints, and examples. It should also consider edge cases that necessitate careful thought and extensive testing. Provide empty Python and JavaScript function signatures. Include a set of test cases that cover both standard and edge cases. Avoid using markdown formatting such as bold or code blocks in the entire structured response. Follow the response template provided and return json string using the header, ex. PROBLEM NAME: as the key. ENSURE PROPER FORMATTING FOR PYTHON AND JAVASCRIPT UNIT TESTS. Follow the example response provided. For proper formatting in python ensure any keys in objects are in single quotes.
+                
+                User Input: Generate an easy leetcode problem. user_solved_problems: {prev_solved_questions}
+
+                Response Template: {format_response}
+
+                Example Response: {example_response}
+
+                """)
+            break # If the message was sent successfully, break the loop
+        except Exception as e:
+            print('🥱🥱🥱 Error sending message to gemini, trying again...', e)
+    else:  # This block will execute if the loop completed all iterations without breaking
+        print("Failed to send message after 5 attempts")
+        return error_response("There was an error retrieving a response from Gemini, please try again later.", 500)
+
         
-        User Input: Generate an easy leetcode problem. user_solved_problems: {prev_solved_questions}
 
-        Response Template: {format_response}
-
-        Example Response: {example_response}
-
-        """)
 
     # convo.send_message(
     #     f"""

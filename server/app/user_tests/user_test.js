@@ -1,25 +1,30 @@
-function isPalindrome(x) {
+function sumEvenAfterQueries(nums, queries) {
     // Your code goes here
-   if (x < 0) return false;
-    let reverse = 0, y = x;
-    while (y > 0) {
-        const lastDigit = y % 10;
-        reverse = (reverse * 10) + lastDigit;
-        y = Math.floor(y / 10);
-    }
-    console.log('test', reverse)
-    return x === reverse;
 }
 
-
 const testCases = [
-    { input: 121, expected: true },
-    { input: -121, expected: false },
-    { input: 10, expected: false }
+    {
+        'input': {
+            'nums': [1,2,3,4],
+            'queries': [[1,0],[-3,1],[-4,0],[2,3]]
+        },
+        'expected': [8,6,2,4]
+    },
+    {
+        'input': {
+            'nums': [8,4,12], 
+            'queries': [[1,0],[-1,1],[-5,1],[1,1]]
+        },
+        'expected': [14,10,6,8]
+    }
 ];
 
 testCases.forEach(({ input, expected }, index) => {
-    const result = isPalindrome(input);
-    console.assert(result === expected, `Test case ${index + 1} failed`);
-    console.log(`Test case ${index + 1}`, result === expected);
+    const result = sumEvenAfterQueries(input.nums, input.queries);
+    console.assert(arraysEqual(result, expected), `Test case ${index + 1} failed`);
+    console.log(`Test case ${index + 1}`, JSON.stringify(expected) === JSON.stringify(result));
 });
+
+function arraysEqual(a, b) {
+    return a.length === b.length && a.every((value, index) => value === b[index]);
+}
