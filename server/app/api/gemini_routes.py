@@ -48,34 +48,46 @@ def getLeetCodeResponseBits(id):
 
     print('🥱🥱🥱 Generating Problem, please wait.')
 
-    format_response = f"""
-        DIFFICULTY: 
+    test_case_intruction= f"""
+            Return EXACTLY three test cases that are provided on leetcode.
+            For each test case, include:
+            INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas. If there's a target, explicitly state it (e.g., "target=#").
+            OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt.
 
-        PROBLEM NAME:
-                            
-        QUESTION PROMPT:
-                           
-        CONSTRAINTS:
-                           
-        TEST CASES:
-        - INPUT: [First input], [Second input if necessary]            
-        - OUTPUT: [Expected output]           
-        - INPUT: [First input], [Second input if necessary]           
-        - OUTPUT: [Expected output]            
-        - INPUT: [First input], [Second input if necessary]            
-        - OUTPUT: [Expected output]
-                           
-        PYTHON FUNCTION SIGNATURE:
-        ex. def <nameOfFunction>(<input parameters>): 
-            # Your code goes here 
-            pass
-                           
-        JAVASCRIPT FUNCTION SIGNATURE:
-        ex. function <nameOfFunction>(<input parameters>) {{ 
-            // Your code goes here           
-        }}
-                           
-        PYTHON UNIT TESTS:
+            Follow the following format exactly:
+    [
+      {{
+        "INPUT": "[10,2,5,3]\n",
+        "OUTPUT": "true"
+      }},
+      {{
+        "INPUT": "[7,1,14,11]\n",
+        "OUTPUT": "true"
+      }},
+      {{
+        "INPUT": "[3,1,7,11]\n",
+        "OUTPUT": "false"
+      }}
+    ]
+        """
+    
+    python_test_instruction = f"""
+            Do not use unittest
+            Define test cases as an list of objects, each with input and expected output (these keys should be inside quotations).
+            Iterate over test cases, executing the solution function with each input and using expression to compare the result to the expected output in order to return a boolean.
+            Make sure to be consistent with input formatting (e.g., keep lists as lists, don't spread them).
+
+            For solutions returning arrays:
+            Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.
+            Use this method within console.assert to verify the expected array structure and content.
+
+            Remember:
+            Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
+            Maintain proper formatting for test case inputs and outputs.
+
+            Follow the following example format:
+
+            PYTHON UNIT TESTING:
             class SolutionTest:
                 @staticmethod
                 def run_test_case(input, expected):
@@ -100,8 +112,25 @@ def getLeetCodeResponseBits(id):
                 results = run_all_tests()
                 for test_case, result in results:
                     print(f"{{test_case}}: {{True if result else False}}")
-                           
-        JAVASCRIPT UNIT TESTS:
+        """
+    
+    javascript_test_instruction = f"""
+            Define test cases as an array of objects, each with input and expected output.
+            Iterate over test cases, executing the solution function with each input and using console.assert to compare the result to the expected output.
+            Make sure to be consistent with input formatting (e.g., keep arrays as arrays, don't spread them).
+
+            For solutions returning arrays:
+            Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.
+            Use this method within console.assert to verify the expected array structure and content.
+
+            Remember:
+            Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
+            Maintain proper formatting for test case inputs and outputs.
+
+            Follow the following example format:
+
+            (do not include this line: these test cases should be pulled from leetcode)
+            JAVASCRIPT UNIT TESTING:
             const testCases = [
                 {{input: [First input], expected: [Expected output]}},
                 {{input: [Second input], expected: [Expected output]}},
@@ -120,7 +149,34 @@ def getLeetCodeResponseBits(id):
             }}
         """
 
+    format_response = f"""
+        DIFFICULTY: 
+
+        PROBLEM NAME:
+                            
+        QUESTION PROMPT:
+                           
+        CONSTRAINTS:
+                           
+        TEST CASES:
+                           
+        PYTHON FUNCTION SIGNATURE:
+        ex. def <nameOfFunction>(<input parameters>): 
+            # Your code goes here 
+            pass
+                           
+        JAVASCRIPT FUNCTION SIGNATURE:
+        ex. function <nameOfFunction>(<input parameters>) {{ 
+            // Your code goes here           
+        }}
+                           
+        PYTHON UNIT TESTS:
+                           
+        JAVASCRIPT UNIT TESTS:
+        """
+
     example_response = json.dumps({
+    "PROBLEM NAME": "Check If N and Its Double Exist",
     "CONSTRAINTS": "1 <= arr.length <= 10^5\n-10^9 <= arr[i] <= 10^9",
     "DIFFICULTY": "Easy",
     "JAVASCRIPT FUNCTION SIGNATURE": "function checkIfExist(arr) {\n    // Your code goes here\n}",
@@ -148,14 +204,20 @@ def getLeetCodeResponseBits(id):
 
         try:
             convo.send_message(f"""
-                Context: Generate a LeetCode-style problem of user specified difficulty that involves data structures and algorithms. If specified, do not generate any problems in the list specified by the user indicated with 'user_solved_problems: <example comma separated list>' The problem should simulate a real-world scenario and include a comprehensive description, detailed constraints, and examples. It should also consider edge cases that necessitate careful thought and extensive testing. Provide empty Python and JavaScript function signatures. Include a set of test cases that cover both standard and edge cases. Avoid using markdown formatting such as bold or code blocks in the entire structured response. Follow the response template provided and return json string using the header, ex. PROBLEM NAME: as the key. ENSURE PROPER FORMATTING FOR PYTHON AND JAVASCRIPT UNIT TESTS. Follow the example response provided. For proper formatting in python ensure any keys in objects are in single quotes.
+                Context: Generate a LeetCode question of user specified difficulty that involves data structures and algorithms. If specified, do not generate any problems in the list specified by the user indicated with 'user_solved_problems: <example comma separated list>' The problem should simulate a real-world scenario and include a comprehensive description, detailed constraints, and examples. It should also consider edge cases that necessitate careful thought and extensive testing. Provide empty Python and JavaScript function signatures. Include a set of test cases that cover both standard and edge cases. ENSURE PROPER FORMATTING FOR PYTHON AND JAVASCRIPT UNIT TESTS. Follow the example response provided. For proper formatting in python ensure any keys in objects are in single quotes. See further instructions for each section below.
+                               
+                Test Case Instruction: {test_case_intruction}
+
+                Python Test Instruction: {python_test_instruction}
+
+                JavaScript Test Instruction: {javascript_test_instruction}
                 
-                User Input: Generate an easy leetcode problem. user_solved_problems: {prev_solved_questions}
 
                 Response Template: {format_response}
 
                 Example Response: {example_response}
 
+                Prompt: Generate an easy leetcode problem. user_solved_problems: {prev_solved_questions}
                 """)
             break # If the message was sent successfully, break the loop
         except Exception as e:
@@ -225,139 +287,13 @@ def getLeetCodeResponseBits(id):
 
     # default_function_names = convo.last.text
 
-    # convo.send_message(
-    #     f"""
-    #         IMPORTANT:
-    #         - Please adhere to the following structure when requesting solutions and tests for coding problems.
-    #         - Keep it relevant to our conversation, {name_and_prompt}
-
-    #         For the entire structured response STRICTLY DO NOT include any markdowns such as:
-    #         (i.e. **BOLD**)
-    #         (i.e. ```javascript)
-    #         (i.e. ```python)
-
-    #         1. Test Cases:
-    #         List no more than three test cases that are provided on leetcode.
-    #         For each test case, include:
-    #         INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas. If there's a target, explicitly state it (e.g., "target=#").
-    #         OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt.
-
-    #         Follow the follwing example format:
-    #         TEST CASES:
-    #         - INPUT: [First input], [Second input if necessary]
-    #         - OUTPUT: [Expected output]
-    #         - INPUT: [First input], [Second input if necessary]
-    #         - OUTPUT: [Expected output]
-    #         - INPUT: [First input], [Second input if necessary]
-    #         - OUTPUT: [Expected output]
-    #     """
-    # )
 
     # test_cases = convo.last.text
 
-    # convo.send_message(
-    #     f"""
-    #         Important: Create a test in python based on the instructions provided below. The tests should all be relevant to the problem {name_and_prompt} response which you gave me in our previous conversation and test specifically for these {test_cases} you gave me.
-
-    #         For the entire structured response STRICTLY DO NOT include any markdowns such as:
-    #         (i.e. **BOLD**)
-    #         (i.e. ```javascript)
-    #         (i.e. ```python)
-    #         (i.e. ##)
-    #         (i.e. ###)
-
-    #         1. Python Testing:
-    #         Do not use unittest
-    #         Define test cases as an list of objects, each with input and expected output (these keys should be inside quotations).
-    #         Iterate over test cases, executing the solution function with each input and using expression to compare the result to the expected output in order to return a boolean.
-    #         Make sure to be consistent with input formatting (e.g., keep lists as lists, don't spread them).
-
-    #         For solutions returning arrays:
-    #         Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.
-    #         Use this method within console.assert to verify the expected array structure and content.
-
-    #         Remember:
-    #         Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
-    #         Maintain proper formatting for test case inputs and outputs.
-
-    #         Follow the following example format:
-
-            # PYTHON UNIT TESTING:
-            # class SolutionTest:
-            #     @staticmethod
-            #     def run_test_case(input, expected):
-            #         result = nameOfFunction(input)
-            #         return result == expected
-
-            # def run_all_tests():
-            #     test_suite = SolutionTest()
-            #     test_results = []
-            #     test_cases = [
-            #         {{'input': [First input], 'expected': [Expected output]}},
-            #         {{'input': [Second input], 'expected': [Expected output]}},
-            #         {{'input': [Third input], 'expected': [Expected output]}}
-            #     ]
-            #     for i, test_case in enumerate(test_cases, start=1):
-            #         input, expected = test_case['input'], test_case['expected']
-            #         result = test_suite.run_test_case(input, expected)
-            #         test_results.append((f"Test case {{i}}", result))
-            #     return test_results
-
-            # if __name__ == '__main__':
-            #     results = run_all_tests()
-            #     for test_case, result in results:
-            #         print(f"{{test_case}}: {{True if result else False}}")
-        # """
-    # )
 
     # python_test = convo.last.text
 
-    # convo.send_message(
-    #     f"""
-    #         Important: Create a unit test in javascript based on the instructions provided below. The tests should all be relevant to the problem {name_and_prompt} response which you gave me in our previous conversation and test specifically for these {test_cases} you gave me.
 
-    #         For the entire structured response STRICTLY DO NOT include any markdowns such as:
-    #         (i.e. **BOLD**)
-    #         (i.e. ```javascript)
-    #         (i.e. ```python)
-    #         (i.e. ##)
-    #         (i.e. ###)
-
-    #         1. JavaScript Unit Testing:
-    #         Define test cases as an array of objects, each with input and expected output.
-    #         Iterate over test cases, executing the solution function with each input and using console.assert to compare the result to the expected output.
-    #         Make sure to be consistent with input formatting (e.g., keep arrays as arrays, don't spread them).
-
-    #         For solutions returning arrays:
-    #         Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.
-    #         Use this method within console.assert to verify the expected array structure and content.
-
-    #         Remember:
-    #         Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
-    #         Maintain proper formatting for test case inputs and outputs.
-
-    #         Follow the following example format:
-
-    #         (do not include this line: these test cases should be pulled from leetcode)
-    #         JAVASCRIPT UNIT TESTING:
-            # const testCases = [
-            #     {{input: [First input], expected: [Expected output]}},
-            #     {{input: [Second input], expected: [Expected output]}},
-            #     {{input: [Third input], expected: [Expected output]}}
-            # ];
-
-            # (do not include this line: this test function below is explicitly an example for array comparisons for test cases. otherwise use a standard test case. if dealing with subarrays, implement a proper method for comparing the the subarray results to the expected results)
-            # testCases.forEach(({{ input, expected }}, index) => {{
-            #     const result = nameOfFunction(input.nums, input.target);
-            #     console.assert(arraysEqual(result, expected), `Test case ${{index + 1}} failed`);
-            #     console.log(`Test case ${{index + 1}}`, JSON.stringify(expected) === JSON.stringify(result));
-            # }});
-
-            # function arraysEqual(a, b) {{
-            #     return a.length === b.length && a.every((value, index) => value === b[index]);
-            # }}
-    #     """
-    # )
 
     javascript_test = convo.last.text
 
