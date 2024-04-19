@@ -75,17 +75,57 @@ def getLeetCodeResponseBits(id):
         }}
                            
         PYTHON UNIT TESTS:
+            class SolutionTest:
+                @staticmethod
+                def run_test_case(input, expected):
+                    result = nameOfFunction(input)
+                    return result == expected
+
+            def run_all_tests():
+                test_suite = SolutionTest()
+                test_results = []
+                test_cases = [
+                    {{'input': [First input], 'expected': [Expected output]}},
+                    {{'input': [Second input], 'expected': [Expected output]}},
+                    {{'input': [Third input], 'expected': [Expected output]}}
+                ]
+                for i, test_case in enumerate(test_cases, start=1):
+                    input, expected = test_case['input'], test_case['expected']
+                    result = test_suite.run_test_case(input, expected)
+                    test_results.append((f"Test case {{i}}", result))
+                return test_results
+
+            if __name__ == '__main__':
+                results = run_all_tests()
+                for test_case, result in results:
+                    print(f"{{test_case}}: {{True if result else False}}")
                            
-        JAVASCRIPT UNIT TESTS:"""
+        JAVASCRIPT UNIT TESTS:
+            const testCases = [
+                {{input: [First input], expected: [Expected output]}},
+                {{input: [Second input], expected: [Expected output]}},
+                {{input: [Third input], expected: [Expected output]}}
+            ];
+
+            (do not include this line: this test function below is explicitly an example for array comparisons for test cases. otherwise use a standard test case. if dealing with subarrays, implement a proper method for comparing the the subarray results to the expected results)
+            testCases.forEach(({{ input, expected }}, index) => {{
+                const result = nameOfFunction(input.nums, input.target);
+                console.assert(arraysEqual(result, expected), `Test case ${{index + 1}} failed`);
+                console.log(`Test case ${{index + 1}}`, JSON.stringify(expected) === JSON.stringify(result));
+            }});
+
+            function arraysEqual(a, b) {{
+                return a.length === b.length && a.every((value, index) => value === b[index]);
+            }}
+        """
 
     example_response = json.dumps({
     "CONSTRAINTS": "1 <= arr.length <= 10^5\n-10^9 <= arr[i] <= 10^9",
     "DIFFICULTY": "Easy",
-    "JAVASCRIPT FUNCTION SIGNATURE": "function checkIfExist(arr: number[]): boolean {",
-    "JAVASCRIPT UNIT TESTS": "const assert = require('assert');\ndescribe('checkIfExist', () => {\n  it('test_1', () => {\n      const arr = [10,2,5,3];\n      assert.strictEqual(checkIfExist(arr), true);\n  });\n  it('test_2', () => {\n      const arr = [7,1,14,11];\n      assert.strictEqual(checkIfExist(arr), true);\n  });\n  it('test_3', () => {\n      const arr = [3,1,7,11];\n     assert.strictEqual(checkIfExist(arr), false);\n  });\n});",
-    "PROBLEM NAME": "Check If N and Its Double Exist",
-    "PYTHON FUNCTION SIGNATURE": "def checkIfExist(arr: List[int]) -> bool:",
-    "PYTHON UNIT TESTS": "import unittest\n\nclass checkIfExist(unittest.TestCase):\n\n    def test_1(self):\n        input_array = [10,2,5,3]\n        self.assertEqual(checkIfExist(input_array), True)\n\n    def test_2(self):\n        input_array = [7,1,14,11]\n        self.assertEqual(checkIfExist(input_array), True)\n\n    def test_3(self):\n      input_array = [3,1,7,11]\n      self.assertEqual(checkIfExist(input_array), False)",
+    "JAVASCRIPT FUNCTION SIGNATURE": "function checkIfExist(arr) {\n    // Your code goes here\n}",
+    "JAVASCRIPT UNIT TESTS": "const testCases = [\n    {'input': [10,2,5,3], 'expected': true},\n    {'input': [7,1,14,11], 'expected': true},\n    {'input': [3,1,7,11], 'expected': false}\n];\n\ntestCases.forEach(({ input, expected }, index) => {\n    const result = checkIfExist(input);\n    console.assert(result === expected, `Test case ${index + 1} failed`);\n    console.log(`Test case ${index + 1}`, JSON.stringify(expected) === JSON.stringify(result));\n});\n\nfunction arraysEqual(a, b) {\n    return a.length === b.length && a.every((value, index) => value === b[index]);\n}",
+    "PYTHON FUNCTION SIGNATURE": "def checkIfExist(arr): \n    # Your code goes here\n    pass",
+    "PYTHON UNIT TESTS": "class SolutionTest:\n    @staticmethod\n    def run_test_case(input, expected):\n        result = checkIfExist(input)\n        return result == expected\n\ndef run_all_tests():\n    test_suite = SolutionTest()\n    test_results = []\n    test_cases = [\n        {'input': [10,2,5,3], 'expected': True},\n        {'input': [7,1,14,11], 'expected': True},\n        {'input': [3,1,7,11], 'expected': False}\n    ]\n    for i, test_case in enumerate(test_cases, start=1):\n        input, expected = test_case['input'], test_case['expected']\n        result = test_suite.run_test_case(input, expected)\n        test_results.append((f'Test case {i}', result))\n    return test_results\n\nif __name__ == '__main__':\n    results = run_all_tests()\n    for test_case, result in results:\n        print(f'{test_case}: {True if result else False}')",
     "QUESTION PROMPT": "Given an array arr of integers, check if there exists two indices i and j such that i != j and arr[i] == 2 * arr[j].\n Return true if such indices exists, otherwise return false.",
     "TEST CASES": [
       {
@@ -105,9 +145,9 @@ def getLeetCodeResponseBits(id):
     
 
     convo.send_message(f"""
-        Context: Generate a LeetCode-style problem of user specified difficulty that involves data structures and algorithms. If specified, do not generate any problems in the list specified by the user indicated with 'user_solved_problems: <example comma separated list>' The problem should simulate a real-world scenario and include a comprehensive description, detailed constraints, and examples. It should also consider edge cases that necessitate careful thought and extensive testing. Provide empty Python and JavaScript function signatures. Include a set of test cases that cover both standard and edge cases. Avoid using markdown formatting such as bold or code blocks in the entire structured response. Follow the response template provided and return json string using the header, ex. PROBLEM NAME: , as the key.
+        Context: Generate a LeetCode-style problem of user specified difficulty that involves data structures and algorithms. If specified, do not generate any problems in the list specified by the user indicated with 'user_solved_problems: <example comma separated list>' The problem should simulate a real-world scenario and include a comprehensive description, detailed constraints, and examples. It should also consider edge cases that necessitate careful thought and extensive testing. Provide empty Python and JavaScript function signatures. Include a set of test cases that cover both standard and edge cases. Avoid using markdown formatting such as bold or code blocks in the entire structured response. Follow the response template provided and return json string using the header, ex. PROBLEM NAME: as the key. ENSURE PROPER FORMATTING FOR PYTHON AND JAVASCRIPT UNIT TESTS. Follow the example response provided. For proper formatting in python ensure any keys in objects are in single quotes.
         
-        User Input: Generate a random leetcode problem. user_solved_problems: {prev_solved_questions}
+        User Input: Generate an easy leetcode problem. user_solved_problems: {prev_solved_questions}
 
         Response Template: {format_response}
 
@@ -230,32 +270,32 @@ def getLeetCodeResponseBits(id):
 
     #         Follow the following example format:
 
-    #         PYTHON UNIT TESTING:
-    #         class SolutionTest:
-    #             @staticmethod
-    #             def run_test_case(input, expected):
-    #                 result = nameOfFunction(input)
-    #                 return result == expected
+            # PYTHON UNIT TESTING:
+            # class SolutionTest:
+            #     @staticmethod
+            #     def run_test_case(input, expected):
+            #         result = nameOfFunction(input)
+            #         return result == expected
 
-    #         def run_all_tests():
-    #             test_suite = SolutionTest()
-    #             test_results = []
-    #             test_cases = [
-    #                 {{'input': [First input], 'expected': [Expected output]}},
-    #                 {{'input': [Second input], 'expected': [Expected output]}},
-    #                 {{'input': [Third input], 'expected': [Expected output]}}
-    #             ]
-    #             for i, test_case in enumerate(test_cases, start=1):
-    #                 input, expected = test_case['input'], test_case['expected']
-    #                 result = test_suite.run_test_case(input, expected)
-    #                 test_results.append((f"Test case {{i}}", result))
-    #             return test_results
+            # def run_all_tests():
+            #     test_suite = SolutionTest()
+            #     test_results = []
+            #     test_cases = [
+            #         {{'input': [First input], 'expected': [Expected output]}},
+            #         {{'input': [Second input], 'expected': [Expected output]}},
+            #         {{'input': [Third input], 'expected': [Expected output]}}
+            #     ]
+            #     for i, test_case in enumerate(test_cases, start=1):
+            #         input, expected = test_case['input'], test_case['expected']
+            #         result = test_suite.run_test_case(input, expected)
+            #         test_results.append((f"Test case {{i}}", result))
+            #     return test_results
 
-    #         if __name__ == '__main__':
-    #             results = run_all_tests()
-    #             for test_case, result in results:
-    #                 print(f"{{test_case}}: {{True if result else False}}")
-    #     """
+            # if __name__ == '__main__':
+            #     results = run_all_tests()
+            #     for test_case, result in results:
+            #         print(f"{{test_case}}: {{True if result else False}}")
+        # """
     # )
 
     # python_test = convo.last.text
@@ -288,22 +328,22 @@ def getLeetCodeResponseBits(id):
 
     #         (do not include this line: these test cases should be pulled from leetcode)
     #         JAVASCRIPT UNIT TESTING:
-    #         const testCases = [
-    #             {{input: [First input], expected: [Expected output]}},
-    #             {{input: [Second input], expected: [Expected output]}},
-    #             {{input: [Third input], expected: [Expected output]}}
-    #         ];
+            # const testCases = [
+            #     {{input: [First input], expected: [Expected output]}},
+            #     {{input: [Second input], expected: [Expected output]}},
+            #     {{input: [Third input], expected: [Expected output]}}
+            # ];
 
-    #         (do not include this line: this test function below is explicitly an example for array comparisons for test cases. otherwise use a standard test case. if dealing with subarrays, implement a proper method for comparing the the subarray results to the expected results)
-    #         testCases.forEach(({{ input, expected }}, index) => {{
-    #             const result = nameOfFunction(input.nums, input.target);
-    #             console.assert(arraysEqual(result, expected), `Test case ${{index + 1}} failed`);
-    #             console.log(`Test case ${{index + 1}}`, JSON.stringify(expected) === JSON.stringify(result));
-    #         }});
+            # (do not include this line: this test function below is explicitly an example for array comparisons for test cases. otherwise use a standard test case. if dealing with subarrays, implement a proper method for comparing the the subarray results to the expected results)
+            # testCases.forEach(({{ input, expected }}, index) => {{
+            #     const result = nameOfFunction(input.nums, input.target);
+            #     console.assert(arraysEqual(result, expected), `Test case ${{index + 1}} failed`);
+            #     console.log(`Test case ${{index + 1}}`, JSON.stringify(expected) === JSON.stringify(result));
+            # }});
 
-    #         function arraysEqual(a, b) {{
-    #             return a.length === b.length && a.every((value, index) => value === b[index]);
-    #         }}
+            # function arraysEqual(a, b) {{
+            #     return a.length === b.length && a.every((value, index) => value === b[index]);
+            # }}
     #     """
     # )
 
