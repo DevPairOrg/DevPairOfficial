@@ -33,9 +33,62 @@ function LandingPage() {
         e.preventDefault();
         navigate('/code-collab');
     };
+
+    const handleAuth = async () => {
+        const res = await fetch('/api/judge0/auth');
+        if (res.ok) {
+            // const data = await res.json();
+            console.log(res, '\n', '200 = ok, 401 = invalid token');
+            return res;
+        } else {
+            return res;
+        }
+    };
+    const handleAuth2 = async () => {
+        const res = await fetch('/api/judge0/auth2');
+        if (res.ok) {
+            // const data = await res.json();
+            console.log(res, '\n', '200 = ok, 401 = invalid token');
+            return res;
+        } else {
+            return res;
+        }
+    };
+    const handleReqSub = async () => {
+        const res = await fetch('/api/judge0/test');
+        if (res.ok) {
+            const data = await res.json();
+            console.log(data);
+        } else {
+            return res;
+        }
+    };
+    const handleCreate = async () => {
+        const res = await fetch('/api/judge0/create', {
+            method: 'POST',
+        });
+        if (res.ok) {
+            const data = await res.json();
+            console.log(data);
+        } else {
+            return res;
+        }
+    };
     return (
         <>
             <main className="landing-page">
+                <button onClick={handleAuth} style={{ color: 'black' }}>
+                    Authenticate
+                </button>
+                <button onClick={handleAuth2} style={{ color: 'black' }}>
+                    Authorize
+                </button>
+                <button onClick={handleReqSub} style={{ color: 'black' }}>
+                    Request Submission
+                </button>
+                <button onClick={handleCreate} style={{ color: 'black' }}>
+                    Create Submission
+                </button>
                 <div className="landing-page-cool-image">
                     <div id="cat-one">
                         <img src={chat1} alt="first-cat-sitting-and-coding" className="bouncy-cats-one" />
