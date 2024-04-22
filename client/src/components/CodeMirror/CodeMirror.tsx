@@ -4,7 +4,13 @@ import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { parsedData } from '../../interfaces/gemini';
-import { TestResults, extractConsoleLogsJavaScriptOnly, handleCodeSubmission, handleJavascriptButton, handlePythonButton } from './util';
+import {
+    TestResults,
+    extractConsoleLogsJavaScriptOnly,
+    handleCodeSubmission,
+    handleJavascriptButton,
+    handlePythonButton,
+} from './util';
 import { useModal, Modal } from '../../context/Modal/Modal';
 import ConsoleOutput from './ConsoleOutput';
 import './CodeMirror.css';
@@ -20,14 +26,15 @@ function IDE(props: parsedData) {
     const [testCaseView, setTestCaseView] = useState<number | null>(null); // switch which test case your looking at
     const [logs, setLogs] = useState<string[] | null>(null); // stoudt console.log statements
 
-    useEffect(() => { // update modal content when needed
-        if(userResults && testCaseView) {
-            openConsoleOutputModal()
+    useEffect(() => {
+        // update modal content when needed
+        if (userResults && testCaseView) {
+            openConsoleOutputModal();
         }
     }, [testCaseView, userResults]);
 
-
-    const openConsoleOutputModal = () => { // opens the console output modal
+    const openConsoleOutputModal = () => {
+        // opens the console output modal
         setModalContent(
             <ConsoleOutput
                 userResults={userResults}
@@ -38,13 +45,14 @@ function IDE(props: parsedData) {
         );
     };
 
-    const onChange = (value: string) => { // NOTE* onChange function for react code mirror automatically takes in value param which is the IDE value string
-        setValue(value)
+    const onChange = (value: string) => {
+        // NOTE* onChange function for react code mirror automatically takes in value param which is the IDE value string
+        setValue(value);
 
         // extract evaluated console.log statements here (only when language is JavaScript)
-        if(language !== 'python' && value) {
-            const evaluatedLogStatements = extractConsoleLogsJavaScriptOnly(value)
-            setLogs(evaluatedLogStatements)
+        if (language !== 'python' && value) {
+            const evaluatedLogStatements = extractConsoleLogsJavaScriptOnly(value);
+            setLogs(evaluatedLogStatements);
         }
     };
 
@@ -52,6 +60,7 @@ function IDE(props: parsedData) {
         <>
             <div id="ide-container">
                 <Modal></Modal> {/* This is needed for the Modal UI to render in */}
+                
                 <div>
                     <div>Problem Name: {problemName && problemName}</div>
                     <div>Prompt: {problemPrompt && problemPrompt}</div>
@@ -85,10 +94,16 @@ function IDE(props: parsedData) {
                         </div>
                         <div style={{ display: 'flex', gap: '5px' }}>
                             <div>Language: </div>
-                            <button onClick={(e) => handlePythonButton(e, setLanguage, setValue, defaultPythonFn)} id="python-button">
+                            <button
+                                onClick={(e) => handlePythonButton(e, setLanguage, setValue, defaultPythonFn)}
+                                id="python-button"
+                            >
                                 Python
                             </button>
-                            <button onClick={(e) => handleJavascriptButton(e, setLanguage, setValue, defaultJsFn)} id="javascript-button">
+                            <button
+                                onClick={(e) => handleJavascriptButton(e, setLanguage, setValue, defaultJsFn)}
+                                id="javascript-button"
+                            >
                                 JavaScript
                             </button>
                         </div>
@@ -100,20 +115,27 @@ function IDE(props: parsedData) {
                         onChange={onChange}
                         theme={dracula}
                     />
-                    <button onClick={ async() => {
-                        handleCodeSubmission(
-                            (value || undefined),
-                            (jsUnitTest || undefined),
-                            language,
-                            (pythonUnitTest || undefined),
-                            setUserResults,
-                            setTestCaseView,
-                            openConsoleOutputModal
-                            )
-                        } } id="ide-submit-button">
+                    <button
+                        onClick={async () => {
+                            handleCodeSubmission(
+                                value || undefined,
+                                jsUnitTest || undefined,
+                                language,
+                                pythonUnitTest || undefined,
+                                setUserResults,
+                                setTestCaseView,
+                                openConsoleOutputModal
+                            );
+                        }}
+                        id="ide-submit-button"
+                    >
                         Submit Code
                     </button>
-                    {userResults && <button onClick={openConsoleOutputModal} className='show-stoudt-results'>Show Results...</button>}
+                    {userResults && (
+                        <button onClick={openConsoleOutputModal} className="show-stoudt-results">
+                            Show Results...
+                        </button>
+                    )}
                 </div>
             </div>
         </>
