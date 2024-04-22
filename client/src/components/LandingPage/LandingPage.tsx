@@ -2,12 +2,12 @@ import { RootState } from '../../store';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-// import chat1 from '../../assets/images/chat1.png';
-// import chat2 from '../../assets/images/chat2.png';
-// import comic1 from '../../assets/images/comic1.png';
-// import comic2 from '../../assets/images/comic2.png';
-// import comic3 from '../../assets/images/comic3.png';
-// import PageHeader from '../ScrambleText/ScrambleText';
+import chat1 from '../../assets/images/chat1.png';
+import chat2 from '../../assets/images/chat2.png';
+import comic1 from '../../assets/images/comic1.png';
+import comic2 from '../../assets/images/comic2.png';
+import comic3 from '../../assets/images/comic3.png';
+import PageHeader from '../ScrambleText/ScrambleText';
 import './LandingPage.css';
 import Footer from '../Footer/Footer';
 
@@ -62,8 +62,28 @@ function LandingPage() {
     // Example: "stdout": "Test Console Log\n8"
     // ? Maybe tell users to remove console.logs before finalizing their submission (create a 'run' button that is separate from 'submission')
 
+    const source_code = `const input = require('fs').readFileSync(0, 'utf-8').trim().split(' ');
+    const a = parseInt(input[0].split('=')[1]);
+    const b = parseInt(input[1].split('=')[1]);
+    console.log(twoSum(a,b))
+
+    function twoSum(a, b) {
+        const sum = a + b
+        console.log('1', sum)
+        console.log('2', b - a)
+        console.log('3', a + b)
+        return a + b;
+    }`;
+    const a = 5;
+    const b = 3;
+    const stdin = `${a} ${b}`;
+    const expectedOutput = '8';
+
+    const encodedSourceCode = btoa(source_code);
+    const encodedStdin = btoa(stdin);
+    const encodedExpectedOutput = btoa(expectedOutput);
     const createJSSubmissionOnLocal = async () => {
-        const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
+        const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=true&wait=true&fields=*';
         const options = {
             method: 'POST',
             headers: {
@@ -73,21 +93,10 @@ function LandingPage() {
                 // 'X-Auth-Host': 'http://146.190.61.177:2358',
             },
             body: JSON.stringify({
-                source_code: `const input = require('fs').readFileSync(0, 'utf-8').trim().split(' ');
-                    const a = parseInt(input[0].split('=')[1]);
-                    const b = parseInt(input[1].split('=')[1]);
-                    const newInput = input[2].replace('[', '').replace(']', '')
-                    const arr = [parseInt(newInput)]
-                    console.log(arr, Array.isArray(arr), typeof arr[0])
-                    console.log(twoSum(a,b))
-
-                    function twoSum(a, b) {
-                        const sum = a + b
-                        return a + b;
-                    }`,
+                source_code: encodedSourceCode,
                 language_id: 63,
-                stdin: 'nums=[2,7,11,15] target=9',
-                expected_output: '8',
+                stdin: encodedStdin,
+                expected_output: encodedExpectedOutput,
             }),
         };
         try {
@@ -98,6 +107,42 @@ function LandingPage() {
             console.error(error);
         }
     };
+    // const createJSSubmissionOnLocal = async () => {
+    //     const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=true&wait=true&fields=*';
+    //     const options = {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json',
+    //             'X-Auth-Token': 'minh',
+    //             'X-Auth-User': 'tran',
+    //             // 'X-Auth-Host': 'http://146.190.61.177:2358',
+    //         },
+    //         body: JSON.stringify({
+    //             source_code: `const input = require('fs').readFileSync(0, 'utf-8').trim().split(' ');
+    //                 const a = parseInt(input[0].split('=')[1]);
+    //                 const b = parseInt(input[1].split('=')[1]);
+    //                 console.log(twoSum(a,b))
+
+    //                 function twoSum(a, b) {
+    //                     const sum = a + b
+    //                     console.log('1', sum)
+    //                     console.log('2', b - a)
+    //                     console.log('3', a + b)
+    //                     return a + b;
+    //                 }`,
+    //             language_id: 63,
+    //             stdin: 'YT01IGI9Mw==',
+    //             expected_output: '8',
+    //         }),
+    //     };
+    //     try {
+    //         const response = await fetch(url, options as any);
+    //         const result = await response.json();
+    //         console.log(result);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
     const createBatchedSubmissionsOnLocal = async () => {
         const url = 'http://146.190.61.177:2358/submissions/batch/?base64_encoded=false&wait=true&fields=*';
         const options = {
@@ -253,7 +298,7 @@ function LandingPage() {
     return (
         <>
             <main className="landing-page">
-                {/* <button onClick={handleAbout} style={{ color: 'black' }}>
+                <button onClick={handleAbout} style={{ color: 'black' }}>
                     IS THE SERVER RUNNING?
                 </button>
                 <button onClick={createJSSubmissionOnLocal} style={{ color: 'black', backgroundColor: 'blue' }}>
@@ -267,14 +312,14 @@ function LandingPage() {
                 </button>
                 <button onClick={handleRandomAPI} style={{ color: 'white', backgroundColor: 'black' }}>
                     TEST ROUTE FOR OTHER API CALLS
-                </button> */}
-                <button style={{ color: 'black', backgroundColor: 'grey' }} onClick={() => parseTestCases(testCase)}>
+                </button>
+                {/* <button style={{ color: 'black', backgroundColor: 'grey' }} onClick={() => parseTestCases(testCase)}>
                     Re-parse
                 </button>
                 <div>
                     <pre>{testCase1}</pre>
-                </div>
-                {/* <div className="landing-page-cool-image">
+                </div> */}
+                <div className="landing-page-cool-image">
                     <div id="cat-one">
                         <img src={chat1} alt="first-cat-sitting-and-coding" className="bouncy-cats-one" />
                     </div>
@@ -315,7 +360,7 @@ function LandingPage() {
                             Get Started
                         </button>
                     )}
-                </div> */}
+                </div>
             </main>
             <Footer />
         </>
