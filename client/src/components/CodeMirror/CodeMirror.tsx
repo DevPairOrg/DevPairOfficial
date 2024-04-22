@@ -4,7 +4,7 @@ import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { parsedData } from '../../interfaces/gemini';
-import { TestResults, extractConsoleLogsJavaScriptOnly, handleCodeSubmission, handleJavascriptButton, handlePythonButton } from './util';
+import { TestResults, extractConsoleLogsJavaScriptOnly, handleCodeSubmission, handleJavascriptButton, handlePythonButton, TestParams, parsedTestCases } from './util';
 import { useModal, Modal } from '../../context/Modal/Modal';
 import ConsoleOutput from './ConsoleOutput';
 import './CodeMirror.css';
@@ -15,6 +15,7 @@ function IDE(props: parsedData) {
 
     const [value, setValue] = useState<string | undefined>(defaultPythonFn); // value of user code inside of IDE
     const [language, setLanguage] = useState<string>('python'); // language for IDE
+    const [params, setParams] = useState<TestParams | {}>({}) // gathers all the parameters for each test case
 
     const [userResults, setUserResults] = useState<TestResults | null>(null); // user results object on submission
     const [testCaseView, setTestCaseView] = useState<number | null>(null); // switch which test case your looking at
@@ -26,34 +27,9 @@ function IDE(props: parsedData) {
         }
     }, [testCaseView, userResults]);
 
-
-    function parsedTestCases(testCases: string | undefined) {
-        if(testCases) {
-            const parseByNewLine = testCases?.trim()?.split("\n")
-
-            const firstInputLine = parseByNewLine[0]
-            const secondInputLine = parseByNewLine[2]
-            const thirdInputLine = parseByNewLine[4]
-
-
-            let testCase1ParamsLine = firstInputLine.split("- INPUT:")
-            let testCase2ParamsLine = secondInputLine.split("- INPUT:")
-            let testCase3ParamsLine = thirdInputLine.split("- INPUT:")
-
-            testCase1ParamsLine = testCase1ParamsLine.splice(1, testCase1ParamsLine.length)
-            testCase2ParamsLine = testCase2ParamsLine.splice(1, testCase2ParamsLine.length)
-            testCase3ParamsLine = testCase3ParamsLine.splice(1, testCase3ParamsLine.length)
-
-            const paramsTestCase1 = testCase1ParamsLine.join("").trim()
-            const paramsTestCase2 = testCase2ParamsLine.join("").trim()
-            const paramsTestCase3 = testCase3ParamsLine.join("").trim()
-
-            console.log({paramsTestCase1, paramsTestCase2, paramsTestCase3})
-            return {paramsTestCase1, paramsTestCase2, paramsTestCase3}
-        }
-    }
-
-    parsedTestCases(testCases)
+    useEffect(() => {
+        setParams(parsedTestCases(testCases))
+    }, [])
 
 
     const openConsoleOutputModal = () => { // opens the console output modal
@@ -76,6 +52,8 @@ function IDE(props: parsedData) {
             setLogs(evaluatedLogStatements)
         }
     };
+
+    console.log("PARMS", params)
 
     return (
         <>

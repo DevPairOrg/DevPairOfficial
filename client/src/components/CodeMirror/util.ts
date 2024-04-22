@@ -157,3 +157,44 @@ export const extractConsoleLogsJavaScriptOnly = (functionDefinition: string) => 
 
 
 // -------------------------------------------------------------------------------------------------------------
+
+
+
+
+// Parse Gemini Test Cases ------------------------------------------------------------------------------------
+
+export interface TestParams {
+    paramsTestCase1: string
+    paramsTestCase2: string
+    paramsTestCase3: string
+}
+
+export function parsedTestCases(testCases: string | undefined) {
+    if(testCases) {
+        const parseByNewLine = testCases?.trim()?.split("\n")
+
+        const firstInputLine = parseByNewLine[0]
+        const secondInputLine = parseByNewLine[2]
+        const thirdInputLine = parseByNewLine[4]
+
+
+        let testCase1ParamsLine = firstInputLine.split("- INPUT:")
+        let testCase2ParamsLine = secondInputLine.split("- INPUT:")
+        let testCase3ParamsLine = thirdInputLine.split("- INPUT:")
+
+        testCase1ParamsLine = testCase1ParamsLine.splice(1, testCase1ParamsLine.length)
+        testCase2ParamsLine = testCase2ParamsLine.splice(1, testCase2ParamsLine.length)
+        testCase3ParamsLine = testCase3ParamsLine.splice(1, testCase3ParamsLine.length)
+
+        const paramsTestCase1 = testCase1ParamsLine.join("").trim()
+        const paramsTestCase2 = testCase2ParamsLine.join("").trim()
+        const paramsTestCase3 = testCase3ParamsLine.join("").trim()
+
+        console.log({paramsTestCase1, paramsTestCase2, paramsTestCase3})
+        return {paramsTestCase1, paramsTestCase2, paramsTestCase3}
+    } else {
+        return {}
+    }
+}
+
+// -------------------------------------------------------------------------------------------------------------
