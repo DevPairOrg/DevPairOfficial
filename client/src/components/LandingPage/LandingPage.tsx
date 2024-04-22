@@ -34,60 +34,65 @@ function LandingPage() {
         navigate('/code-collab');
     };
 
-    const handleAuth = async () => {
-        const res = await fetch('/api/judge0/auth');
-        if (res.ok) {
-            // const data = await res.json();
-            console.log(res, '\n', '200 = ok, 401 = invalid token');
-            return res;
-        } else {
-            return res;
-        }
-    };
-    const handleAuth2 = async () => {
-        const res = await fetch('/api/judge0/auth2');
-        if (res.ok) {
-            // const data = await res.json();
-            console.log(res, '\n', '200 = ok, 401 = invalid token');
-            return res;
-        } else {
-            return res;
-        }
-    };
-    const handleReqSub = async () => {
-        const res = await fetch('/api/judge0/test');
-        if (res.ok) {
-            const data = await res.json();
-            console.log(data);
-        } else {
-            return res;
-        }
-    };
-    const handleCreate = async () => {
-        const res = await fetch('/api/judge0/create', {
+    const createSubmissionOnLocal = async () => {
+        const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
+        const options = {
             method: 'POST',
-        });
-        if (res.ok) {
-            const data = await res.json();
-            console.log(data);
-        } else {
-            return res;
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Auth-Token': 'minh',
+                'X-Auth-User': 'tran',
+                // 'X-Auth-Host': 'http://146.190.61.177:2358',
+            },
+            body: JSON.stringify({
+                source_code: `const input = require('fs').readFileSync(0, 'utf-8').trim().split(' ');
+                    const a = parseInt(input[0].split('=')[1]);
+                    const b = parseInt(input[1].split('=')[1]);
+                    console.log(twoSum(a, b));
+
+                    function twoSum(a, b) {
+                        return a + b;
+                    }`,
+                language_id: 63,
+                stdin: 'a=5 b=3',
+                expected_output: '8',
+            }),
+        };
+        try {
+            const response = await fetch(url, options as any);
+            const result = await response.json();
+            console.log(result);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleAbout = async () => {
+        const url = 'http://146.190.61.177:2358/about';
+        const options = {
+            method: 'GET',
+            headers: {
+                'X-Auth-Token': 'minh',
+                'X-Auth-User': 'tran',
+            },
+        };
+        try {
+            const response = await fetch(url, options as any);
+            const result = await response.text();
+            console.log(response);
+            console.log(result);
+        } catch (error) {
+            console.error(error);
         }
     };
     return (
         <>
             <main className="landing-page">
-                <button onClick={handleAuth} style={{ color: 'black' }}>
-                    Authenticate
+                <button onClick={handleAbout} style={{ color: 'black' }}>
+                    INITIAL ABOUT TEST
                 </button>
-                <button onClick={handleAuth2} style={{ color: 'black' }}>
-                    Authorize
-                </button>
-                <button onClick={handleReqSub} style={{ color: 'black' }}>
-                    Request Submission
-                </button>
-                <button onClick={handleCreate} style={{ color: 'black' }}>
-                    Create Submission
+                <button onClick={createSubmissionOnLocal} style={{ color: 'black', backgroundColor: 'purple' }}>
+                    createSubmissionOnLocal
                 </button>
                 <div className="landing-page-cool-image">
                     <div id="cat-one">
