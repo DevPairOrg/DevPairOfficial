@@ -27,6 +27,35 @@ function IDE(props: parsedData) {
     }, [testCaseView, userResults]);
 
 
+    function parsedTestCases(testCases: string | undefined) {
+        if(testCases) {
+            const parseByNewLine = testCases?.trim()?.split("\n")
+
+            const firstInputLine = parseByNewLine[0]
+            const secondInputLine = parseByNewLine[2]
+            const thirdInputLine = parseByNewLine[4]
+
+
+            let testCase1ParamsLine = firstInputLine.split("- INPUT:")
+            let testCase2ParamsLine = secondInputLine.split("- INPUT:")
+            let testCase3ParamsLine = thirdInputLine.split("- INPUT:")
+
+            testCase1ParamsLine = testCase1ParamsLine.splice(1, testCase1ParamsLine.length)
+            testCase2ParamsLine = testCase2ParamsLine.splice(1, testCase2ParamsLine.length)
+            testCase3ParamsLine = testCase3ParamsLine.splice(1, testCase3ParamsLine.length)
+
+            const paramsTestCase1 = testCase1ParamsLine.join("").trim()
+            const paramsTestCase2 = testCase2ParamsLine.join("").trim()
+            const paramsTestCase3 = testCase3ParamsLine.join("").trim()
+
+            console.log({paramsTestCase1, paramsTestCase2, paramsTestCase3})
+            return {paramsTestCase1, paramsTestCase2, paramsTestCase3}
+        }
+    }
+
+    parsedTestCases(testCases)
+
+
     const openConsoleOutputModal = () => { // opens the console output modal
         setModalContent(
             <ConsoleOutput
@@ -52,6 +81,7 @@ function IDE(props: parsedData) {
         <>
             <div id="ide-container">
                 <Modal></Modal> {/* This is needed for the Modal UI to render in */}
+                <button onClick={() => parsedTestCases(testCases)}>TEST</button>
                 <div>
                     <div>Problem Name: {problemName && problemName}</div>
                     <div>Prompt: {problemPrompt && problemPrompt}</div>
