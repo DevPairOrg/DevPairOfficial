@@ -19,11 +19,12 @@ function IDE(props: parsedData) {
 
     const [value, setValue] = useState<string | undefined>(defaultPythonFn); // value of user code inside of IDE
     const [language, setLanguage] = useState<string>('python'); // language for IDE
-    const [params, setParams] = useState<CaseParameters | {}>(testCases ? testCases : {}); // gathers all the parameters for each test case
+    const [params, _setParams] = useState<CaseParameters[] | []>(testCases ? testCases : []); // gathers all the parameters for each test case
 
-    const [userResults, setUserResults] = useState<TestResults | null>(null); // user results object on submission
+    const [userResults, _setUserResults] = useState<TestResults | null>(null); // user results object on submission
     const [testCaseView, setTestCaseView] = useState<number | null>(null); // switch which test case your looking at
-    const [logs, setLogs] = useState<string[] | null>(null); // stoudt console.log statements
+    const [logs, _setLogs] = useState<string[] | null>(null); // stoudt console.log statements
+
     useEffect(() => {
         // update modal content when needed
         if (userResults && testCaseView) {
@@ -85,21 +86,10 @@ function IDE(props: parsedData) {
         updateIDERealTime(value);
     };
 
-    // useEffect(() => {
-    //     setParams(testCases);
-    // });
-
     return (
         <>
             <div id="ide-container">
                 <Modal></Modal> {/* This is needed for the Modal UI to render in */}
-                <button
-                    onClick={() => handleJudgeSubmission(value, language, params)}
-                    id="ide-submit-button"
-                    style={{ color: 'red' }}
-                >
-                    Test Submission
-                </button>
                 <div>
                     <div>Problem Name: {problemName && problemName}</div>
                     <div>Prompt: {problemPrompt && problemPrompt}</div>
@@ -164,23 +154,13 @@ function IDE(props: parsedData) {
                         onChange={onChange}
                         theme={dracula}
                     />
-                    {/* <button
-                        onClick={async () => {
-                            handleCodeSubmission(
-                                value || undefined,
-                                jsUnitTest || undefined,
-                                language,
-                                pythonUnitTest || undefined,
-                                setUserResults,
-                                setTestCaseView,
-                                openConsoleOutputModal
-                            );
-                        }}
+                    <button
+                        onClick={() => handleJudgeSubmission(value, language, params)}
                         id="ide-submit-button"
+                        style={{ color: 'red' }}
                     >
-                        Submit Code
-                    </button> */}
-
+                        Submit
+                    </button>
                     {userResults && (
                         <button onClick={openConsoleOutputModal} className="show-stoudt-results">
                             Show Results...

@@ -3,7 +3,7 @@ import shareScreenPlaceholder from '../../../assets/images/share-screen-holder.w
 import useGeminiDSARequest from '../../../hooks/Gemini/useGeminiDSARequest';
 import { useAppSelector } from '../../../hooks';
 import PairedScreenShare, { ContentProps } from '../ScreenShare/ScreenShareContainer';
-import React, {useEffect, useCallback} from 'react';
+import React, { useEffect, useCallback } from 'react';
 import GeminiDSA from './GeminiDSA';
 import { useAppDispatch } from '../../../hooks';
 import { resetGeminiState } from '../../../store/pairedContent';
@@ -22,22 +22,16 @@ const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler, channe
     }, [socket, connectSocket]);
 
     // handle received
-    const handleLeaveGeminiPageReceived = useCallback(
-        () => {
-            dispatch(resetGeminiState());
-        },
-        [dispatch]
-    );
+    const handleLeaveGeminiPageReceived = useCallback(() => {
+        dispatch(resetGeminiState());
+    }, [dispatch]);
 
     // handle send
-    const sendLeaveGeminiPage = useCallback(
-        () => {
-            socket?.emit('leave_gemini_page', {
-                room: (channelName as string),
-            });
-        },
-        [socket, channelName]
-    );
+    const sendLeaveGeminiPage = useCallback(() => {
+        socket?.emit('leave_gemini_page', {
+            room: channelName as string,
+        });
+    }, [socket, channelName]);
 
     // attach listeners for sockets
     useEffect(() => {
@@ -46,8 +40,9 @@ const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler, channe
 
             // Clean up: Detach the event listener and dispatch action to clear states messages when unmounting
             return () => {
+                socket.disconnect();
                 socket.off('leave_gemini_page_received', handleLeaveGeminiPageReceived);
-                dispatch(resetGeminiState())
+                dispatch(resetGeminiState());
             };
         }
     }, [dispatch, handleLeaveGeminiPageReceived, socket]);

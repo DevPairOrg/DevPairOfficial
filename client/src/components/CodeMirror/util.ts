@@ -146,8 +146,6 @@ export const handleJavascriptButton = (
 
 // -------------------------------------------------------------------------------------------------------------
 
-
-
 // ! stringifiy object data so it can be easily used with JSON.parse() method
 function stringifyObjectData(objectString: string) {
     // Remove leading and trailing spaces
@@ -155,7 +153,7 @@ function stringifyObjectData(objectString: string) {
 
     // Check if the string starts and ends with curly braces
     if (objectString[0] !== '{' || objectString[objectString.length - 1] !== '}') {
-        console.error("Input is not a valid JSON-like object.");
+        console.error('Input is not a valid JSON-like object.');
         return null;
     }
 
@@ -166,7 +164,7 @@ function stringifyObjectData(objectString: string) {
     const parts = objectString.split(',');
 
     // Iterate through each part and fix the format
-    const fixedParts = parts.map(part => {
+    const fixedParts = parts.map((part) => {
         // Find the index of the colon
         const colonIndex = part.indexOf(':');
 
@@ -190,22 +188,13 @@ function stringifyObjectData(objectString: string) {
     return `{${fixedParts.join(',')}}`;
 }
 
-interface TestParam {
-    INPUT: any;
-    OUTPUT: any;
-}
-
-//? NEW SUBMISSION USING JUDGE0 ---------------------------------------------------------------------------------
 //? NEW SUBMISSION USING JUDGE0 ---------------------------------------------------------------------------------
 export interface CaseParameters {
     INPUT: string;
     OUTPUT: string;
 }
 
-export interface JudgeResponse {
-    response: Response;
-}
-
+// * MAIN FUNCTION CALL WITH CONDITIONAL FETCHES
 export const handleJudgeSubmission = async (
     sourceCode: string | undefined,
     language: string,
@@ -242,30 +231,27 @@ export const handleJudgeSubmission = async (
     }
 };
 
-export const createJSSubmissionOnLocal = async (testCases: TestParam[] | undefined, value: string | undefined
-    sourceCode: string | undefined,
-    stdin: string,
-    expectedOutput: string
-) => {
+function grabFunctionName(sourceCode: string | undefined) {
+    if (!sourceCode) return;
 
-    function grabFunctionName(value: string | undefined) {
-        if(!value) return
+    // Extracting the function name
+    const regex = /function\s+(\w+)\s*\(/;
+    const match = sourceCode.match(regex);
 
-        // Extracting the function name
-        const regex = /function\s+(\w+)\s*\(/;
-        const match = value.match(regex);
-
-        if (match && match[1]) {
-            return match[1];
-        } else {
-            // If no match is found, return null or handle the case as needed
-            return null;
-        }
+    if (match && match[1]) {
+        return match[1];
+    } else {
+        // If no match is found, return null or handle the case as needed
+        return null;
     }
+}
 
-    const correctFunctionName = grabFunctionName(value)
-
-
+export const createJSSubmissionOnLocal = async (
+    sourceCode: string | undefined,
+    stdin: string | undefined,
+    expectedOutput: string | undefined
+) => {
+    const correctFunctionName = grabFunctionName(sourceCode);
     const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
     const options = {
         method: 'POST',
@@ -280,17 +266,17 @@ export const createJSSubmissionOnLocal = async (testCases: TestParam[] | undefin
                 const input = require('fs').readFileSync(0, 'utf-8').trim();
                 const eachParam = input.split(';')
 
-                //console.log("EACH PARAM", eachParam)
+                console.log("EACH PARAM", eachParam)
                 const parsedTypesParamsArray = eachParam.map((param) => {
                     param = param.split("=")[1]
                     parsedParam = JSON.parse( param.trim() )
                     return parsedParam
                 })
-                //console.log("PARSED TYPES ARR --->", parsedTypesParamsArray)
+                console.log("PARSED TYPES ARR --->", parsedTypesParamsArray)
 
 
                 console.log(${correctFunctionName}(...parsedTypesParamsArray))
-                ${value}
+                ${sourceCode}
 
             `,
             language_id: 63,
