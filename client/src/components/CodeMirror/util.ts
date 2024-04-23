@@ -146,44 +146,57 @@ export const handleJavascriptButton = (
 
 // -------------------------------------------------------------------------------------------------------------
 
-// Parse Gemini Test Cases ------------------------------------------------------------------------------------
-
-import { TestCase } from '../../interfaces/gemini';
-export interface TestParams {
-    TestCaseInput1: any;
-    TestCaseInput2: any;
-    TestCaseInput3: any;
-    TestCaseOutput1: any;
-    TestCaseOutput2: any;
-    TestCaseOutput3: any;
-}
-
-export function parsedTestCases(testCases: TestCase[] | undefined) {
-    console.log('Parsing test cases...');
-    if (testCases) {
-        return {
-            TestCaseInput1: testCases[0].INPUT,
-            TestCaseInput2: testCases[1].INPUT,
-            TestCaseInput3: testCases[2].INPUT,
-            TestCaseOutput1: testCases[0].OUTPUT,
-            TestCaseOutput2: testCases[1].OUTPUT,
-            TestCaseOutput3: testCases[2].OUTPUT,
-        };
-    if(testCases) {
-        console.log("PARAMS OBJECT", {paramsTestCase1: testCases[0].INPUT, paramsTestCase2: testCases[1].INPUT, paramsTestCase3: testCases[2].INPUT})
-        return {paramsTestCase1: testCases[0].INPUT, paramsTestCase2: testCases[1].INPUT, paramsTestCase3: testCases[2].INPUT}
-    } else {
-        console.log('No test cases');
-        return {};
-    }
-}
-
-// -------------------------------------------------------------------------------------------------------------
-
 //? NEW SUBMISSION USING JUDGE0 ---------------------------------------------------------------------------------
+export interface CaseParameters {
+    INPUT: string;
+    OUTPUT: string;
+}
 
-export const createJSSubmissionOnLocal = async (sourceCode: string | undefined, params: TestParams | {}) => {
-    console.log('Running javascript submission', params);
+export interface JudgeResponse {
+    response: Response;
+}
+
+export const handleJudgeSubmission = async (
+    sourceCode: string | undefined,
+    language: string,
+    testCases: CaseParameters[]
+) => {
+    console.log('wtf is this', testCases);
+    if (language === 'javascript') {
+        for (const test of testCases) {
+            console.log('Submission for Javascript', test);
+            const result = await createJSSubmissionOnLocal(sourceCode, test.INPUT, test.OUTPUT);
+            console.log({
+                stdin: result.stdin,
+                expectedOutput: result.expected_output,
+                result: result.status.description,
+                stdout: result.stdout,
+                stderr: result.stderr,
+                exitCode: result.exit_code,
+            });
+        }
+    }
+    if (language === 'python') {
+        for (const test of testCases) {
+            console.log('Submission for Python', test);
+            const result = await createPySubmissionOnLocal(sourceCode, test.INPUT, test.OUTPUT);
+            console.log({
+                stdin: result.stdin,
+                expectedOutput: result.expected_output,
+                result: result.status.description,
+                stdout: result.stdout,
+                stderr: result.stderr,
+                exitCode: result.exit_code,
+            });
+        }
+    }
+};
+
+export const createJSSubmissionOnLocal = async (
+    sourceCode: string | undefined,
+    stdin: string,
+    expectedOutput: string
+) => {
     const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
     const options = {
         method: 'POST',
@@ -193,28 +206,16 @@ export const createJSSubmissionOnLocal = async (sourceCode: string | undefined, 
             'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
         },
         body: JSON.stringify({
-            // source_code: `
-            //     const input = require('fs').readFileSync(0, 'utf-8').trim().split(' ');
-            //     const a = parseInt(input[0].split('=')[1]);
-            //     const b = parseInt(input[1].split('=')[1]);
-            //     console.log(twoSum(a, b));
-
-            //     function twoSum(a, b) {
-            //         const sum = a + b
-            //         console.log('Test Console Log', sum)
-            //         return a + b;
-            //     }
-            // `,
             source_code: sourceCode,
             language_id: 63,
-            stdin: (params as TestParams).TestCaseInput1,
-            expected_output: (params as TestParams).TestCaseOutput1,
+            stdin: stdin,
+            expected_output: expectedOutput,
         }),
     };
     try {
+        console.log('Running javascript submission: STDIN ===>', stdin);
         const response = await fetch(url, options as any);
         const result = await response.json();
-        console.log(result);
         return result;
     } catch (error) {
         console.error(error);
@@ -223,7 +224,11 @@ export const createJSSubmissionOnLocal = async (sourceCode: string | undefined, 
 
 // ! For Python: Must Include 'additional_files': sys
 // ! This is so the 'import sys' in the source code actually works correctly
-export const createPySubmissionOnLocal = async (sourceCode: string | undefined, params: TestCase | {}) => {
+export const createPySubmissionOnLocal = async (
+    sourceCode: string | undefined,
+    stdin: string,
+    expectedOutput: string
+) => {
     // This formats python code and keeps its indentation while using json.stringify so our fetch code block doesn't look weird
     function formatPythonCode(code: string) {
         const lines = code.split('\n');
@@ -231,8 +236,7 @@ export const createPySubmissionOnLocal = async (sourceCode: string | undefined, 
         const firstLineIndent = lines[1].search(/\S|$/);
         return lines.map((line) => line.substring(firstLineIndent)).join('\n');
     }
-
-    if (Object.entries(params).length > 0 && sourceCode !== undefined) {
+    if (sourceCode) {
         const formattedPythonSourceCode = formatPythonCode(sourceCode);
         const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
         const options = {
@@ -244,29 +248,17 @@ export const createPySubmissionOnLocal = async (sourceCode: string | undefined, 
             },
             body: JSON.stringify({
                 additional_files: 'sys',
-                // !!! FOR PYTHON YOU HAVE TO USE THIS INDENTATION LMAOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-                // source_code: `
-                //     import sys
-                //     def two_sum(a, b):
-                //         sum_value = a + b
-                //         return sum_value
-
-                //     input_data = sys.stdin.read().strip().split(' ')
-                //     a = int(input_data[0].split('=')[1])
-                //     b = int(input_data[1].split('=')[1])
-
-                //     print(two_sum(a, b))
-                // `,
                 source_code: formattedPythonSourceCode,
                 language_id: 71,
-                stdin: (params as TestParams).TestCaseInput1,
-                expected_output: (params as TestParams).TestCaseOutput1,
+                stdin: stdin,
+                expected_output: expectedOutput,
             }),
         };
+
         try {
             const response = await fetch(url, options as any);
             const result = await response.json();
-            console.log(result);
+            return result;
         } catch (error) {
             console.error(error);
         }

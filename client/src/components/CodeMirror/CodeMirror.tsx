@@ -5,17 +5,7 @@ import { python } from '@codemirror/lang-python';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { parsedData } from '../../interfaces/gemini';
 import { useSocket } from '../../context/Socket';
-import {
-    TestResults,
-    extractConsoleLogsJavaScriptOnly,
-    handleCodeSubmission,
-    handleJavascriptButton,
-    handlePythonButton,
-    TestParams,
-    parsedTestCases,
-    createJSSubmissionOnLocal,
-    createPySubmissionOnLocal,
-} from './util';
+import { TestResults, handleJavascriptButton, handlePythonButton, CaseParameters, handleJudgeSubmission } from './util';
 
 import { useModal, Modal } from '../../context/Modal/Modal';
 import ConsoleOutput from './ConsoleOutput';
@@ -24,17 +14,16 @@ import './CodeMirror.css';
 function IDE(props: parsedData) {
     const { socket, connectSocket, error } = useSocket();
 
-    const { problemName, problemPrompt, testCases, pythonUnitTest, jsUnitTest, defaultPythonFn, defaultJsFn, channelName } = props;
+    const { problemName, problemPrompt, testCases, defaultPythonFn, defaultJsFn, channelName } = props;
     const { setModalContent } = useModal();
 
     const [value, setValue] = useState<string | undefined>(defaultPythonFn); // value of user code inside of IDE
     const [language, setLanguage] = useState<string>('python'); // language for IDE
-    const [params, setParams] = useState<TestParams | {}>({}); // gathers all the parameters for each test case
+    const [params, setParams] = useState<CaseParameters | {}>(testCases ? testCases : {}); // gathers all the parameters for each test case
 
     const [userResults, setUserResults] = useState<TestResults | null>(null); // user results object on submission
     const [testCaseView, setTestCaseView] = useState<number | null>(null); // switch which test case your looking at
     const [logs, setLogs] = useState<string[] | null>(null); // stoudt console.log statements
-
     useEffect(() => {
         // update modal content when needed
         if (userResults && testCaseView) {
@@ -42,20 +31,12 @@ function IDE(props: parsedData) {
         }
     }, [testCaseView, userResults]);
 
-    useEffect(() => {
-        const testInputOutputs = parsedTestCases(testCases);
-        console.log(testInputOutputs);
-        setParams(testInputOutputs);
-        console.log('asldfjaks', params);
-    }, []);
-
     if (error) console.log('Error in IDE Component: ', error);
     useEffect(() => {
         if (!socket) {
             connectSocket();
         }
     }, [socket, connectSocket]);
-
 
     const openConsoleOutputModal = () => {
         // opens the console output modal
@@ -71,20 +52,17 @@ function IDE(props: parsedData) {
     };
 
     // handle received
-    const handleIDEReceived = useCallback(
-        (data: {newValue: string}) => {
-            setValue(data.newValue)
-        },
-        []
-    );
+    const handleIDEReceived = useCallback((data: { newValue: string }) => {
+        setValue(data.newValue);
+    }, []);
 
     // handle send
     const updateIDERealTime = useCallback(
         (value: string) => {
-            console.log("UPDATE IDE...")
+            console.log('UPDATE IDE...');
             socket?.emit('update_IDE', {
                 newValue: value,
-                room: (channelName as string),
+                room: channelName as string,
             });
         },
         [socket, value, channelName]
@@ -99,44 +77,43 @@ function IDE(props: parsedData) {
                 socket.off('update_IDE_received', handleIDEReceived);
             };
         }
-    }, [ handleIDEReceived, socket]);
+    }, [handleIDEReceived, socket]);
 
-    const onChange = (value: string) => { // NOTE* onChange function for react code mirror automatically takes in value param which is the IDE value string
-        setValue(value)
-        updateIDERealTime(value)
-
-        // extract evaluated console.log statements here (only when language is JavaScript)
-        // if(language !== 'python' && value) {
-        //     const evaluatedLogStatements = extractConsoleLogsJavaScriptOnly(value)
-        //     setLogs(evaluatedLogStatements)
-        // }
+    const onChange = (value: string) => {
+        // NOTE* onChange function for react code mirror automatically takes in value param which is the IDE value string
+        setValue(value);
+        updateIDERealTime(value);
     };
+
+    // useEffect(() => {
+    //     setParams(testCases);
+    // });
 
     return (
         <>
             <div id="ide-container">
                 <Modal></Modal> {/* This is needed for the Modal UI to render in */}
-                <button onClick={() => parsedTestCases(testCases)}>TEST</button>
-                {/* <button onClick={() => createJSSubmissionOnLocal()}>JAVASCRIPT SUBMISSION</button>
-                <button onClick={() => createPySubmissionOnLocal()}>PYTHON SUBMISSION</button> */}
                 <button
-                    onClick={() => createJSSubmissionOnLocal(value, params)}
+                    onClick={() => handleJudgeSubmission(value, language, params)}
                     id="ide-submit-button"
                     style={{ color: 'red' }}
                 >
-                    Submit Code
+                    Test Submission
                 </button>
                 <div>
                     <div>Problem Name: {problemName && problemName}</div>
                     <div>Prompt: {problemPrompt && problemPrompt}</div>
-                    <pre>{testCases && (testCases.map(entry => {
-                        return (
-                            <>
-                            <div key={Math.random()}>INPUT: {entry.INPUT}</div>
-                            <div key={Math.random()}>OUTPUT: {entry.OUTPUT}</div>
-                            </>
-                        )
-                    }))}</pre>
+                    <pre>
+                        {testCases &&
+                            testCases.map((entry) => {
+                                return (
+                                    <>
+                                        <div key={Math.random()}>INPUT: {entry.INPUT}</div>
+                                        <div key={Math.random()}>OUTPUT: {entry.OUTPUT}</div>
+                                    </>
+                                );
+                            })}
+                    </pre>
                 </div>
                 <div>
                     <div
