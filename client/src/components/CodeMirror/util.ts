@@ -157,3 +157,111 @@ export const extractConsoleLogsJavaScriptOnly = (functionDefinition: string) => 
 
 
 // -------------------------------------------------------------------------------------------------------------
+
+
+
+
+// Parse Gemini Test Cases ------------------------------------------------------------------------------------
+
+import { TestCase } from "../../interfaces/gemini";
+export interface TestParams {
+    paramsTestCase1: string
+    paramsTestCase2: string
+    paramsTestCase3: string
+}
+
+export function parsedTestCases(testCases: TestCase[] | undefined) {
+    if(testCases) {
+        return {paramsTestCase1: testCases[0].INPUT, paramsTestCase2: testCases[1].INPUT, paramsTestCase3: testCases[2].INPUT}
+    } else {
+        return {}
+    }
+}
+
+// -------------------------------------------------------------------------------------------------------------
+
+
+
+
+//? NEW SUBMISSION USING JUDGE0 ---------------------------------------------------------------------------------
+
+export const createJSSubmissionOnLocal = async () => {
+    const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+            'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
+            // 'X-Auth-Host': 'http://146.190.61.177:2358',
+        },
+        body: JSON.stringify({
+            source_code: `
+                const input = require('fs').readFileSync(0, 'utf-8').trim().split(' ');
+                const a = parseInt(input[0].split('=')[1]);
+                const b = parseInt(input[1].split('=')[1]);
+                console.log(twoSum(a, b));
+
+                function twoSum(a, b) {
+                    const sum = a + b
+                    console.log('Test Console Log', sum)
+                    return a + b;
+                }
+            `,
+            language_id: 63,
+            stdin: 'a=5 b=3',
+            expected_output: '8',
+        }),
+    };
+    try {
+        const response = await fetch(url, options as any);
+        const result = await response.json();
+        console.log(result);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+
+// ! For Python: Must Include 'additional_files': sys
+// ! This is so the 'import sys' in the source code actually works correctly
+export const createPySubmissionOnLocal = async () => {
+    const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+            'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
+            // 'X-Auth-Host': 'http://146.190.61.177:2358',
+        },
+        body: JSON.stringify({
+            additional_files: 'sys',
+            // !!! FOR PYTHON YOU HAVE TO USE THIS INDENTATION LMAOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+            source_code: `
+                import sys
+                def two_sum(a, b):
+                    sum_value = a + b
+                    return sum_value
+
+                input_data = sys.stdin.read().strip().split(' ')
+                a = int(input_data[0].split('=')[1])
+                b = int(input_data[1].split('=')[1])
+
+                print(two_sum(a, b))
+            `,
+            language_id: 71,
+            stdin: 'a=5 b=3',
+            expected_output: '8',
+        }),
+    };
+    try {
+        const response = await fetch(url, options as any);
+        const result = await response.json();
+        console.log(result);
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+//? ------------------------------------------------------------------------------------------------------
