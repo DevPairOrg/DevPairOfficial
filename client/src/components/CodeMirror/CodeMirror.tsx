@@ -4,7 +4,18 @@ import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { parsedData } from '../../interfaces/gemini';
-import { TestResults, extractConsoleLogsJavaScriptOnly, handleCodeSubmission, handleJavascriptButton, handlePythonButton } from './util';
+import {
+    TestResults,
+    extractConsoleLogsJavaScriptOnly,
+    handleCodeSubmission,
+    handleJavascriptButton,
+    handlePythonButton,
+    TestParams,
+    parsedTestCases,
+    createJSSubmissionOnLocal,
+    createPySubmissionOnLocal
+} from './util';
+
 import { useModal, Modal } from '../../context/Modal/Modal';
 import ConsoleOutput from './ConsoleOutput';
 import './CodeMirror.css';
@@ -15,6 +26,7 @@ function IDE(props: parsedData) {
 
     const [value, setValue] = useState<string | undefined>(defaultPythonFn); // value of user code inside of IDE
     const [language, setLanguage] = useState<string>('python'); // language for IDE
+    const [params, setParams] = useState<TestParams | {}>({}) // gathers all the parameters for each test case
 
     const [userResults, setUserResults] = useState<TestResults | null>(null); // user results object on submission
     const [testCaseView, setTestCaseView] = useState<number | null>(null); // switch which test case your looking at
@@ -25,6 +37,10 @@ function IDE(props: parsedData) {
             openConsoleOutputModal()
         }
     }, [testCaseView, userResults]);
+
+    useEffect(() => {
+        setParams(parsedTestCases(testCases))
+    }, [])
 
 
     const openConsoleOutputModal = () => { // opens the console output modal
@@ -48,10 +64,14 @@ function IDE(props: parsedData) {
         }
     };
 
+
     return (
         <>
             <div id="ide-container">
                 <Modal></Modal> {/* This is needed for the Modal UI to render in */}
+                <button onClick={() => parsedTestCases(testCases)}>TEST</button>
+                <button onClick={() => createJSSubmissionOnLocal()}>JAVASCRIPT SUBMISSION</button>
+                <button onClick={() => createPySubmissionOnLocal()}>PYTHON SUBMISSION</button>
                 <div>
                     <div>Problem Name: {problemName && problemName}</div>
                     <div>Prompt: {problemPrompt && problemPrompt}</div>
