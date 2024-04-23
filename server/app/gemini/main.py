@@ -78,11 +78,11 @@ def initGlobalGeminiConvo():
     },
     {
       "role": "user",
-      "parts": ["Context: You are expected to write 3 separate test snippets  for both javascript and python that defines the inputs as variables and console.logs or prints the function called with those input variables. The response should be in JSON so I can parse with json.loads in python. The snippets should leave room to add in the function."]
+      "parts": ["Context: You are expected to write 3 separate test snippets  for both javascript and python that defines the inputs as variables and console.logs or prints the function called with those input variables. The response should be in JSON so I can parse with json.loads in python. The snippets should leave room to add in the function. You should end the python test snippet with a newline character."]
     },
     {
       "role": "model",
-      "parts": ["```json\n{\n  \"PYTHON_UNIT_TEST\": [\n    \"stations = [10,19,3,17,25,4,22,23,12,11];\\nk = 18;\\nm = 30;\\nprint(optimal_gas_station_refueling(stations, k, m))\",\n    \"stations = [1,2,3,4,5,6,7,8,9,10];\\nk = 1;\\nm = 3;\\nprint(optimal_gas_station_refueling(stations, k, m))\",\n    \"stations = [1,2,3,4,5,200];\\nk = 4;\\nm = 4;\\nprint(optimal_gas_station_refueling(stations, k, m))\"\n  ],\n  \"JAVASCRIPT_UNIT_TEST\": [\n    \"const stations = [10,19,3,17,25,4,22,23,12,11];\\nconst k = 18;\\nconst m = 30;\\nconsole.log(optimal_gas_station_refueling(stations, k, m));\",\n    \"const stations = [1,2,3,4,5,6,7,8,9,10];\\nconst k = 1;\\nconst m = 3;\\nconsole.log(optimal_gas_station_refueling(stations, k, m));\",\n    \"const stations = [1,2,3,4,5,200];\\nconst k = 4;\\nconst m = 4;\\nconsole.log(optimal_gas_station_refueling(stations, k, m));\"\n  ]\n}\n```"]
+      "parts": ["```json\n{\n  \"PYTHON_UNIT_TEST\": [\n    \"stations = [10,19,3,17,25,4,22,23,12,11];\\nk = 18;\\nm = 30;\\nprint(optimal_gas_station_refueling(stations, k, m))\\n\",\n    \"stations = [1,2,3,4,5,6,7,8,9,10];\\nk = 1;\\nm = 3;\\nprint(optimal_gas_station_refueling(stations, k, m))\\n\",\n    \"stations = [1,2,3,4,5,200];\\nk = 4;\\nm = 4;\\nprint(optimal_gas_station_refueling(stations, k, m))\\n\"\n  ],\n  \"JAVASCRIPT_UNIT_TEST\": [\n    \"const stations = [10,19,3,17,25,4,22,23,12,11];\\nconst k = 18;\\nconst m = 30;\\nconsole.log(optimal_gas_station_refueling(stations, k, m));\",\n    \"const stations = [1,2,3,4,5,6,7,8,9,10];\\nconst k = 1;\\nconst m = 3;\\nconsole.log(optimal_gas_station_refueling(stations, k, m));\",\n    \"const stations = [1,2,3,4,5,200];\\nconst k = 4;\\nconst m = 4;\\nconsole.log(optimal_gas_station_refueling(stations, k, m));\"\n  ]\n}\n```"]
     },
     {
       "role": "user",
@@ -110,11 +110,11 @@ def initGlobalGeminiConvo():
     },
     {
       "role": "user",
-      "parts": ["Context: You are expected to write 3 separate test snippets  for both javascript and python that defines the inputs as variables and console.logs or prints the function called with those input variables. The response should be in JSON so I can parse with json.loads in python. The snippets should leave room to add in the function."]
+      "parts": ["Context: You are expected to write 3 separate test snippets for both javascript and python that defines the inputs as variables and console.logs or prints the function called with those input variables. The response should be in JSON so I can parse with json.loads in python. The snippets should leave room to add in the function. You should end the python test snippet with a newline character."]
     },
     {
       "role": "model",
-      "parts": ["```json\n{\n  \"PYTHON_UNIT_TEST\": [\n    \"nums = [7,1,5,3,6,4]\\nprint(maximizing_revenue_from_transactions(nums))\",\n    \"nums = [1,2,3,4,5]\\nprint(maximizing_revenue_from_transactions(nums))\",\n    \"nums = [7,6,4,3,1]\\nprint(maximizing_revenue_from_transactions(nums))\"\n  ],\n  \"JAVASCRIPT_UNIT_TEST\": [\n    \"const nums = [7,1,5,3,6,4];\\nconsole.log(maximizing_revenue_from_transactions(nums));\",\n    \"const nums = [1,2,3,4,5];\\nconsole.log(maximizing_revenue_from_transactions(nums));\",\n    \"const nums = [7,6,4,3,1];\\nconsole.log(maximizing_revenue_from_transactions(nums));\"\n  ]\n}\n```"]
+      "parts": ["```json\n{\n  \"PYTHON_UNIT_TEST\": [\n    \"nums = [7,1,5,3,6,4]\\nprint(maximizing_revenue_from_transactions(nums))\\n\",\n    \"nums = [1,2,3,4,5]\\nprint(maximizing_revenue_from_transactions(nums))\\n\",\n    \"nums = [7,6,4,3,1]\\nprint(maximizing_revenue_from_transactions(nums))\\n\"\n  ],\n  \"JAVASCRIPT_UNIT_TEST\": [\n    \"const nums = [7,1,5,3,6,4];\\nconsole.log(maximizing_revenue_from_transactions(nums));\",\n    \"const nums = [1,2,3,4,5];\\nconsole.log(maximizing_revenue_from_transactions(nums));\",\n    \"const nums = [7,6,4,3,1];\\nconsole.log(maximizing_revenue_from_transactions(nums));\"\n  ]\n}\n```"]
     },
   ])
 

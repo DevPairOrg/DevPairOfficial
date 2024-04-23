@@ -130,7 +130,7 @@ def getLeetCodeResponseBits(id):
         try:
             convo.send_message(
             f"""
-                Context: You are expected to write 3 separate test snippets  for both javascript and python that defines the inputs as variables and console.logs or prints the function called with those input variables. The response should be in JSON so I can parse with json.loads in python. The snippets should leave room to add in the function.
+                Context: You are expected to write 3 separate test snippets  for both javascript and python that defines the inputs as variables and console.logs or prints the function called with those input variables. The response should be in JSON so I can parse with json.loads in python. The snippets should leave room to add in the function. You should end the python test snippet with a newline character.
             
             """
             )

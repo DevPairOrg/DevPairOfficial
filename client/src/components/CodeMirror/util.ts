@@ -12,10 +12,11 @@ async function fetchTest(value: string, language: string, test: string) {
       // 'X-Auth-Host': 'http://146.190.61.177:2358',
     },
     body: JSON.stringify({
-        source_code: btoa(test + value),
+        source_code: btoa(value + '\n' + test),
         language_id: language === "python" ? 71: 63,
     })
     }
+
     return fetch(url, options as any);
 }
 
@@ -27,11 +28,11 @@ export const handleJudgeSubmission = async (
 ) => {
     if (!value) return;
     const tests = language === "python" ? pythonUnitTest : jsUnitTest;
-
+    console.log(language)
     tests.forEach(async (test) => {
         const response = await fetchTest(value, language, test);
         const result = await response.json();
-        console.log(atob(result.stdout));
+        console.log(result);
     });
 }
 
