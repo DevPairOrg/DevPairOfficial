@@ -163,46 +163,16 @@ export const extractConsoleLogsJavaScriptOnly = (functionDefinition: string) => 
 
 // Parse Gemini Test Cases ------------------------------------------------------------------------------------
 
+import { TestCase } from "../../interfaces/gemini";
 export interface TestParams {
     paramsTestCase1: string
     paramsTestCase2: string
     paramsTestCase3: string
 }
 
-export function parsedTestCases(testCases: string | undefined) {
+export function parsedTestCases(testCases: TestCase[] | undefined) {
     if(testCases) {
-        const parseByNewLine = testCases?.trim()?.split("\n")
-
-        let firstInputLine: string
-        let secondInputLine: string
-        let thirdInputLine: string
-
-        if(parseByNewLine.length === 8 ) { // sometimes it adds extra spacing seperation between input output
-            firstInputLine = parseByNewLine[0]
-            secondInputLine = parseByNewLine[3]
-            thirdInputLine = parseByNewLine[6]
-        } else {
-            firstInputLine = parseByNewLine[0]
-            secondInputLine = parseByNewLine[2]
-            thirdInputLine = parseByNewLine[4]
-        }
-
-
-
-        let testCase1ParamsLine = firstInputLine.split("- INPUT:")
-        let testCase2ParamsLine = secondInputLine.split("- INPUT:")
-        let testCase3ParamsLine = thirdInputLine.split("- INPUT:")
-
-        testCase1ParamsLine = testCase1ParamsLine.splice(1, testCase1ParamsLine.length)
-        testCase2ParamsLine = testCase2ParamsLine.splice(1, testCase2ParamsLine.length)
-        testCase3ParamsLine = testCase3ParamsLine.splice(1, testCase3ParamsLine.length)
-
-        const paramsTestCase1 = testCase1ParamsLine.join("").trim()
-        const paramsTestCase2 = testCase2ParamsLine.join("").trim()
-        const paramsTestCase3 = testCase3ParamsLine.join("").trim()
-
-        console.log({paramsTestCase1, paramsTestCase2, paramsTestCase3})
-        return {paramsTestCase1, paramsTestCase2, paramsTestCase3}
+        return {paramsTestCase1: testCases[0].INPUT, paramsTestCase2: testCases[1].INPUT, paramsTestCase3: testCases[2].INPUT}
     } else {
         return {}
     }
