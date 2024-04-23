@@ -2,8 +2,12 @@ import { useAppSelector } from '../../../hooks';
 import { ModalProvider } from '../../../context/Modal/Modal';
 import IDE from '../../CodeMirror/CodeMirror';
 
+interface GeminiDSAProps {
+    channelName?: string
+}
 
-const GeminiDSA = () => {
+
+const GeminiDSA: React.FC<GeminiDSAProps> = ({channelName}) => {
     const geminiProblem = useAppSelector((state) => state.pairedContent.gemini.generatedProblem);
 
     return (
@@ -18,6 +22,7 @@ const GeminiDSA = () => {
                         jsUnitTest={geminiProblem?.jsUnitTest}
                         defaultPythonFn={geminiProblem?.defaultPythonFn}
                         defaultJsFn={geminiProblem?.defaultJsFn}
+                        channelName={channelName}
                     />
                 </ModalProvider>
             </div>

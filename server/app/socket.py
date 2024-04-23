@@ -226,6 +226,72 @@ def handle_user_leaving(data):
     except Exception as e:
         emit('custom_error', {'error': str(e)})
 
+
+
+@socketio.on("send_users_to_gemini_dsa_component")
+@authenticated_only
+def handle_update_IDE(data):
+    """
+    sends both users to the gemini dsa problem IDE component
+
+    Expected data:
+        {
+            "fetchData": "example_parsed_gemini_response_data",
+            "room": "example_room_name"
+        }
+
+    """
+    try:
+        response = {
+            "parsedGeminiResponse": data["fetchData"],
+        }
+        emit("send_users_to_gemini_dsa_component_received", response, to=data["room"])
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
+
+
+
+
+@socketio.on("update_IDE")
+@authenticated_only
+def handle_update_IDE(data):
+    """
+    updates the IDE for both users
+
+    Expected data:
+        {
+            "newValue": "example_ide_value",
+            "room": "example_room_name"
+        }
+
+    """
+    try:
+        response = {
+            "newValue": data["newValue"],
+        }
+        emit("update_IDE_received", response, to=data["room"])
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
+
+
+@socketio.on("leave_gemini_page")
+@authenticated_only
+def handle_update_IDE(data):
+    """
+    exits gemini IDE page for both users
+
+    Expected data:
+        {
+            "room": "example_room_name"
+        }
+
+    """
+    try:
+        emit("leave_gemini_page_received", to=data["room"])
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
+
+
 @socketio.on('custom_error')
 def epipe_error(e):
     logging.error(f"🤬🤬🤬🤬🤬🤬🤬SocketIO Error🤬🤬🤬🤬🤬🤬🤬: {e}")

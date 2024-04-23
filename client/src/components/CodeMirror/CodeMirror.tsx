@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
-import CodeMirror from "@uiw/react-codemirror";
-import { javascript } from "@codemirror/lang-javascript";
-import { python } from "@codemirror/lang-python";
-import { dracula } from "@uiw/codemirror-theme-dracula";
-import { parsedData } from "../../interfaces/gemini";
+import { useState, useEffect, useCallback } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
+import { javascript } from '@codemirror/lang-javascript';
+import { python } from '@codemirror/lang-python';
+import { dracula } from '@uiw/codemirror-theme-dracula';
+import { parsedData } from '../../interfaces/gemini';
+import { useSocket } from '../../context/Socket';
 import {
   TestResults,
   // extractConsoleLogsJavaScriptOnly,
@@ -22,16 +23,10 @@ import ConsoleOutput from "./ConsoleOutput";
 import "./CodeMirror.css";
 
 function IDE(props: parsedData) {
-  const {
-    problemName,
-    problemPrompt,
-    testCases,
-    pythonUnitTest,
-    jsUnitTest,
-    defaultPythonFn,
-    defaultJsFn,
-  } = props;
-  const { setModalContent } = useModal();
+    const { socket, connectSocket, error } = useSocket();
+
+    const { problemName, problemPrompt, testCases, pythonUnitTest, jsUnitTest, defaultPythonFn, defaultJsFn, channelName } = props;
+    const { setModalContent } = useModal();
 
   const [value, setValue] = useState<string | undefined>(defaultPythonFn); // value of user code inside of IDE
   const [language, setLanguage] = useState<string>("python"); // language for IDE
@@ -52,21 +47,61 @@ function IDE(props: parsedData) {
     setParams(parsedTestCases(testCases));
   }, []);
 
-  const openConsoleOutputModal = () => {
-    // opens the console output modal
-    setModalContent(
-      <ConsoleOutput
-        userResults={userResults}
-        testCaseView={testCaseView}
-        logs={logs}
-        setTestCaseView={setTestCaseView}
-      />
-    );
-  };
 
-  const onChange = (value: string) => {
-    // NOTE* onChange function for react code mirror automatically takes in value param which is the IDE value string
-    setValue(value);
+    if (error) console.log('Error in IDE Component: ', error);
+    useEffect(() => {
+        if (!socket) {
+            connectSocket();
+        }
+    }, [socket, connectSocket]);
+
+
+    const openConsoleOutputModal = () => { // opens the console output modal
+
+        setModalContent(
+            <ConsoleOutput
+                userResults={userResults}
+                testCaseView={testCaseView}
+                logs={logs}
+                setTestCaseView={setTestCaseView}
+            />
+        );
+    };
+
+    // handle received
+    const handleIDEReceived = useCallback(
+        (data: {newValue: string}) => {
+            setValue(data.newValue)
+        },
+        []
+    );
+
+    // handle send
+    const updateIDERealTime = useCallback(
+        (value: string) => {
+            console.log("UPDATE IDE...")
+            socket?.emit('update_IDE', {
+                newValue: value,
+                room: (channelName as string),
+            });
+        },
+        [socket, value, channelName]
+    );
+
+    useEffect(() => {
+        if (socket && !socket.hasListeners('update_IDE_received')) {
+            socket.on('update_IDE_received', handleIDEReceived);
+
+            // Clean up: Detach the event listener and dispatch action to clear states messages when unmounting
+            return () => {
+                socket.off('update_IDE_received', handleIDEReceived);
+            };
+        }
+    }, [ handleIDEReceived, socket]);
+
+    const onChange = (value: string) => { // NOTE* onChange function for react code mirror automatically takes in value param which is the IDE value string
+        setValue(value)
+        updateIDERealTime(value)
 
     // extract evaluated console.log statements here (only when language is JavaScript)
     // if (language !== "python" && value) {
