@@ -100,6 +100,31 @@ def getLeetCodeResponseBits(id):
         return error_response("There was an error retrieving a response from Gemini, please try again later.", 500)
 
     # GENERATE TEST CASES
+    for _ in range(5):
+        try:
+            convo.send_message(
+            f"""
+                Context: You are expected to provide test cases for the problem you generated. Define at least three test cases as an array of objects, each with input and expected output.            
+                For each test case, include:            
+                --INPUT: The inputs needed to test the solution, with multiple parameters separated by SEMICOLONS and the parameter set to the variable it corresponds to in the function signature. (e.g., "nums=[1,2,3]; target=3"). DO NOT SEPARATE INPUT PARAMETERS WITH COMMAS USE SEMICOLONS. 
+
+                --OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt.
+                Respond in JSON so I can parse with json.loads in python
+            
+            """
+            )
+
+            md_tests = convo.last.text
+            json_tests = md_tests.replace("```json", "").replace("```", "").strip()
+            test_cases = json.loads(json_tests)
+            break
+        except Exception as e:
+            print('🥱🥱🥱 Error generating test cases, trying again...', e)
+    else:
+        print("Failed to send message after 5 attempts")
+        return error_response("There was an error retrieving a response from Gemini, please try again later.", 500)
+
+    # GENERATE UNIT TESTS
 
     for _ in range(5):
         try:
@@ -111,7 +136,8 @@ def getLeetCodeResponseBits(id):
 
                 For solutions returning arrays:            
                 Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.            
-                Use this method within console.assert to verify the expected array structure and content.            Remember:            
+                Use this method within console.assert to verify the expected array structure and content.              
+                Remember:            
                 Maintain proper formatting for test case inputs and outputs. 
                 Respond in JSON so I can parse with json.loads in python.
             
@@ -128,30 +154,8 @@ def getLeetCodeResponseBits(id):
         print("Failed to send message after 5 attempts")
         return error_response("There was an error retrieving a response from Gemini, please try again later.", 500)
 
-    # GENERATE UNIT TESTS
 
-    for _ in range(5):
-        try:
-            convo.send_message(
-            f"""
-                Context: You are expected to provide test cases for the problem you generated. Define at least three test cases as an array of objects, each with input and expected output.            
-                For each test case, include:            
-                --INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas. If there's a target, explicitly state it (e.g., "target=#").            
-                --OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt.
-                Respond in JSON so I can parse with json.loads in python
-            
-            """
-            )
 
-            md_tests = convo.last.text
-            json_tests = md_tests.replace("```json", "").replace("```", "").strip()
-            test_cases = json.loads(json_tests)
-            break
-        except Exception as e:
-            print('🥱🥱🥱 Error generating test cases, trying again...', e)
-    else:
-        print("Failed to send message after 5 attempts")
-        return error_response("There was an error retrieving a response from Gemini, please try again later.", 500)
 
     print('😁😁😁 name & prompt', name_and_prompt)
     print('😁😁😁 default fn names', default_function_names)
