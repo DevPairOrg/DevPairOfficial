@@ -19,6 +19,8 @@ function IDE(props: parsedData) {
     }, []);
 
     const handleSubmission = async () => {
+
+        console.log("🤬🤬🤬🤬🤬🤬🤬🤬 ", pythonUnitTest)
         try {
             const response = await fetch('/api/problem/test', {
                 method: 'POST',

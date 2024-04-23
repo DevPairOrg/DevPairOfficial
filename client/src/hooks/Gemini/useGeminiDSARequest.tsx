@@ -27,8 +27,8 @@ const useGeminiDSARequest = () => {
                 problemName: data.geminiResponse["PROBLEM NAME"],
                 problemPrompt: data.geminiResponse["QUESTION PROMPT"],
                 testCases: data.geminiResponse["TEST CASES"],
-                pythonUnitTest: data.geminiResponse["PYTHON UNIT TESTS"],
-                jsUnitTest: data.geminiResponse["JAVASCRIPT UNIT TESTS"],
+                pythonUnitTest: data.geminiResponse["PYTHON_UNIT_TESTS"],
+                jsUnitTest: data.geminiResponse["JAVASCRIPT_UNIT_TESTS"],
                 defaultPythonFn: data.geminiResponse["PYTHON FUNCTION SIGNATURE"],
                 defaultJsFn: data.geminiResponse["JAVASCRIPT FUNCTION SIGNATURE"]
             };
