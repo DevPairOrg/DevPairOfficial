@@ -8,7 +8,7 @@ export interface parsedData {
     defaultJsFn: string | undefined;
   }
 
-  interface TestCase {
+  export interface TestCase {
     INPUT: string;
     OUTPUT: string;
   }
