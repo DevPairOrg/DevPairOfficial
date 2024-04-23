@@ -88,8 +88,8 @@ function LandingPage() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Auth-Token': 'minh',
-                'X-Auth-User': 'tran',
+                'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+                'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
                 // 'X-Auth-Host': 'http://146.190.61.177:2358',
             },
             body: JSON.stringify({
@@ -113,8 +113,8 @@ function LandingPage() {
     //         method: 'POST',
     //         headers: {
     //             'Content-Type': 'application/json',
-    //             'X-Auth-Token': 'minh',
-    //             'X-Auth-User': 'tran',
+    //             'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+    //             'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
     //             // 'X-Auth-Host': 'http://146.190.61.177:2358',
     //         },
     //         body: JSON.stringify({
@@ -149,8 +149,8 @@ function LandingPage() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Auth-Token': 'minh',
-                'X-Auth-User': 'tran',
+                'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+                'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
                 // 'X-Auth-Host': 'http://146.190.61.177:2358',
             },
             body: JSON.stringify({
@@ -188,8 +188,8 @@ function LandingPage() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Auth-Token': 'minh',
-                'X-Auth-User': 'tran',
+                'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+                'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
                 // 'X-Auth-Host': 'http://146.190.61.177:2358',
             },
             body: JSON.stringify({
@@ -236,8 +236,8 @@ function LandingPage() {
         const options = {
             method: 'GET',
             headers: {
-                'X-Auth-Token': 'minh',
-                'X-Auth-User': 'tran',
+                'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+                'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
             },
         };
         try {
@@ -254,8 +254,8 @@ function LandingPage() {
         const options = {
             method: 'GET',
             headers: {
-                'X-Auth-Token': 'minh',
-                'X-Auth-User': 'tran',
+                'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+                'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
             },
         };
         try {
@@ -268,32 +268,32 @@ function LandingPage() {
         }
     };
 
-    const parseTestCases = (str: string | undefined) => {
-        console.log('Test Cases Below\n');
-        const res: any[] = [];
+    // const parseTestCases = (str: string | undefined) => {
+    //     console.log('Test Cases Below\n');
+    //     const res: any[] = [];
 
-        const input1 = str?.replaceAll(' ', '').split('-');
+    //     const input1 = str?.replaceAll(' ', '').split('-');
 
-        input1.forEach((line: string, index: number) => {
-            if (line !== '') {
-                if (line.includes('INPUT')) {
-                    const newline = line.replace('INPUT:', '');
-                    res.push(newline);
-                    console.log('input line', line);
-                }
+    //     input1.forEach((line: string, index: number) => {
+    //         if (line !== '') {
+    //             if (line.includes('INPUT')) {
+    //                 const newline = line.replace('INPUT:', '');
+    //                 res.push(newline);
+    //                 console.log('input line', line);
+    //             }
 
-                if (line.includes('OUTPUT')) {
-                    const newline = line.replace('OUTPUT:', '');
-                    res.push(newline);
-                    console.log('output line', line);
-                }
-            }
-        });
+    //             if (line.includes('OUTPUT')) {
+    //                 const newline = line.replace('OUTPUT:', '');
+    //                 res.push(newline);
+    //                 console.log('output line', line);
+    //             }
+    //         }
+    //     });
 
-        setTestCase1(input1);
-        console.log(input1);
-        console.log(res);
-    };
+    //     setTestCase1(input1);
+    //     console.log(input1);
+    //     console.log(res);
+    // };
 
     return (
         <>
