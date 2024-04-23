@@ -1,13 +1,67 @@
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '..';
-import { generateAndSetGeminiProblem } from '../../store/pairedContent';
-import { parseCode } from '../../utility/parseGeminiResponse';
+import { generateAndSetGeminiProblem, resetGeminiState } from '../../store/pairedContent';
+import { useSocket } from '../../context/Socket';
 
-const useGeminiDSARequest = () => {
+export interface ParsedGeminiResponse {
+    problemName: any;
+    problemPrompt: any;
+    testCases: any;
+    pythonUnitTest: any;
+    jsUnitTest: any;
+    defaultPythonFn: any;
+    defaultJsFn: any;
+}
+
+const useGeminiDSARequest = (channelName: string | undefined) => {
+    const { socket, connectSocket, error } = useSocket();
+
     const dispatch = useAppDispatch();
     const sessionUser = useAppSelector((state) => state.session.user);
     const [loading, setLoading] = useState<boolean>(false); // This state is for UX to render something while the request is still loading/processing
-    const [error, setError] = useState<string>('');
+    const [fetchError, setFetchError] = useState<string>('');
+
+    if (error) console.log('Error in useGeminiDSARequest: ', error);
+    useEffect(() => {
+        if (!socket) {
+            connectSocket();
+        }
+    }, [socket, connectSocket]);
+
+
+    // handle received
+    const handleSendUsersToGeminiDSAComponentReceived = useCallback(
+        (data: {parsedGeminiResponse: ParsedGeminiResponse}) => {
+            dispatch(generateAndSetGeminiProblem({ isActive: true, generatedProblem: data.parsedGeminiResponse }));
+        },
+        [dispatch]
+    );
+
+    // handle send
+    const sendUsersToGeminiDSAComponent = useCallback(
+        (parsedGeminiResponse: ParsedGeminiResponse) => {
+
+            socket?.emit('send_users_to_gemini_dsa_component', {
+                fetchData: parsedGeminiResponse,
+                room: (channelName as string),
+            });
+        },
+        [socket, channelName]
+    );
+
+    // attach listeners for sockets
+    useEffect(() => {
+        if (socket && !socket.hasListeners('send_users_to_gemini_dsa_component_received')) {
+            socket.on('send_users_to_gemini_dsa_component_received', handleSendUsersToGeminiDSAComponentReceived);
+
+            // Clean up: Detach the event listener and dispatch action to clear states messages when unmounting
+            return () => {
+                socket.off('send_users_to_gemini_dsa_component_received', handleSendUsersToGeminiDSAComponentReceived);
+                dispatch(resetGeminiState())
+            };
+        }
+    }, [dispatch, handleSendUsersToGeminiDSAComponentReceived, socket]);
+
 
     const handleGeminiDSARequest = async () => {
         if (!sessionUser) {
@@ -23,7 +77,7 @@ const useGeminiDSARequest = () => {
             const data = await res.json();
             console.log(data)
             // addQuestionPromptToUserModel(data.geminiResponse);
-            const parsedGeminiResponse = {
+            const parsedGeminiResponse: ParsedGeminiResponse = {
                 problemName: data.geminiResponse["PROBLEM NAME"],
                 problemPrompt: data.geminiResponse["QUESTION PROMPT"],
                 testCases: data.geminiResponse["TEST CASES"],
@@ -32,32 +86,35 @@ const useGeminiDSARequest = () => {
                 defaultPythonFn: data.geminiResponse["PYTHON FUNCTION SIGNATURE"],
                 defaultJsFn: data.geminiResponse["JAVASCRIPT FUNCTION SIGNATURE"]
             };
-            
-            dispatch(generateAndSetGeminiProblem({ isActive: true, generatedProblem: parsedGeminiResponse }));
+
+            sendUsersToGeminiDSAComponent(parsedGeminiResponse)
+            // dispatch(generateAndSetGeminiProblem({ isActive: true, generatedProblem: parsedGeminiResponse }));
         } else {
             console.error('Failed to generate a problem through Gemini API.');
-            setError('Failed to generate a problem.');
+            setFetchError('Failed to generate a problem.');
         }
     };
 
-    const addQuestionPromptToUserModel = async (questionPrompt: string) => {
-        if (!sessionUser) {
-            console.error('Error adding question prompt to user model. No signed in user');
-            return;
-        }
+    // const addQuestionPromptToUserModel = async (questionPrompt: string) => {
+    //     if (!sessionUser) {
+    //         console.error('Error adding question prompt to user model. No signed in user');
+    //         return;
+    //     }
 
-        const res = await fetch('/api/gemini/add', {
-            method: 'POST',
-            body: JSON.stringify({ userId: sessionUser.id, prompt: questionPrompt }),
-            headers: { 'Content-Type': 'application/json' },
-        });
+    //     const res = await fetch('/api/gemini/add', {
+    //         method: 'POST',
+    //         body: JSON.stringify({ userId: sessionUser.id, prompt: questionPrompt }),
+    //         headers: { 'Content-Type': 'application/json' },
+    //     });
 
-        if (!res.ok) {
-            console.error('Error adding question prompt to user model');
-        }
-    };
+    //     if (!res.ok) {
+    //         console.error('Error adding question prompt to user model');
+    //     }
+    // };
 
-    return { handleGeminiDSARequest, loading, error };
+    return { handleGeminiDSARequest, loading, error: fetchError };
 };
+
+
 
 export default useGeminiDSARequest;

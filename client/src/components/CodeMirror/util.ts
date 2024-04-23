@@ -172,6 +172,7 @@ export interface TestParams {
 
 export function parsedTestCases(testCases: TestCase[] | undefined) {
     if(testCases) {
+        console.log("PARAMS OBJECT", {paramsTestCase1: testCases[0].INPUT, paramsTestCase2: testCases[1].INPUT, paramsTestCase3: testCases[2].INPUT})
         return {paramsTestCase1: testCases[0].INPUT, paramsTestCase2: testCases[1].INPUT, paramsTestCase3: testCases[2].INPUT}
     } else {
         return {}
