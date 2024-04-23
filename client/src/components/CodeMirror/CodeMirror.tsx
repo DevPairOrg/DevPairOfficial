@@ -13,9 +13,8 @@ import {
     TestParams,
     parsedTestCases,
     createJSSubmissionOnLocal,
-    createPySubmissionOnLocal
+    createPySubmissionOnLocal,
 } from './util';
-
 
 import { useModal, Modal } from '../../context/Modal/Modal';
 import ConsoleOutput from './ConsoleOutput';
@@ -27,7 +26,7 @@ function IDE(props: parsedData) {
 
     const [value, setValue] = useState<string | undefined>(defaultPythonFn); // value of user code inside of IDE
     const [language, setLanguage] = useState<string>('python'); // language for IDE
-    const [params, setParams] = useState<TestParams | {}>({}) // gathers all the parameters for each test case
+    const [params, setParams] = useState<TestParams | {}>({}); // gathers all the parameters for each test case
 
     const [userResults, setUserResults] = useState<TestResults | null>(null); // user results object on submission
     const [testCaseView, setTestCaseView] = useState<number | null>(null); // switch which test case your looking at
@@ -41,11 +40,14 @@ function IDE(props: parsedData) {
     }, [testCaseView, userResults]);
 
     useEffect(() => {
-        setParams(parsedTestCases(testCases))
-    }, [])
+        const testInputOutputs = parsedTestCases(testCases);
+        console.log(testInputOutputs);
+        setParams(testInputOutputs);
+        console.log('asldfjaks', params);
+    }, []);
 
-
-    const openConsoleOutputModal = () => { // opens the console output modal
+    const openConsoleOutputModal = () => {
+        // opens the console output modal
 
         setModalContent(
             <ConsoleOutput
@@ -68,25 +70,34 @@ function IDE(props: parsedData) {
         }
     };
 
-
     return (
         <>
             <div id="ide-container">
                 <Modal></Modal> {/* This is needed for the Modal UI to render in */}
                 <button onClick={() => parsedTestCases(testCases)}>TEST</button>
-                <button onClick={() => createJSSubmissionOnLocal()}>JAVASCRIPT SUBMISSION</button>
-                <button onClick={() => createPySubmissionOnLocal()}>PYTHON SUBMISSION</button>
+                {/* <button onClick={() => createJSSubmissionOnLocal()}>JAVASCRIPT SUBMISSION</button>
+                <button onClick={() => createPySubmissionOnLocal()}>PYTHON SUBMISSION</button> */}
+                <button
+                    onClick={() => createJSSubmissionOnLocal(value, params)}
+                    id="ide-submit-button"
+                    style={{ color: 'red' }}
+                >
+                    Submit Code
+                </button>
                 <div>
                     <div>Problem Name: {problemName && problemName}</div>
                     <div>Prompt: {problemPrompt && problemPrompt}</div>
-                    <pre>{testCases && (testCases.map(entry => {
-                        return (
-                            <>
-                            <div>INPUT: {entry.INPUT}</div>
-                            <div>OUTPUT: {entry.OUTPUT}</div>
-                            </>
-                        )
-                    }))}</pre>
+                    <pre>
+                        {testCases &&
+                            testCases.map((entry) => {
+                                return (
+                                    <>
+                                        <div>INPUT: {entry.INPUT}</div>
+                                        <div>OUTPUT: {entry.OUTPUT}</div>
+                                    </>
+                                );
+                            })}
+                    </pre>
                 </div>
                 <div>
                     <div
@@ -137,7 +148,7 @@ function IDE(props: parsedData) {
                         onChange={onChange}
                         theme={dracula}
                     />
-                    <button
+                    {/* <button
                         onClick={async () => {
                             handleCodeSubmission(
                                 value || undefined,
@@ -152,7 +163,8 @@ function IDE(props: parsedData) {
                         id="ide-submit-button"
                     >
                         Submit Code
-                    </button>
+                    </button> */}
+
                     {userResults && (
                         <button onClick={openConsoleOutputModal} className="show-stoudt-results">
                             Show Results...

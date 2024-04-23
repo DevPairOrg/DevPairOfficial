@@ -1,4 +1,3 @@
-
 // HANDLE CODE SUBMISSION FETCH FUNCTION ----------------------------------------------------------------------
 
 export const handleCodeSubmission = async (
@@ -9,12 +8,11 @@ export const handleCodeSubmission = async (
     setUserResults: React.Dispatch<React.SetStateAction<TestResults | null>>,
     setTestCaseView: React.Dispatch<React.SetStateAction<number | null>>,
     openConsoleOutputModal: () => void
-
-    ) => {
+) => {
     let valWithoutLogs;
     if (language === 'javascript' && value) {
         // Remove console.log statements from the function definition for JavaScript
-        valWithoutLogs = value.replace(/console\.log\s*\([^]*?\)\s*;?/g, '')
+        valWithoutLogs = value.replace(/console\.log\s*\([^]*?\)\s*;?/g, '');
     }
 
     try {
@@ -36,10 +34,10 @@ export const handleCodeSubmission = async (
         }
 
         const data: any = await response.json();
-        let testResults: any
+        let testResults: any;
 
-        if(language !== 'python') {
-            testResults = JSON.parse(data.testResults) // additional conversion needed for JavaScript
+        if (language !== 'python') {
+            testResults = JSON.parse(data.testResults); // additional conversion needed for JavaScript
         } else {
             testResults = data.testResults;
         }
@@ -48,12 +46,11 @@ export const handleCodeSubmission = async (
 
         if (hasDigestibleResults) {
             setUserResults(testResults);
-            setTestCaseView(1)
-            openConsoleOutputModal()
+            setTestCaseView(1);
+            openConsoleOutputModal();
         } else {
             console.error('An error occured generating test result data');
         }
-
     } catch (error) {
         console.error('An error occurred:', error);
     }
@@ -61,17 +58,13 @@ export const handleCodeSubmission = async (
 
 // -----------------------------------------------------------------------------------------------------------
 
-
-
-
 // HANDLE CODE SUBMISSION HELPERS ----------------------------------------------------------------------------
 
 export interface TestResults {
-    testCase1: {assert: boolean, expected: any, userOutput: any}
-    testCase2: {assert: boolean, expected: any, userOutput: any}
-    testCase3: {assert: boolean, expected: any, userOutput: any}
+    testCase1: { assert: boolean; expected: any; userOutput: any };
+    testCase2: { assert: boolean; expected: any; userOutput: any };
+    testCase3: { assert: boolean; expected: any; userOutput: any };
 }
-
 
 // Function to perform type assertion
 function checkResponseData(data: any): data is TestResults {
@@ -87,7 +80,6 @@ function checkResponseData(data: any): data is TestResults {
     );
 }
 
-
 function isTestCase(data: any) {
     return (
         typeof data.assert === 'boolean' &&
@@ -97,9 +89,6 @@ function isTestCase(data: any) {
 }
 
 // -----------------------------------------------------------------------------------------------------------
-
-
-
 
 // STOUDT & IDE RELATED --------------------------------------------------------------------------------------
 
@@ -113,7 +102,7 @@ export const extractConsoleLogsJavaScriptOnly = (functionDefinition: string) => 
 
         const originalConsoleLog = console.log; //! CRUCIAL -- DO NOT TOUCH... this stores the normal behavior of the global console.log function
         //* Override console.log to capture its output
-        console.log = function(...args: any[]) {
+        console.log = function (...args: any[]) {
             evaluatedLogs.push(args.join(' '));
             // originalConsoleLog.apply(console, args);
         };
@@ -124,68 +113,74 @@ export const extractConsoleLogsJavaScriptOnly = (functionDefinition: string) => 
         console.log = originalConsoleLog; //! CRUCIAL -- DO NOT TOUCH... Restores the original console.log function
 
         // Now, evaluatedLogs array contains the evaluated console.log() statements
-        return evaluatedLogs
+        return evaluatedLogs;
     } catch (error) {
         // console.error('Error evaluating function string:', error);
         //? commented out because its going to send out an error each time the IDE has any syntax error. But can uncomment for debugging
-        return null
+        return null;
     }
-}
+};
 
 // Python or Javascript User Options ----------------------------------------------------------------------------
 
-    export const handlePythonButton = (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-        setLanguage: React.Dispatch<React.SetStateAction<string>>,
-        setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
-        defaultPythonFn: string | undefined
-        ) => {
-        e.preventDefault();
-        setLanguage('python');
-        setValue(defaultPythonFn);
-    };
-    export const handleJavascriptButton = (
-        e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-        setLanguage: React.Dispatch<React.SetStateAction<string>>,
-        setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
-        defaultJsFn: string | undefined
-        ) => {
-        e.preventDefault();
-        setLanguage('javascript');
-        setValue(defaultJsFn);
-    };
-
+export const handlePythonButton = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    setLanguage: React.Dispatch<React.SetStateAction<string>>,
+    setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
+    defaultPythonFn: string | undefined
+) => {
+    e.preventDefault();
+    setLanguage('python');
+    setValue(defaultPythonFn);
+};
+export const handleJavascriptButton = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    setLanguage: React.Dispatch<React.SetStateAction<string>>,
+    setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
+    defaultJsFn: string | undefined
+) => {
+    e.preventDefault();
+    setLanguage('javascript');
+    setValue(defaultJsFn);
+};
 
 // -------------------------------------------------------------------------------------------------------------
 
-
-
-
 // Parse Gemini Test Cases ------------------------------------------------------------------------------------
 
-import { TestCase } from "../../interfaces/gemini";
+import { TestCase } from '../../interfaces/gemini';
 export interface TestParams {
-    paramsTestCase1: string
-    paramsTestCase2: string
-    paramsTestCase3: string
+    TestCaseInput1: any;
+    TestCaseInput2: any;
+    TestCaseInput3: any;
+    TestCaseOutput1: any;
+    TestCaseOutput2: any;
+    TestCaseOutput3: any;
 }
 
 export function parsedTestCases(testCases: TestCase[] | undefined) {
-    if(testCases) {
-        return {paramsTestCase1: testCases[0].INPUT, paramsTestCase2: testCases[1].INPUT, paramsTestCase3: testCases[2].INPUT}
+    console.log('Parsing test cases...');
+    if (testCases) {
+        return {
+            TestCaseInput1: testCases[0].INPUT,
+            TestCaseInput2: testCases[1].INPUT,
+            TestCaseInput3: testCases[2].INPUT,
+            TestCaseOutput1: testCases[0].OUTPUT,
+            TestCaseOutput2: testCases[1].OUTPUT,
+            TestCaseOutput3: testCases[2].OUTPUT,
+        };
     } else {
-        return {}
+        console.log('No test cases');
+        return {};
     }
 }
 
 // -------------------------------------------------------------------------------------------------------------
 
-
-
-
 //? NEW SUBMISSION USING JUDGE0 ---------------------------------------------------------------------------------
 
-export const createJSSubmissionOnLocal = async () => {
+export const createJSSubmissionOnLocal = async (sourceCode: string | undefined, params: TestParams | {}) => {
+    console.log('Running javascript submission', params);
     const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
     const options = {
         method: 'POST',
@@ -193,74 +188,85 @@ export const createJSSubmissionOnLocal = async () => {
             'Content-Type': 'application/json',
             'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
             'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
-            // 'X-Auth-Host': 'http://146.190.61.177:2358',
         },
         body: JSON.stringify({
-            source_code: `
-                const input = require('fs').readFileSync(0, 'utf-8').trim().split(' ');
-                const a = parseInt(input[0].split('=')[1]);
-                const b = parseInt(input[1].split('=')[1]);
-                console.log(twoSum(a, b));
+            // source_code: `
+            //     const input = require('fs').readFileSync(0, 'utf-8').trim().split(' ');
+            //     const a = parseInt(input[0].split('=')[1]);
+            //     const b = parseInt(input[1].split('=')[1]);
+            //     console.log(twoSum(a, b));
 
-                function twoSum(a, b) {
-                    const sum = a + b
-                    console.log('Test Console Log', sum)
-                    return a + b;
-                }
-            `,
+            //     function twoSum(a, b) {
+            //         const sum = a + b
+            //         console.log('Test Console Log', sum)
+            //         return a + b;
+            //     }
+            // `,
+            source_code: sourceCode,
             language_id: 63,
-            stdin: 'a=5 b=3',
-            expected_output: '8',
+            stdin: (params as TestParams).TestCaseInput1,
+            expected_output: (params as TestParams).TestCaseOutput1,
         }),
     };
     try {
         const response = await fetch(url, options as any);
         const result = await response.json();
         console.log(result);
+        return result;
     } catch (error) {
         console.error(error);
     }
 };
 
-
 // ! For Python: Must Include 'additional_files': sys
 // ! This is so the 'import sys' in the source code actually works correctly
-export const createPySubmissionOnLocal = async () => {
-    const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
-    const options = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
-            'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
-            // 'X-Auth-Host': 'http://146.190.61.177:2358',
-        },
-        body: JSON.stringify({
-            additional_files: 'sys',
-            // !!! FOR PYTHON YOU HAVE TO USE THIS INDENTATION LMAOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-            source_code: `
-                import sys
-                def two_sum(a, b):
-                    sum_value = a + b
-                    return sum_value
+export const createPySubmissionOnLocal = async (sourceCode: string | undefined, params: TestCase | {}) => {
+    // This formats python code and keeps its indentation while using json.stringify so our fetch code block doesn't look weird
+    function formatPythonCode(code: string) {
+        const lines = code.split('\n');
+        if (lines.length === 0) return code;
+        const firstLineIndent = lines[1].search(/\S|$/);
+        return lines.map((line) => line.substring(firstLineIndent)).join('\n');
+    }
 
-                input_data = sys.stdin.read().strip().split(' ')
-                a = int(input_data[0].split('=')[1])
-                b = int(input_data[1].split('=')[1])
+    if (Object.entries(params).length > 0 && sourceCode !== undefined) {
+        const formattedPythonSourceCode = formatPythonCode(sourceCode);
+        const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+                'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
+            },
+            body: JSON.stringify({
+                additional_files: 'sys',
+                // !!! FOR PYTHON YOU HAVE TO USE THIS INDENTATION LMAOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+                // source_code: `
+                //     import sys
+                //     def two_sum(a, b):
+                //         sum_value = a + b
+                //         return sum_value
 
-                print(two_sum(a, b))
-            `,
-            language_id: 71,
-            stdin: 'a=5 b=3',
-            expected_output: '8',
-        }),
-    };
-    try {
-        const response = await fetch(url, options as any);
-        const result = await response.json();
-        console.log(result);
-    } catch (error) {
-        console.error(error);
+                //     input_data = sys.stdin.read().strip().split(' ')
+                //     a = int(input_data[0].split('=')[1])
+                //     b = int(input_data[1].split('=')[1])
+
+                //     print(two_sum(a, b))
+                // `,
+                source_code: formattedPythonSourceCode,
+                language_id: 71,
+                stdin: (params as TestParams).TestCaseInput1,
+                expected_output: (params as TestParams).TestCaseOutput1,
+            }),
+        };
+        try {
+            const response = await fetch(url, options as any);
+            const result = await response.json();
+            console.log(result);
+        } catch (error) {
+            console.error(error);
+        }
     }
 };
 
