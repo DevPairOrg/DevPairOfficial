@@ -7,6 +7,7 @@ import ScreenShare from './ScreenShare';
 export interface ContentProps {
     agoraEngine: IAgoraRTCClient;
     leaveRoomHandler: () => void;
+    channelName?: string;
 }
 
 const PairedScreenShare: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }) => {

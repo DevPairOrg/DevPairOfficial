@@ -8,8 +8,8 @@ import GeminiDSA from './GeminiDSA';
 import { useAppDispatch } from '../../../hooks';
 import { resetGeminiState } from '../../../store/pairedContent';
 
-const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }) => {
-    const { handleGeminiDSARequest } = useGeminiDSARequest();
+const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler, channelName }) => {
+    const { handleGeminiDSARequest } = useGeminiDSARequest(channelName);
     const dispatch = useAppDispatch();
     const screenSharing = useAppSelector((state) => state.pairedContent.agora.screenshare.isActive);
     const geminiAPIRequest = useAppSelector((state) => state.pairedContent.gemini.isActive);
@@ -28,7 +28,7 @@ const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }) => {
         } else if (geminiAPIRequest) {
             return (
                 <>
-                    <GeminiDSA />
+                    <GeminiDSA channelName={channelName} />
 
                     {/* Temporary button to reset gemini active state */}
                     <button onClick={handleLeaveGemini} style={{ color: 'white', backgroundColor: 'red' }}>

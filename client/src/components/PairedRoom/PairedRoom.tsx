@@ -43,7 +43,7 @@ const PairedRoom: React.FC = () => {
                         <AgoraRTCProvider client={agoraEngine}>
                             <AgoraProvider leaveRoomHandler={leaveRoomHandler}>
                                 <VideoCams channelName={channelName} />
-                                <Content agoraEngine={agoraEngine} leaveRoomHandler={leaveRoomHandler} />
+                                <Content agoraEngine={agoraEngine} channelName={channelName} leaveRoomHandler={leaveRoomHandler} />
                                 <Chat channelName={channelName} agoraEngine={agoraEngine} />
                             </AgoraProvider>
                         </AgoraRTCProvider>
