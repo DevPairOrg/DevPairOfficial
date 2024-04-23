@@ -274,6 +274,24 @@ def handle_update_IDE(data):
         emit('custom_error', {'error': str(e)})
 
 
+@socketio.on("leave_gemini_page")
+@authenticated_only
+def handle_update_IDE(data):
+    """
+    exits gemini IDE page for both users
+
+    Expected data:
+        {
+            "room": "example_room_name"
+        }
+
+    """
+    try:
+        emit("leave_gemini_page_received", to=data["room"])
+    except Exception as e:
+        emit('custom_error', {'error': str(e)})
+
+
 @socketio.on('custom_error')
 def epipe_error(e):
     logging.error(f"🤬🤬🤬🤬🤬🤬🤬SocketIO Error🤬🤬🤬🤬🤬🤬🤬: {e}")

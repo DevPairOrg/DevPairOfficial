@@ -3,20 +3,54 @@ import shareScreenPlaceholder from '../../../assets/images/share-screen-holder.w
 import useGeminiDSARequest from '../../../hooks/Gemini/useGeminiDSARequest';
 import { useAppSelector } from '../../../hooks';
 import PairedScreenShare, { ContentProps } from '../ScreenShare/ScreenShareContainer';
-import React from 'react';
+import React, {useEffect, useCallback} from 'react';
 import GeminiDSA from './GeminiDSA';
 import { useAppDispatch } from '../../../hooks';
 import { resetGeminiState } from '../../../store/pairedContent';
 
-const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler, channelName }) => {
+const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler, channelName, socket, connectSocket }) => {
     const { handleGeminiDSARequest } = useGeminiDSARequest(channelName);
     const dispatch = useAppDispatch();
     const screenSharing = useAppSelector((state) => state.pairedContent.agora.screenshare.isActive);
     const geminiAPIRequest = useAppSelector((state) => state.pairedContent.gemini.isActive);
 
-    const handleLeaveGemini = async () => {
-        dispatch(resetGeminiState());
-    };
+    // handle connect
+    useEffect(() => {
+        if (!socket && connectSocket) {
+            connectSocket();
+        }
+    }, [socket, connectSocket]);
+
+    // handle received
+    const handleLeaveGeminiPageReceived = useCallback(
+        () => {
+            dispatch(resetGeminiState());
+        },
+        [dispatch]
+    );
+
+    // handle send
+    const sendLeaveGeminiPage = useCallback(
+        () => {
+            socket?.emit('leave_gemini_page', {
+                room: (channelName as string),
+            });
+        },
+        [socket, channelName]
+    );
+
+    // attach listeners for sockets
+    useEffect(() => {
+        if (socket && !socket.hasListeners('leave_gemini_page_received')) {
+            socket.on('leave_gemini_page_received', handleLeaveGeminiPageReceived);
+
+            // Clean up: Detach the event listener and dispatch action to clear states messages when unmounting
+            return () => {
+                socket.off('leave_gemini_page_received', handleLeaveGeminiPageReceived);
+                dispatch(resetGeminiState())
+            };
+        }
+    }, [dispatch, handleLeaveGeminiPageReceived, socket]);
 
     const renderContent = () => {
         if (screenSharing) {
@@ -31,7 +65,7 @@ const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler, channe
                     <GeminiDSA channelName={channelName} />
 
                     {/* Temporary button to reset gemini active state */}
-                    <button onClick={handleLeaveGemini} style={{ color: 'white', backgroundColor: 'red' }}>
+                    <button onClick={sendLeaveGeminiPage} style={{ color: 'white', backgroundColor: 'red' }}>
                         Exit
                     </button>
                 </>

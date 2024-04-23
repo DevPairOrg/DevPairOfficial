@@ -37,6 +37,7 @@ export interface ServerToClientEvents {
     received_request: (data: {request:  Request}) => void;
     update_IDE_received: (data: {newValue: string}) => void;
     send_users_to_gemini_dsa_component_received: (data: {parsedGeminiResponse: ParsedGeminiResponse}) => void;
+    leave_gemini_page_received: () => void;
 }
 
 // Type for information sent to the server
@@ -52,4 +53,5 @@ export interface ClientToServerEvents {
     sent_request: (data: { requestId: number; room: string }) => void;
     update_IDE: (data: {newValue: string; room: string}) => void;
     send_users_to_gemini_dsa_component: (data: {fetchData: ParsedGeminiResponse; room: string}) => void;
+    leave_gemini_page: (data: {room: string}) => void;
 }
