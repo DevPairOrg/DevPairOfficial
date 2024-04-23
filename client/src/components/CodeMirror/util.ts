@@ -169,6 +169,9 @@ export function parsedTestCases(testCases: TestCase[] | undefined) {
             TestCaseOutput2: testCases[1].OUTPUT,
             TestCaseOutput3: testCases[2].OUTPUT,
         };
+    if(testCases) {
+        console.log("PARAMS OBJECT", {paramsTestCase1: testCases[0].INPUT, paramsTestCase2: testCases[1].INPUT, paramsTestCase3: testCases[2].INPUT})
+        return {paramsTestCase1: testCases[0].INPUT, paramsTestCase2: testCases[1].INPUT, paramsTestCase3: testCases[2].INPUT}
     } else {
         console.log('No test cases');
         return {};

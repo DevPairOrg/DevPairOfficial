@@ -6,6 +6,7 @@ export interface parsedData {
     jsUnitTest: string | undefined;
     defaultPythonFn: string | undefined;
     defaultJsFn: string | undefined;
+    channelName?: string | undefined
   }
 
   export interface TestCase {
