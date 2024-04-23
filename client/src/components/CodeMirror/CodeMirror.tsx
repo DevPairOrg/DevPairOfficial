@@ -4,7 +4,18 @@ import { javascript } from '@codemirror/lang-javascript';
 import { python } from '@codemirror/lang-python';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { parsedData } from '../../interfaces/gemini';
-import { TestResults, extractConsoleLogsJavaScriptOnly, handleCodeSubmission, handleJavascriptButton, handlePythonButton, TestParams, parsedTestCases } from './util';
+import {
+    TestResults,
+    extractConsoleLogsJavaScriptOnly,
+    handleCodeSubmission,
+    handleJavascriptButton,
+    handlePythonButton,
+    TestParams,
+    parsedTestCases,
+    createJSSubmissionOnLocal,
+    createPySubmissionOnLocal
+} from './util';
+
 import { useModal, Modal } from '../../context/Modal/Modal';
 import ConsoleOutput from './ConsoleOutput';
 import './CodeMirror.css';
@@ -53,13 +64,14 @@ function IDE(props: parsedData) {
         }
     };
 
-    console.log("PARMS", params)
 
     return (
         <>
             <div id="ide-container">
                 <Modal></Modal> {/* This is needed for the Modal UI to render in */}
                 <button onClick={() => parsedTestCases(testCases)}>TEST</button>
+                <button onClick={() => createJSSubmissionOnLocal()}>JAVASCRIPT SUBMISSION</button>
+                <button onClick={() => createPySubmissionOnLocal()}>PYTHON SUBMISSION</button>
                 <div>
                     <div>Problem Name: {problemName && problemName}</div>
                     <div>Prompt: {problemPrompt && problemPrompt}</div>

@@ -60,8 +60,8 @@ function LandingPage() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Auth-Token': 'minh',
-                'X-Auth-User': 'tran',
+                'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+                'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
                 // 'X-Auth-Host': 'http://146.190.61.177:2358',
             },
             body: JSON.stringify({
@@ -97,8 +97,8 @@ function LandingPage() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Auth-Token': 'minh',
-                'X-Auth-User': 'tran',
+                'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+                'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
                 // 'X-Auth-Host': 'http://146.190.61.177:2358',
             },
             body: JSON.stringify({
@@ -135,8 +135,8 @@ print(two_sum(a, b))
         const options = {
             method: 'GET',
             headers: {
-                'X-Auth-Token': 'minh',
-                'X-Auth-User': 'tran',
+                'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+                'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
             },
         };
         try {
