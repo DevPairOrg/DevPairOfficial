@@ -70,11 +70,11 @@ def initGlobalGeminiConvo():
     },
     {
       "role": "user",
-      "parts": ["Context: You are expected to provide test cases for the problem you generated. Define at least three test cases as an array of objects, each with input and expected output.            For each test case, include:            --INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas. If there's a target, explicitly state it (e.g., \"target=#\").            --OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt. Respond   in JSON so I can parse with json.loads in python"]
+      "parts": ["Context: You are expected to provide test cases for the problem you generated. Define at least three test cases as an array of objects, each with input and expected output.            For each test case, include:            --INPUT: The inputs needed to test the solution, with multiple parameters separated by SEMICOLONS and the parameter set to the variable it corresponds to in the function signature. (e.g., \"nums=[1,2,3]; target=3\"). DO NOT SEPARATE INPUT PARAMETERS WITH COMMAS USE SEMICOLONS.            --OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt. Respond   in JSON so I can parse with json.loads in python"]
     },
     {
       "role": "model",
-      "parts": ["```json\n{\n  \"TEST CASES\": [\n    {\n      \"INPUT\": \"[1, 2, 3, 4, 5], 2\",\n      \"OUTPUT\": \"Watson\"\n    },\n    {\n      \"INPUT\": \"[1, 1, 1, 1, 1], 2\",\n      \"OUTPUT\": \"Sherlock\"\n    },\n    {\n      \"INPUT\": \"[1, 2, 3, 4, 5], 3\",\n      \"OUTPUT\": \"Sherlock\"\n    }\n  ]\n}\n```"]
+      "parts": ["```json\n{\n  \"TEST CASES\": [\n    {\n      \"INPUT\": \"arr=[1, 2, 3, 4, 5]; k=2\",\n      \"OUTPUT\": \"Watson\"\n    },\n    {\n      \"INPUT\": \"arr=[1, 1, 1, 1, 1]; k=2\",\n      \"OUTPUT\": \"Sherlock\"\n    },\n    {\n      \"INPUT\": \"arr=[1, 2, 3, 4, 5]; k=3\",\n      \"OUTPUT\": \"Sherlock\"\n    }\n  ]\n}\n```"]
     },
     {
       "role": "user",
@@ -102,11 +102,11 @@ def initGlobalGeminiConvo():
     },
     {
       "role": "user",
-      "parts": ["Context: You are expected to provide test cases for the problem you generated. Define at least three test cases as an array of objects, each with input and expected output.            For each test case, include:            --INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas. If there's a target, explicitly state it (e.g., \"target=#\").            --OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt. Respond   in JSON so I can parse with json.loads in python"]
+      "parts": ["Context: You are expected to provide test cases for the problem you generated. Define at least three test cases as an array of objects, each with input and expected output.            For each test case, include:            --INPUT: The inputs needed to test the solution, with multiple parameters separated by SEMICOLONS and the parameter set to the variable it corresponds to in the function signature. (e.g., \"nums=[1,2,3]; target=3\"). DO NOT SEPARATE INPUT PARAMETERS WITH COMMAS USE SEMICOLONS.            --OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt. Respond   in JSON so I can parse with json.loads in python"]
     },
     {
       "role": "model",
-      "parts": ["```json\n{\n  \"TEST CASES\": [\n    {\n      \"INPUT\": \"[[1, 1], [2, 2], [3, 3], [4, 4]]\",\n      \"OUTPUT\": \"1.0\"\n    },\n    {\n      \"INPUT\": \"[[1, 1], [1, 2], [1, 3], [1, 4]]\",\n      \"OUTPUT\": \"0.0\"\n    },\n    {\n      \"INPUT\": \"[[1, 1], [2, 3], [3, 2], [4, 4]]\",\n      \"OUTPUT\": \"2.8284271247461903\"\n    }\n  ]\n}\n```"]
+      "parts": ["```json\n{\n  \"TEST CASES\": [\n    {\n      \"INPUT\": \"points=[[1, 1], [2, 2], [3, 3], [4, 4]]\",\n      \"OUTPUT\": \"1.0\"\n    },\n    {\n      \"INPUT\": \"points=[[1, 1], [1, 2], [1, 3], [1, 4]]\",\n      \"OUTPUT\": \"0.0\"\n    },\n    {\n      \"INPUT\": \"points=[[1, 1], [2, 3], [3, 2], [4, 4]]\",\n      \"OUTPUT\": \"2.8284271247461903\"\n    }\n  ]\n}\n```"]
     },
     {
       "role": "user",
