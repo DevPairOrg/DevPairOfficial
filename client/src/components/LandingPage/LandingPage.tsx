@@ -250,7 +250,8 @@ function LandingPage() {
         }
     };
     const handleRandomAPI = async () => {
-        const url = 'http://146.190.61.177:2358/config_info';
+        const url =
+            'http://146.190.61.177:2358/submissions/batch?tokens=21ff262e-61f9-42c4-b538-2bc8dda03937%2C5ab2befc-6a57-42ab-b39e-26de16a72c23%2C14e22a10-2381-47c0-95e4-161b311744ce&base64_encoded=true&fields=*';
         const options = {
             method: 'GET',
             headers: {

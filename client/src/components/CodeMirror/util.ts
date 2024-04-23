@@ -1,97 +1,181 @@
 // HANDLE JUDGE0 SUBMISSION -----------------------------------------------------------------------------------
 
-async function fetchTest(value: string, language: string, test: string) {
-    const url =
-    "http://146.190.61.177:2358/submissions/?base64_encoded=true&wait=true&fields=*";
+interface BatchedResponse {
+    batched: true;
+    result: string[]; // Adjust the type according to your actual data structure
+}
+
+interface NonBatchedResponse {
+    batched: false;
+    response: Response; // This will hold the fetch Response object
+}
+
+interface ErrorResponse {
+    error: unknown;
+}
+
+async function fetchTest(
+    value: string,
+    language: string,
+    test: string,
+    batched: boolean
+): Promise<BatchedResponse | NonBatchedResponse | undefined> {
+    const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=true&wait=true&fields=*';
     const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Auth-Token": import.meta.env.VITE_X_AUTH_TOKEN,
-      "X-Auth-User": import.meta.env.VITE_X_AUTH_USER,
-      // 'X-Auth-Host': 'http://146.190.61.177:2358',
-    },
-    body: JSON.stringify({
-        source_code: btoa(value + '\n' + test),
-        language_id: language === "python" ? 71: 63,
-    })
-    }
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+            'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
+            // 'X-Auth-Host': 'http://146.190.61.177:2358',
+        },
+        body: JSON.stringify({
+            source_code: btoa(value + '\n' + test),
+            language_id: language === 'python' ? 71 : 63,
+        }),
+    };
 
     return fetch(url, options as any);
 }
 
+async function fetchTests(
+    value: string,
+    language: string,
+    tests: string[],
+    batched: boolean
+): Promise<BatchedResponse | NonBatchedResponse | ErrorResponse> {
+    console.log('TESTS===>', tests);
+    const url = 'http://146.190.61.177:2358/submissions/batch?base64_encoded=true&wait=true';
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+            'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
+            'X-Auth-Host': 'http://146.190.61.177:2358',
+        },
+        body: JSON.stringify({
+            submissions: tests.map((test) => ({
+                language_id: language === 'python' ? 71 : 63,
+                source_code: btoa(value + '\n' + test),
+            })),
+        }),
+    };
+
+    try {
+        const response = await fetch(url, options);
+        if (!response.ok) {
+            throw new Error(`HTTP Error: ${response.status}`);
+        }
+        const jsonData = await response.json(); // Assuming the response is JSON
+        console.log('Response:', jsonData);
+        if (batched) {
+            return { batched: true, result: jsonData }; // Assuming jsonData is an array of strings
+        } else {
+            return { batched: false, response: response };
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        return { error: error as unknown };
+    }
+}
+
+// Handles submissions based on language and test units
 export const handleJudgeSubmission = async (
     value: string | undefined,
     jsUnitTest: string[],
     language: string,
     pythonUnitTest: string[],
-) => {
+    batched: boolean
+): Promise<BatchedResponse | NonBatchedResponse | ErrorResponse | undefined> => {
     if (!value) return;
-    const tests = language === "python" ? pythonUnitTest : jsUnitTest;
-    console.log(language)
-    tests.forEach(async (test) => {
-        const response = await fetchTest(value, language, test);
-        const result = await response.json();
-        console.log(result);
-    });
-}
+
+    const tests = language === 'python' ? pythonUnitTest : jsUnitTest;
+    console.log('WHAT IS TEST', tests)
+    console.log('Language:', language);
+
+    try {
+        if (batched) {
+            const response = await fetchTests(value, language, tests, true);
+            console.log('Batched response', response);
+            return response;
+        } else {
+            console.log('Non-Batched Test');
+            console.log('All Tests', tests);
+            const results = [];
+            for (const test of tests) {
+                console.log('Current Test', test);
+                const response = await fetchTest(value, language, test, batched);
+                if (response && response.ok) {
+                    const data = await response.json();
+                    console.log('non batched response', data);
+                    results.push(data);
+                }
+            }
+            return results;
+        }
+    } catch (error) {
+        console.error('An error occurred:', error);
+        return { error: error as unknown }; // Ensure this matches ErrorResponse
+    }
+};
 
 // HANDLE CODE SUBMISSION FETCH FUNCTION ----------------------------------------------------------------------
 
 export const handleCodeSubmission = async (
-  value: string | undefined,
-  jsUnitTest: string | undefined,
-  language: string,
-  pythonUnitTest: string | undefined,
-  setUserResults: React.Dispatch<React.SetStateAction<TestResults | null>>,
-  setTestCaseView: React.Dispatch<React.SetStateAction<number | null>>,
-  openConsoleOutputModal: () => void
+    value: string | undefined,
+    jsUnitTest: string | undefined,
+    language: string,
+    pythonUnitTest: string | undefined,
+    setUserResults: React.Dispatch<React.SetStateAction<TestResults | null>>,
+    setTestCaseView: React.Dispatch<React.SetStateAction<number | null>>,
+    openConsoleOutputModal: () => void
 ) => {
-  let valWithoutLogs;
-  if (language === "javascript" && value) {
-    // Remove console.log statements from the function definition for JavaScript
-    valWithoutLogs = value.replace(/console\.log\s*\([^]*?\)\s*;?/g, "");
-  }
-
-  try {
-    const response = await fetch("/api/problem/test", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        code: language !== "python" ? valWithoutLogs : value, // do not pass console.log to backend if your using JavaScript IDE
-        language: language,
-        problemUnitTest: language === "python" ? pythonUnitTest : jsUnitTest,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+    let valWithoutLogs;
+    if (language === 'javascript' && value) {
+        // Remove console.log statements from the function definition for JavaScript
+        valWithoutLogs = value.replace(/console\.log\s*\([^]*?\)\s*;?/g, '');
     }
 
-    const data: any = await response.json();
-    let testResults: any;
+    try {
+        const response = await fetch('/api/problem/test', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+            },
+            body: JSON.stringify({
+                code: language !== 'python' ? valWithoutLogs : value, // do not pass console.log to backend if your using JavaScript IDE
+                language: language,
+                problemUnitTest: language === 'python' ? pythonUnitTest : jsUnitTest,
+            }),
+        });
 
-    if (language !== "python") {
-      testResults = JSON.parse(data.testResults); // additional conversion needed for JavaScript
-    } else {
-      testResults = data.testResults;
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data: any = await response.json();
+        let testResults: any;
+
+        if (language !== 'python') {
+            testResults = JSON.parse(data.testResults); // additional conversion needed for JavaScript
+        } else {
+            testResults = data.testResults;
+        }
+
+        const hasDigestibleResults = checkResponseData(testResults);
+
+        if (hasDigestibleResults) {
+            setUserResults(testResults);
+            setTestCaseView(1);
+            openConsoleOutputModal();
+        } else {
+            console.error('An error occured generating test result data');
+        }
+    } catch (error) {
+        console.error('An error occurred:', error);
     }
-
-    const hasDigestibleResults = checkResponseData(testResults);
-
-    if (hasDigestibleResults) {
-      setUserResults(testResults);
-      setTestCaseView(1);
-      openConsoleOutputModal();
-    } else {
-      console.error("An error occured generating test result data");
-    }
-  } catch (error) {
-    console.error("An error occurred:", error);
-  }
 };
 
 // -----------------------------------------------------------------------------------------------------------
@@ -99,108 +183,114 @@ export const handleCodeSubmission = async (
 // HANDLE CODE SUBMISSION HELPERS ----------------------------------------------------------------------------
 
 export interface TestResults {
-  testCase1: { assert: boolean; expected: any; userOutput: any };
-  testCase2: { assert: boolean; expected: any; userOutput: any };
-  testCase3: { assert: boolean; expected: any; userOutput: any };
+    testCase1: { assert: boolean; expected: any; userOutput: any };
+    testCase2: { assert: boolean; expected: any; userOutput: any };
+    testCase3: { assert: boolean; expected: any; userOutput: any };
 }
 
 // Function to perform type assertion
 function checkResponseData(data: any): data is TestResults {
-  return (
-    // Check if test cases exist and have the correct structure
-    data.hasOwnProperty("testCase1") &&
-    data.hasOwnProperty("testCase2") &&
-    data.hasOwnProperty("testCase3") &&
-    // Check the structure of each test case
-    isTestCase(data.testCase1) &&
-    isTestCase(data.testCase2) &&
-    isTestCase(data.testCase3)
-  );
+    return (
+        // Check if test cases exist and have the correct structure
+        data.hasOwnProperty('testCase1') &&
+        data.hasOwnProperty('testCase2') &&
+        data.hasOwnProperty('testCase3') &&
+        // Check the structure of each test case
+        isTestCase(data.testCase1) &&
+        isTestCase(data.testCase2) &&
+        isTestCase(data.testCase3)
+    );
 }
 
 function isTestCase(data: any) {
-  return (
-    typeof data.assert === "boolean" &&
-    typeof data.expected !== "undefined" &&
-    typeof data.userOutput !== "undefined"
-  );
+    return (
+        typeof data.assert === 'boolean' &&
+        typeof data.expected !== 'undefined' &&
+        typeof data.userOutput !== 'undefined'
+    );
 }
 
 // -----------------------------------------------------------------------------------------------------------
 
 // STOUDT & IDE RELATED --------------------------------------------------------------------------------------
 
-export const extractConsoleLogsJavaScriptOnly = (
-  functionDefinition: string
-) => {
-  try {
-    // Define an array to store evaluated console.log() statements
-    const evaluatedLogs: string[] = [];
+export const extractConsoleLogsJavaScriptOnly = (functionDefinition: string) => {
+    try {
+        // Define an array to store evaluated console.log() statements
+        const evaluatedLogs: string[] = [];
 
-    // Construct a real function using the function string
-    const func = Function(`return (${functionDefinition})`)();
+        // Construct a real function using the function string
+        const func = Function(`return (${functionDefinition})`)();
 
-    const originalConsoleLog = console.log; //! CRUCIAL -- DO NOT TOUCH... this stores the normal behavior of the global console.log function
-    //* Override console.log to capture its output
-    console.log = function (...args: any[]) {
-      evaluatedLogs.push(args.join(" "));
-      // originalConsoleLog.apply(console, args);
-    };
+        const originalConsoleLog = console.log; //! CRUCIAL -- DO NOT TOUCH... this stores the normal behavior of the global console.log function
+        //* Override console.log to capture its output
+        console.log = function (...args: any[]) {
+            evaluatedLogs.push(args.join(' '));
+            // originalConsoleLog.apply(console, args);
+        };
 
-    // Execute the function
-    func();
+        // Execute the function
+        func();
 
-    console.log = originalConsoleLog; //! CRUCIAL -- DO NOT TOUCH... Restores the original console.log function
+        console.log = originalConsoleLog; //! CRUCIAL -- DO NOT TOUCH... Restores the original console.log function
 
-    // Now, evaluatedLogs array contains the evaluated console.log() statements
-    return evaluatedLogs;
-  } catch (error) {
-    // console.error('Error evaluating function string:', error);
-    //? commented out because its going to send out an error each time the IDE has any syntax error. But can uncomment for debugging
-    return null;
-  }
+        // Now, evaluatedLogs array contains the evaluated console.log() statements
+        return evaluatedLogs;
+    } catch (error) {
+        // console.error('Error evaluating function string:', error);
+        //? commented out because its going to send out an error each time the IDE has any syntax error. But can uncomment for debugging
+        return null;
+    }
 };
 
 // Python or Javascript User Options ----------------------------------------------------------------------------
 
 export const handlePythonButton = (
-  e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  setLanguage: React.Dispatch<React.SetStateAction<string>>,
-  setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
-  defaultPythonFn: string | undefined
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    setLanguage: React.Dispatch<React.SetStateAction<string>>,
+    setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
+    defaultPythonFn: string | undefined
 ) => {
-  e.preventDefault();
-  setLanguage("python");
-  setValue(defaultPythonFn);
+    e.preventDefault();
+    setLanguage('python');
+    setValue(defaultPythonFn);
 };
 export const handleJavascriptButton = (
-  e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-  setLanguage: React.Dispatch<React.SetStateAction<string>>,
-  setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
-  defaultJsFn: string | undefined
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    setLanguage: React.Dispatch<React.SetStateAction<string>>,
+    setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
+    defaultJsFn: string | undefined
 ) => {
-  e.preventDefault();
-  setLanguage("javascript");
-  setValue(defaultJsFn);
+    e.preventDefault();
+    setLanguage('javascript');
+    setValue(defaultJsFn);
 };
 
 // -------------------------------------------------------------------------------------------------------------
 
 // Parse Gemini Test Cases ------------------------------------------------------------------------------------
 
-import { TestCase } from "../../interfaces/gemini";
+import { TestCase } from '../../interfaces/gemini';
 export interface TestParams {
-  paramsTestCase1: string;
-  paramsTestCase2: string;
-  paramsTestCase3: string;
+    paramsTestCase1: string;
+    paramsTestCase2: string;
+    paramsTestCase3: string;
 }
 
 export function parsedTestCases(testCases: TestCase[] | undefined) {
-    if(testCases) {
-        console.log("PARAMS OBJECT", {paramsTestCase1: testCases[0].INPUT, paramsTestCase2: testCases[1].INPUT, paramsTestCase3: testCases[2].INPUT})
-        return {paramsTestCase1: testCases[0].INPUT, paramsTestCase2: testCases[1].INPUT, paramsTestCase3: testCases[2].INPUT}
+    if (testCases) {
+        console.log('PARAMS OBJECT', {
+            paramsTestCase1: testCases[0].INPUT,
+            paramsTestCase2: testCases[1].INPUT,
+            paramsTestCase3: testCases[2].INPUT,
+        });
+        return {
+            paramsTestCase1: testCases[0].INPUT,
+            paramsTestCase2: testCases[1].INPUT,
+            paramsTestCase3: testCases[2].INPUT,
+        };
     } else {
-        return {}
+        return {};
     }
 }
 
@@ -209,18 +299,17 @@ export function parsedTestCases(testCases: TestCase[] | undefined) {
 //? NEW SUBMISSION USING JUDGE0 ---------------------------------------------------------------------------------
 
 export const createJSSubmissionOnLocal = async () => {
-  const url =
-    "http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*";
-  const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Auth-Token": import.meta.env.VITE_X_AUTH_TOKEN,
-      "X-Auth-User": import.meta.env.VITE_X_AUTH_USER,
-      // 'X-Auth-Host': 'http://146.190.61.177:2358',
-    },
-    body: JSON.stringify({
-      source_code: `
+    const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+            'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
+            // 'X-Auth-Host': 'http://146.190.61.177:2358',
+        },
+        body: JSON.stringify({
+            source_code: `
                 const input = require('fs').readFileSync(0, 'utf-8').trim().split(' ');
                 const a = parseInt(input[0].split('=')[1]);
                 const b = parseInt(input[1].split('=')[1]);
@@ -232,37 +321,36 @@ export const createJSSubmissionOnLocal = async () => {
                     return a + b;
                 }
             `,
-      language_id: 63,
-      stdin: "a=5 b=3",
-      expected_output: "8",
-    }),
-  };
-  try {
-    const response = await fetch(url, options as any);
-    const result = await response.json();
-    console.log(result);
-  } catch (error) {
-    console.error(error);
-  }
+            language_id: 63,
+            stdin: 'a=5 b=3',
+            expected_output: '8',
+        }),
+    };
+    try {
+        const response = await fetch(url, options as any);
+        const result = await response.json();
+        console.log(result);
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 // ! For Python: Must Include 'additional_files': sys
 // ! This is so the 'import sys' in the source code actually works correctly
 export const createPySubmissionOnLocal = async () => {
-  const url =
-    "http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*";
-  const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Auth-Token": import.meta.env.VITE_X_AUTH_TOKEN,
-      "X-Auth-User": import.meta.env.VITE_X_AUTH_USER,
-      // 'X-Auth-Host': 'http://146.190.61.177:2358',
-    },
-    body: JSON.stringify({
-      additional_files: "sys",
-      // !!! FOR PYTHON YOU HAVE TO USE THIS INDENTATION LMAOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
-      source_code: `
+    const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+            'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
+            // 'X-Auth-Host': 'http://146.190.61.177:2358',
+        },
+        body: JSON.stringify({
+            additional_files: 'sys',
+            // !!! FOR PYTHON YOU HAVE TO USE THIS INDENTATION LMAOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+            source_code: `
                 import sys
                 def two_sum(a, b):
                     sum_value = a + b
@@ -274,18 +362,18 @@ export const createPySubmissionOnLocal = async () => {
 
                 print(two_sum(a, b))
             `,
-      language_id: 71,
-      stdin: "a=5 b=3",
-      expected_output: "8",
-    }),
-  };
-  try {
-    const response = await fetch(url, options as any);
-    const result = await response.json();
-    console.log(result);
-  } catch (error) {
-    console.error(error);
-  }
+            language_id: 71,
+            stdin: 'a=5 b=3',
+            expected_output: '8',
+        }),
+    };
+    try {
+        const response = await fetch(url, options as any);
+        const result = await response.json();
+        console.log(result);
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 //? ------------------------------------------------------------------------------------------------------
