@@ -1,14 +1,14 @@
 export interface parsedData {
-    problemName: string | undefined;
-    problemPrompt: string | undefined;
-    testCases: TestCase[] | undefined;
-    pythonUnitTest: string | undefined;
-    jsUnitTest: string | undefined;
-    defaultPythonFn: string | undefined;
-    defaultJsFn: string | undefined;
-  }
+  problemName: string;
+  problemPrompt: string;
+  testCases: TestCase[];
+  pythonUnitTest: string[];
+  jsUnitTest: string[];
+  defaultPythonFn: string;
+  defaultJsFn: string;
+}
 
-  export interface TestCase {
-    INPUT: string;
-    OUTPUT: string;
-  }
+export interface TestCase {
+  INPUT: string;
+  OUTPUT: string;
+}

@@ -130,16 +130,7 @@ def getLeetCodeResponseBits(id):
         try:
             convo.send_message(
             f"""
-                Context: You are expected to provide unit tests for the problem you generated. Define unit test for both Python and JavaScript. For each language, define a test suite that includes a method to run a single test case and a method to run all test cases. The test suite should iterate over the test cases, executing the solution function with each input and using an expression to compare the result to the expected output. Make sure to be consistent with input formatting (e.g., keep arrays as arrays, don't spread them). Follow the example response format provided.            Define test cases as an list of objects, each with input and expected output (these keys should be inside quotations).                         
-                Iterate over test cases, executing the solution function with each input and using expression to compare the result to the expected output in order to return a boolean.            
-                Make sure to be consistent with input formatting (e.g., keep lists as lists, don't spread them).
-
-                For solutions returning arrays:            
-                Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.            
-                Use this method within console.assert to verify the expected array structure and content.              
-                Remember:            
-                Maintain proper formatting for test case inputs and outputs. 
-                Respond in JSON so I can parse with json.loads in python.
+                Context: You are expected to write 3 separate test snippets  for both javascript and python that defines the inputs as variables and console.logs or prints the function called with those input variables. The response should be in JSON so I can parse with json.loads in python. The snippets should leave room to add in the function.
             
             """
             )
