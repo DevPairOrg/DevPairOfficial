@@ -1,6 +1,11 @@
+import json
 from flask import Blueprint, request
+
+from .utils import error_response
 from ..gemini import initGlobalGeminiConvo
 from app.models import User, db
+import json
+from .utils import error_response
 
 gemini_routes = Blueprint('gemini', __name__)
 
@@ -46,215 +51,110 @@ def getLeetCodeResponseBits(id):
 
     print('🥱🥱🥱 Generating Problem, please wait.')
 
-    convo.send_message(
-        f"""
-            IMPORTANT: Please adhere to the following structure when requesting solutions and tests for coding problems.
+    # GENERAT PROBLEM NAME AND DESCRIPTION
 
-            For the entire structured response STRICTLY DO NOT include any markdowns such as:
-            (i.e. **BOLD**)
-            (i.e. ```javascript)
-            (i.e. ```python)
+    for _ in range(5):
+        try:
+            convo.send_message(
+            f"""
+                For the entire structured response STRICTLY DO NOT include any markdowns such as:
+                (i.e. **BOLD**)            (i.e. ```javascript)            (i.e. ```python)  
 
-            1. Pull a coding question from leetcode in the following format and do not assign types to the function parameters. Use just variable names:
+                Context: You are expected to generate a data structure and algorithm practice problem of easy or medium difficulty. Do not generate any problems with linked lists or binary trees. If 'user_solved_problems: <example comma separated list>' specified, do not generate any problems in this list as the user has already successfully solved these. The problem should simulate a real-world scenario and include a comprehensive description and detailed constraints. Only return the following keys: 'PROBLEM NAME', 'CONSTRAINTS', 'DIFFICULTY', and 'QUESTION PROMPT' and in JSON so I can parse with json.loads in python.
 
-            PROBLEM NAME:
-            Name of Problem
+                user_solved_problems: {prev_solved_questions}
+            
+            """
+            )
+            md_name = convo.last.text
+            json_name = md_name.replace("```json", "").replace("```", "").strip()
+            name_and_prompt = json.loads(json_name)
+            break
+        except Exception as e:
+            print('🥱🥱🥱 Error generating name and prompt, trying again...', e)
+    else:
+        print("Failed to send message after 5 attempts")
+        return error_response("There was an error retrieving a response from Gemini, please try again later.", 500)
 
-            QUESTION PROMPT:
-            Describe the coding problem here, including constraints or relevant details.
+    # GENERATE FUNCTION SIGNATURES
 
-            ***IMPORTANT NOTE*** YOU MAY NOT USE THE FOLLOWING LEETCODE PROBLEMS:
-            {prev_solved_questions}
-        """
-    )
+    for _ in range(5):
+        try:
+            convo.send_message(
+            f"""
+                Context: You are expected to provide empty functions for the problem you generated. The functions should be named according to the problem and include comments within the functions stating "Your code goes here." Include two separate functions -- one for python and one for javascript. Python: Use pass instead of a return statement within the empty function. JavaScript: Keep the function empty with just the comment and avoid using arrow functions. Do not use Python comment syntax for JavaScript (triple quotes). Parameters for both functions should not have a type assigned to them. Respond in JSON so I can parse with json.loads in python.           
+                DO NOT ADD TYPES TO THE FUNCTION PARAMETERS
+                Use # for comments in python and // for comments in javascript
+            
+            """
+            )
 
-    name_and_prompt = convo.last.text
+            md_funcs = convo.last.text
+            json_funcs = md_funcs.replace("```json", "").replace("```", "").strip()
+            default_function_names = json.loads(json_funcs)
+            break
+        except Exception as e:
+            print('🥱🥱🥱 Error generating function signatures, trying again...', e)
+    else:
+        print("Failed to send message after 5 attempts")
+        return error_response("There was an error retrieving a response from Gemini, please try again later.", 500)
 
-    convo.send_message(
-        f"""
-            IMPORTANT:
-            - Please adhere to the following structure when requesting solutions and tests for coding problems.
-            - Keep it relevant to our conversation, {name_and_prompt}
+    # GENERATE TEST CASES
 
-            For the entire structured response STRICTLY DO NOT include any markdowns such as:
-            (i.e. **BOLD**)
-            (i.e. ```javascript)
-            (i.e. ```python)
+    for _ in range(5):
+        try:
+            convo.send_message(
+            f"""
+                Context: You are expected to provide unit tests for the problem you generated. Define unit test for both Python and JavaScript. For each language, define a test suite that includes a method to run a single test case and a method to run all test cases. The test suite should iterate over the test cases, executing the solution function with each input and using an expression to compare the result to the expected output. Make sure to be consistent with input formatting (e.g., keep arrays as arrays, don't spread them). Follow the example response format provided.            Define test cases as an list of objects, each with input and expected output (these keys should be inside quotations).                         
+                Iterate over test cases, executing the solution function with each input and using expression to compare the result to the expected output in order to return a boolean.            
+                Make sure to be consistent with input formatting (e.g., keep lists as lists, don't spread them).
 
-            1. Empty Functions:
-            Provide empty functions with names relevant to the problem.
-            Include comments within the functions stating "Your code goes here."
-            Include two separate functions -- one for python and one for javascript.
-            Python: Use pass instead of a return statement within the empty function.
-            JavaScript: Keep the function empty with just the comment and avoid using arrow functions. Do not use Python comment syntax for JavaScript (triple quotes).
-            Parameters for both functions should not have a type assigned to them.
+                For solutions returning arrays:            
+                Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.            
+                Use this method within console.assert to verify the expected array structure and content.            Remember:            
+                Maintain proper formatting for test case inputs and outputs. 
+                Respond in JSON so I can parse with json.loads in python.
+            
+            """
+            )
 
-            Follow this Example Format:
+            md_units = convo.last.text
+            json_units = md_units.replace("```json", "").replace("```", "").strip()
+            unit_tests = json.loads(json_units)
+            break
+        except Exception as e:
+            print('🥱🥱🥱 Error generating unit tests, trying again...', e)
+    else:
+        print("Failed to send message after 5 attempts")
+        return error_response("There was an error retrieving a response from Gemini, please try again later.", 500)
 
-            EMPTY FUNCTION:
-            def nameOfFunction(input parameters):
-                # Your code goes here
-                pass
+    # GENERATE UNIT TESTS
 
-            function nameOfFunction(input parameters) {{
-                // Your code goes here
-            }}
-        """
-    )
+    for _ in range(5):
+        try:
+            convo.send_message(
+            f"""
+                Context: You are expected to provide test cases for the problem you generated. Define at least three test cases as an array of objects, each with input and expected output.            
+                For each test case, include:            
+                --INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas. If there's a target, explicitly state it (e.g., "target=#").            
+                --OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt.
+                Respond in JSON so I can parse with json.loads in python
+            
+            """
+            )
 
-    default_function_names = convo.last.text
-
-    convo.send_message(
-        f"""
-            IMPORTANT:
-            - Please adhere to the following structure when requesting solutions and tests for coding problems.
-            - Keep it relevant to our conversation, {name_and_prompt}
-
-            For the entire structured response STRICTLY DO NOT include any markdowns such as:
-            (i.e. **BOLD**)
-            (i.e. ```javascript)
-            (i.e. ```python)
-
-            1. Test Cases:
-            List no more than three test cases that are provided on leetcode.
-            For each test case, include:
-            INPUT: A detailed list of inputs needed to test the solution, with multiple parameters separated by commas. If there's a target, explicitly state it (e.g., "target=#").
-            OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt.
-
-            Follow the follwing example format:
-            TEST CASES:
-            - INPUT: [First input], [Second input if necessary]
-            - OUTPUT: [Expected output]
-            - INPUT: [First input], [Second input if necessary]
-            - OUTPUT: [Expected output]
-            - INPUT: [First input], [Second input if necessary]
-            - OUTPUT: [Expected output]
-        """
-    )
-
-    test_cases = convo.last.text
-
-    convo.send_message(
-        f"""
-            Important: Create a test in python based on the instructions provided below. The tests should all be relevant to the problem {name_and_prompt} response which you gave me in our previous conversation and test specifically for these {test_cases} you gave me.
-
-            For the entire structured response STRICTLY DO NOT include any markdowns such as:
-            (i.e. **BOLD**)
-            (i.e. ```javascript)
-            (i.e. ```python)
-            (i.e. ##)
-            (i.e. ###)
-
-            1. Python Testing:
-            Do not use unittest
-            Define test cases as an list of objects, each with input and expected output (these keys should be inside quotations).
-            Iterate over test cases, executing the solution function with each input and using expression to compare the result to the expected output in order to return a boolean.
-            Make sure to be consistent with input formatting (e.g., keep lists as lists, don't spread them).
-
-            For solutions returning arrays:
-            Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.
-            Use this method within console.assert to verify the expected array structure and content.
-
-            Remember:
-            Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
-            Maintain proper formatting for test case inputs and outputs.
-
-            Follow the following example format below:
-
-            PYTHON UNIT TESTING:
-
-            import json
-            testResults = {{}}
-
-            class SolutionTest:
-                @staticmethod
-                def run_test_case(input, expected, index):
-                    result = input
-                    testResults[f'testCase{{index}}'] = {{ "userOutput": result, "expected": expected, "assert": result == expected }}
-
-                def run_all_tests():
-                    test_suite = SolutionTest()
-                    test_cases = [
-                        {{'input': [First input], 'expected': [Expected output]}},
-                        {{'input': [Second input], 'expected': [Expected output]}},
-                        {{'input': [Third input], 'expected': [Expected output]}}
-                    ]
-
-                    for i, test_case in enumerate(test_cases, start=1):
-                        input, expected = test_case['input'], test_case['expected']
-                        test_suite.run_test_case(input, expected, i)
-
-                    return json.dumps(testResults)
-
-            test_output = SolutionTest.run_all_tests()
-            print(test_output)
-
-        """
-    )
-
-    python_test = convo.last.text
-
-    convo.send_message(
-        f"""
-            Important: Create a unit test in javascript based on the instructions provided below. The tests should all be relevant to the problem {name_and_prompt} response which you gave me in our previous conversation and test specifically for these {test_cases} you gave me.
-
-            For the entire structured response STRICTLY DO NOT include any markdowns such as:
-            (i.e. **BOLD**)
-            (i.e. ```javascript)
-            (i.e. ```python)
-            (i.e. ##)
-            (i.e. ###)
-
-            1. JavaScript Unit Testing:
-            Define test cases as an array of objects, each with input and expected output.
-            Iterate over test cases, executing the solution function with each input and using console.assert to compare the result to the expected output.
-            Make sure to be consistent with input formatting (e.g., keep arrays as arrays, don't spread them).
-
-            For solutions returning arrays:
-            Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.
-            Use this method within console.assert to verify the expected array structure and content.
-
-            Remember:
-            Avoid using any markdown formatting like asterisks for bold text or backticks for code blocks.
-            Maintain proper formatting for test case inputs and outputs.
-
-            Follow the following example format below:
-
-            JAVASCRIPT UNIT TESTING:
-
-            function runTests() {{
-                const testResults = {{}}
-
-                (DO NOT INCLUDE THIS LINE: these test cases should be pulled from leetcode)
-                const testCases = [
-                    {{input: [First input], expected: [Expected output]}},
-                    {{input: [Second input], expected: [Expected output]}},
-                    {{input: [Third input], expected: [Expected output]}}
-                ];
-
-                function arraysEqual(a, b) {{
-                    return a.length === b.length && a.every((value, index) => value === b[index]);
-                }}
-
-                (DO NOT INCLUDE THIS LINE: this test function below is explicitly an example for array comparisons for test cases. otherwise use a standard test case for the assert key. if dealing with subarrays, implement a proper method for comparing the the subarray results to the expected results)
-                testCases.forEach(({{ input, expected }}, index) => {{
-                    const result = nameOfFunction(input.nums, input.target);
-                    {{testResults[`testCase${{index + 1}}`] = {{userOutput: result, expected: expected, assert: arraysEqual(result, expected)}}}}
-                }});
-
-                return JSON.stringify(testResults)
-            }}
-
-            const testResults = runTests()
-            console.log(testResults)
-        """
-    )
-
-    javascript_test = convo.last.text
+            md_tests = convo.last.text
+            json_tests = md_tests.replace("```json", "").replace("```", "").strip()
+            test_cases = json.loads(json_tests)
+            break
+        except Exception as e:
+            print('🥱🥱🥱 Error generating test cases, trying again...', e)
+    else:
+        print("Failed to send message after 5 attempts")
+        return error_response("There was an error retrieving a response from Gemini, please try again later.", 500)
 
     print('😁😁😁 name & prompt', name_and_prompt)
     print('😁😁😁 default fn names', default_function_names)
     print('😁😁😁 test cases', test_cases)
-    print('😁😁😁 python tests', python_test)
-    print('😁😁😁 javascript tests', javascript_test)
-    return {'geminiResponse': name_and_prompt + '\n' + default_function_names + '\n' + test_cases + '\n' + python_test + '\n' + javascript_test, 'nameAndPrompt': name_and_prompt}
+    print('😁😁😁 unit tests', unit_tests)
+    return {'geminiResponse': {**name_and_prompt, **default_function_names, **test_cases, **unit_tests}}

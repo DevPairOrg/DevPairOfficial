@@ -75,7 +75,14 @@ function IDE(props: parsedData) {
                 <div>
                     <div>Problem Name: {problemName && problemName}</div>
                     <div>Prompt: {problemPrompt && problemPrompt}</div>
-                    <pre>{testCases && testCases}</pre>
+                    <pre>{testCases && (testCases.map(entry => {
+                        return (
+                            <>
+                            <div>INPUT: {entry.INPUT}</div>
+                            <div>OUTPUT: {entry.OUTPUT}</div>
+                            </>
+                        )
+                    }))}</pre>
                 </div>
                 <div>
                     <div
