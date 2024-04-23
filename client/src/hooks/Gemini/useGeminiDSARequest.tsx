@@ -81,11 +81,13 @@ const useGeminiDSARequest = (channelName: string | undefined) => {
                 problemName: data.geminiResponse["PROBLEM NAME"],
                 problemPrompt: data.geminiResponse["QUESTION PROMPT"],
                 testCases: data.geminiResponse["TEST CASES"],
-                pythonUnitTest: data.geminiResponse["PYTHON_UNIT_TESTS"],
-                jsUnitTest: data.geminiResponse["JAVASCRIPT_UNIT_TESTS"],
+                pythonUnitTest: data.geminiResponse["PYTHON_UNIT_TEST"],
+                jsUnitTest: data.geminiResponse["JAVASCRIPT_UNIT_TEST"],
                 defaultPythonFn: data.geminiResponse["PYTHON FUNCTION SIGNATURE"],
                 defaultJsFn: data.geminiResponse["JAVASCRIPT FUNCTION SIGNATURE"]
             };
+
+            dispatch(generateAndSetGeminiProblem({ isActive: true, generatedProblem: parsedGeminiResponse }));
 
             sendUsersToGeminiDSAComponent(parsedGeminiResponse)
             // dispatch(generateAndSetGeminiProblem({ isActive: true, generatedProblem: parsedGeminiResponse }));
