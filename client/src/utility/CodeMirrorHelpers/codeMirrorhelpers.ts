@@ -170,9 +170,9 @@ export const createPySubmissionOnLocal = async (
 
     // # Create a dictionary that maps parameter names to their values
     // args = {name: globals()[name] for name in params.keys()}
-
-    // # Call the function (params.keys() returns a list of the parameter names)
-    // print(${functionName}(*params.keys()))
+    
+    // # Call the function with the arguments
+    // print(${functionName}(**args))
     const url =
       "http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*";
     const options = {
