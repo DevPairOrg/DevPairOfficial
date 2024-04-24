@@ -104,12 +104,19 @@ def getLeetCodeResponseBits(id):
         try:
             convo.send_message(
             f"""
+
+                problem description: {name_and_prompt['QUESTION PROMPT']}
+
                 Context: You are expected to provide test cases for the problem you generated. Define at least three test cases as an array of objects, each with input and expected output.            
                 For each test case, include:            
                 --INPUT: The inputs needed to test the solution, with multiple parameters separated by SEMICOLONS and the parameter set to the variable it corresponds to in the function signature. (e.g., "nums=[1,2,3]; target=3"). DO NOT SEPARATE INPUT PARAMETERS WITH COMMAS USE SEMICOLONS. 
 
-                --OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. This should accurately reflect the prompt.
+                --OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. 
+                
+                This should accurately reflect the problem description.
                 Respond in JSON so I can parse with json.loads in python
+
+                Keep in mind that the test cases should be consistent with the problem description and constraints and array indexes are ALWAYS zero based.
             
             """
             )
