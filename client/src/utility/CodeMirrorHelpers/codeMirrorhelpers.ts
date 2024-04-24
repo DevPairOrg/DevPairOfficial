@@ -188,6 +188,29 @@ export const createPySubmissionOnLocal = async (
 };
 
 
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------
+    // ***** LANGUAGE CODES: 71 (python) 63 (javascript) 93(javascript but this one is unavailable on local) *****
+    // * Create a submission - use base64_encoded=false&wait=true - wait=true grabs the results and returns it right away instead returning a token for you to use to hit another route to retrieve the results
+    // TODO: Figure out how to utilize multiple input / outputs
+    // ? Must include Post Method, Auth Token/User/Content-Type
+    // ? Body must be JSON.stringify
+
+    // * (Start of important comments)
+    // !!! the function stdin is being parsed because although the function being passed in has parameters (a, b) it's actually function twoSum(input) where 'input' is a string intiially
+    // Therefore, we have to trim, split the input (stdin) into an array [a, b]
+    // Then parse them into integers and reassigning them into proper variables
+    // const a = parseInt(input[0]) and const b = parseInt(input[1])
+    // Finally we use those variables to match the parameters of function twoSum(a, b)
+    // !!! IMPORTANT !!! results will only return correctly if we add a console.log(twoSum(a,b))
+    // * (End of important comments)
+
+    // TODO: Figure out an efficient way to have gemini parse this for us intially for the test case, or for it to not have to trim/split/parse and how to do it for arrays
+    // TODO: Figure out how to capture console.logs - when console.log is added to the user function and is submitted, it returns in the key 'stdout' along with the return value
+    // Example: "stdout": "Test Console Log\n8"
+    // ? Maybe tell users to remove console.logs before finalizing their submission (create a 'run' button that is separate from 'submission')
+// ----------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 //*  JUDGE0 SUBMISSION FETCH
 export const handleJudgeSubmission = async (
     sourceCode: string | undefined,
