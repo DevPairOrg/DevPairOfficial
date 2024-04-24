@@ -1,5 +1,5 @@
 import React from 'react';
-import { JudgeResults } from './util';
+import { JudgeResults } from '../../utility/CodeMirrorHelpers/codeMirrorhelpers';
 
 interface ModalContentProps {
     userResults: JudgeResults | null;

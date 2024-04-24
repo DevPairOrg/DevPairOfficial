@@ -12,7 +12,7 @@ import {
     JudgeResults,
     seperateLogsAndUserOutputFromStdout,
     assertResults
-} from './util';
+} from '../../utility/CodeMirrorHelpers/codeMirrorhelpers';
 
 import { useModal, Modal } from '../../context/Modal/Modal';
 import ConsoleOutput from './ConsoleOutput';
