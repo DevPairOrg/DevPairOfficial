@@ -1,128 +1,26 @@
-// HANDLE CODE SUBMISSION FETCH FUNCTION ----------------------------------------------------------------------
-
-export const handleCodeSubmission = async (
-    value: string | undefined,
-    jsUnitTest: string | undefined,
-    language: string,
-    pythonUnitTest: string | undefined,
-    setUserResults: React.Dispatch<React.SetStateAction<TestResults | null>>,
-    setTestCaseView: React.Dispatch<React.SetStateAction<number | null>>,
-    openConsoleOutputModal: () => void
-) => {
-    let valWithoutLogs;
-    if (language === 'javascript' && value) {
-        // Remove console.log statements from the function definition for JavaScript
-        valWithoutLogs = value.replace(/console\.log\s*\([^]*?\)\s*;?/g, '');
-    }
-
-    try {
-        const response = await fetch('/api/problem/test', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-            },
-            body: JSON.stringify({
-                code: language !== 'python' ? valWithoutLogs : value, // do not pass console.log to backend if your using JavaScript IDE
-                language: language,
-                problemUnitTest: language === 'python' ? pythonUnitTest : jsUnitTest,
-            }),
-        });
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data: any = await response.json();
-        let testResults: any;
-
-        if (language !== 'python') {
-            testResults = JSON.parse(data.testResults); // additional conversion needed for JavaScript
-        } else {
-            testResults = data.testResults;
-        }
-
-        const hasDigestibleResults = checkResponseData(testResults);
-
-        if (hasDigestibleResults) {
-            setUserResults(testResults);
-            setTestCaseView(1);
-            openConsoleOutputModal();
-        } else {
-            console.error('An error occured generating test result data');
-        }
-    } catch (error) {
-        console.error('An error occurred:', error);
-    }
-};
-
-// -----------------------------------------------------------------------------------------------------------
-
-// HANDLE CODE SUBMISSION HELPERS ----------------------------------------------------------------------------
-
-export interface TestResults {
-    testCase1: { assert: boolean; expected: any; userOutput: any };
-    testCase2: { assert: boolean; expected: any; userOutput: any };
-    testCase3: { assert: boolean; expected: any; userOutput: any };
+// *INTERFACES
+export interface CaseParameters {
+    INPUT: string;
+    OUTPUT: string;
 }
 
-// Function to perform type assertion
-function checkResponseData(data: any): data is TestResults {
-    return (
-        // Check if test cases exist and have the correct structure
-        data.hasOwnProperty('testCase1') &&
-        data.hasOwnProperty('testCase2') &&
-        data.hasOwnProperty('testCase3') &&
-        // Check the structure of each test case
-        isTestCase(data.testCase1) &&
-        isTestCase(data.testCase2) &&
-        isTestCase(data.testCase3)
-    );
+export interface TestResult {
+    stdin?: any
+    expectedOutput?: any
+    userOutput?: any
+    assert?: any
+    result?: any
+    stdout?: any
+    stderr?: any
+    exitCode?: any
 }
 
-function isTestCase(data: any) {
-    return (
-        typeof data.assert === 'boolean' &&
-        typeof data.expected !== 'undefined' &&
-        typeof data.userOutput !== 'undefined'
-    );
+export interface JudgeResults {
+    [key: string]: TestResult
 }
 
-// -----------------------------------------------------------------------------------------------------------
 
-// STOUDT & IDE RELATED --------------------------------------------------------------------------------------
-
-export const extractConsoleLogsJavaScriptOnly = (functionDefinition: string) => {
-    try {
-        // Define an array to store evaluated console.log() statements
-        const evaluatedLogs: string[] = [];
-
-        // Construct a real function using the function string
-        const func = Function(`return (${functionDefinition})`)();
-
-        const originalConsoleLog = console.log; //! CRUCIAL -- DO NOT TOUCH... this stores the normal behavior of the global console.log function
-        //* Override console.log to capture its output
-        console.log = function (...args: any[]) {
-            evaluatedLogs.push(args.join(' '));
-            // originalConsoleLog.apply(console, args);
-        };
-
-        // Execute the function
-        func();
-
-        console.log = originalConsoleLog; //! CRUCIAL -- DO NOT TOUCH... Restores the original console.log function
-
-        // Now, evaluatedLogs array contains the evaluated console.log() statements
-        return evaluatedLogs;
-    } catch (error) {
-        // console.error('Error evaluating function string:', error);
-        //? commented out because its going to send out an error each time the IDE has any syntax error. But can uncomment for debugging
-        return null;
-    }
-};
-
-// Python or Javascript User Options ----------------------------------------------------------------------------
-
+// *SWITCH IDE LANGUAGE
 export const handlePythonButton = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     setLanguage: React.Dispatch<React.SetStateAction<string>>,
@@ -133,6 +31,7 @@ export const handlePythonButton = (
     setLanguage('python');
     setValue(defaultPythonFn);
 };
+
 export const handleJavascriptButton = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     setLanguage: React.Dispatch<React.SetStateAction<string>>,
@@ -144,104 +43,19 @@ export const handleJavascriptButton = (
     setValue(defaultJsFn);
 };
 
-// -------------------------------------------------------------------------------------------------------------
 
-// ! stringifiy object data so it can be easily used with JSON.parse() method
-function stringifyObjectData(objectString: string) {
-    // Remove leading and trailing spaces
-    objectString = objectString.trim();
 
-    // Check if the string starts and ends with curly braces
-    if (objectString[0] !== '{' || objectString[objectString.length - 1] !== '}') {
-        console.error('Input is not a valid JSON-like object.');
-        return null;
-    }
-
-    // Remove outer curly braces
-    objectString = objectString.substring(1, objectString.length - 1).trim();
-
-    // Split the object string by commas
-    const parts = objectString.split(',');
-
-    // Iterate through each part and fix the format
-    const fixedParts = parts.map((part) => {
-        // Find the index of the colon
-        const colonIndex = part.indexOf(':');
-
-        // If colon exists and it's not the first character and not the last character
-        if (colonIndex > 0 && colonIndex < part.length - 1) {
-            // Extract key and value
-            const key = part.slice(0, colonIndex).trim();
-            const value = part.slice(colonIndex + 1).trim();
-
-            // Check if key needs quotes
-            if (!key.startsWith('"') && !key.endsWith('"')) {
-                return `"${key}": ${value}`;
-            }
-        }
-
-        // If the part doesn't need fixing, return as it is
-        return part.trim();
-    });
-
-    // Join the fixed parts and return the properly stringified data
-    return `{${fixedParts.join(',')}}`;
-}
-
-//? NEW SUBMISSION USING JUDGE0 ---------------------------------------------------------------------------------
-export interface CaseParameters {
-    INPUT: string;
-    OUTPUT: string;
-}
-
-// * MAIN FUNCTION CALL WITH CONDITIONAL FETCHES
-export const handleJudgeSubmission = async (
-    sourceCode: string | undefined,
-    language: string,
-    testCases: CaseParameters[]
-) => {
-    console.log('wtf is this', testCases);
-    if (language === 'javascript') {
-        for (const test of testCases) {
-            console.log('Submission for Javascript', test);
-            const result = await createJSSubmissionOnLocal(sourceCode, test.INPUT, test.OUTPUT);
-            console.log({
-                stdin: result.stdin,
-                expectedOutput: result.expected_output,
-                result: result.status.description,
-                stdout: result.stdout,
-                stderr: result.stderr,
-                exitCode: result.exit_code,
-            });
-        }
-    }
-    if (language === 'python') {
-        for (const test of testCases) {
-            console.log('Submission for Python', test);
-            const result = await createPySubmissionOnLocal(sourceCode, test.INPUT, test.OUTPUT);
-            console.log({
-                stdin: result.stdin,
-                expectedOutput: result.expected_output,
-                result: result.status.description,
-                stdout: result.stdout,
-                stderr: result.stderr,
-                exitCode: result.exit_code,
-            });
-        }
-    }
-};
-
+// JUDGE SUBMISSION HELPERS
 function grabFunctionName(sourceCode: string | undefined) {
     if (!sourceCode) return;
 
-    // Extracting the function name
+    // Extracting function name AS SEEN from source code
     const regex = /function\s+(\w+)\s*\(/;
     const match = sourceCode.match(regex);
 
     if (match && match[1]) {
         return match[1];
     } else {
-        // If no match is found, return null or handle the case as needed
         return null;
     }
 }
@@ -261,19 +75,56 @@ export const createJSSubmissionOnLocal = async (
             'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
         },
         body: JSON.stringify({
-            // TODO --- TEST TO SEE IF JSON.parse() WORKS WITH INCOMING OBJECTS... so far works with string, number, and arrays
             source_code: `
                 const input = require('fs').readFileSync(0, 'utf-8').trim();
                 const eachParam = input.split(';')
 
-                console.log("EACH PARAM", eachParam)
+                function stringifyObjectData(objectString) { // NEEDS TO BE JAVASCRIPT COMPILED SYNTAX DEFINITION
+                    objectString = objectString.trim();
+
+                    if (objectString[0] !== '{' || objectString[objectString.length - 1] !== '}') {
+                        console.error('Input is not a valid JSON-like object.');
+                        return null;
+                    }
+
+                    objectString = objectString.substring(1, objectString.length - 1).trim();
+                    const parts = objectString.split(',');
+
+                    const fixedParts = parts.map((part) => {
+                        const colonIndex = part.indexOf(':');
+
+                        if (colonIndex > 0 && colonIndex < part.length - 1) {
+                            const key = part.slice(0, colonIndex).trim();
+                            const value = part.slice(colonIndex + 1).trim();
+
+                            if (!key.startsWith('"') && !key.endsWith('"')) {
+                                return \`"\${key}": \${value}\`;
+                            }
+                        }
+
+                        return part.trim();
+                    });
+
+                    return \`{\${fixedParts.join(',')}}\`;
+                }
+
+
+                //! console.log("EACH PARAM", eachParam) // <--- FOR DEBUGGING
                 const parsedTypesParamsArray = eachParam.map((param) => {
                     param = param.split("=")[1]
-                    parsedParam = JSON.parse( param.trim() )
+                    let parsedParam;
+
+                    if(param.includes('{') || param.includes('}')) {
+                        const objectData = stringifyObjectData(param)
+                        parsedParam = JSON.parse( objectData )
+                    } else {
+                        parsedParam = JSON.parse( param.trim() )
+                    }
+
                     return parsedParam
                 })
-                console.log("PARSED TYPES ARR --->", parsedTypesParamsArray)
 
+                //! console.log("PARSED TYPES ARR --->", parsedTypesParamsArray) // <--- FOR DEBUGGING
 
                 console.log(${correctFunctionName}(...parsedTypesParamsArray))
                 ${sourceCode}
@@ -285,7 +136,6 @@ export const createJSSubmissionOnLocal = async (
         }),
     };
     try {
-        console.log('Running javascript submission: STDIN ===>', stdin);
         const response = await fetch(url, options as any);
         const result = await response.json();
         return result;
@@ -337,4 +187,211 @@ export const createPySubmissionOnLocal = async (
     }
 };
 
-//? ------------------------------------------------------------------------------------------------------
+
+//*  JUDGE0 SUBMISSION FETCH
+export const handleJudgeSubmission = async (
+    sourceCode: string | undefined,
+    language: string,
+    testCases: CaseParameters[] | undefined
+) => {
+    if(!testCases || !sourceCode) return
+
+    let judgeResults: JudgeResults = {
+        testCase1: {},
+        testCase2: {},
+        testCase3: {}
+    }
+
+    if (language === 'javascript') {
+        for (const [index, test] of testCases.entries()) {
+            const result = await createJSSubmissionOnLocal(sourceCode, test.INPUT, test.OUTPUT);
+
+            judgeResults[`testCase${index + 1}`] = {
+                stdin: result.stdin,
+                expectedOutput: result.expected_output,
+                result: result.status.description,
+                stdout: result.stdout,
+                stderr: result.stderr,
+                exitCode: result.exit_code,
+            }
+        }
+
+        return judgeResults
+
+    } else if(language === 'python') {
+        for (const test of testCases) {
+            console.log('Submission for Python', test);
+            const result = await createPySubmissionOnLocal(sourceCode, test.INPUT, test.OUTPUT);
+            console.log({
+                stdin: result.stdin,
+                expectedOutput: result.expected_output,
+                result: result.status.description,
+                stdout: result.stdout,
+                stderr: result.stderr,
+                exitCode: result.exit_code,
+            });
+        }
+    }
+};
+
+
+
+// POST JUDGE SUBMISSION HELPERS
+
+export function seperateLogsAndUserOutputFromStdout(judgeResults: JudgeResults) {
+    for(let key in judgeResults) {
+        const testCase = judgeResults[key]
+        const stoudt = testCase.stdout
+        const seperatedStoudt = stoudt.split("\n")
+
+        const stoudtLogs = seperatedStoudt.splice(0, seperatedStoudt.length - 2)
+        const userOutput = JSON.parse(seperatedStoudt[seperatedStoudt.length - 2])
+
+        testCase.stdout = stoudtLogs
+        testCase.userOutput = userOutput
+    }
+}
+
+export function assertResults(judgeResults: JudgeResults) {
+    for(let key in judgeResults) {
+        const testCase = judgeResults[key]
+
+        const expectedOutput = testCase.expectedOutput // *still needs to be parsed with JSON.parse()
+        const userOutput = testCase.userOutput
+
+        if(expectedOutput.includes('{') || expectedOutput.includes('}')) { // strict compare 2 objects
+            const objectData = stringifyObjectData(expectedOutput)
+            if(objectData) {
+                const parsedData = JSON.parse(objectData)
+                testCase.assert = strictEqualObjects(userOutput, parsedData)
+            }
+        } else if (expectedOutput.includes('[') || expectedOutput.includes(']')) { // strict compare 2 arrays
+            const parsedData = JSON.parse(expectedOutput)
+            testCase.assert = arraysAreEqual(userOutput, parsedData)
+        } else { // string, boolean, and number types
+            const parsedData = JSON.parse(expectedOutput)
+            testCase.assert = (userOutput === parsedData)
+        }
+
+    }
+}
+
+function stringifyObjectData(objectString: string) {
+    // when test case paramaters are objects, or the expected output is an object, we can use this function to convert object string data to the correct stringified format
+    // to get our objects to work with JSON.parse()
+    objectString = objectString.trim();
+
+    if (objectString[0] !== '{' || objectString[objectString.length - 1] !== '}') {
+        console.error('Input is not a valid JSON-like object.');
+        return null;
+    }
+
+    objectString = objectString.substring(1, objectString.length - 1).trim();
+    const parts = objectString.split(',');
+
+    const fixedParts = parts.map((part) => {
+        const colonIndex = part.indexOf(':');
+
+        if (colonIndex > 0 && colonIndex < part.length - 1) {
+            const key = part.slice(0, colonIndex).trim();
+            const value = part.slice(colonIndex + 1).trim();
+
+            if (!key.startsWith('"') && !key.endsWith('"')) {
+                return `"${key}": ${value}`;
+            }
+        }
+
+        return part.trim();
+    });
+
+    return `{${fixedParts.join(',')}}`;
+}
+
+
+function arraysAreEqual(arr1: any, arr2: any) {
+    if (arr1.length !== arr2.length) {
+        return false;
+    }
+
+    for (let i = 0; i < arr1.length; i++) {
+        const element1 = arr1[i];
+        const element2 = arr2[i];
+
+        if (Array.isArray(element1) && Array.isArray(element2)) {
+            if (!arraysAreEqual(element1, element2)) {
+                return false;
+            }
+        } else if (typeof element1 === 'object' && typeof element2 === 'object') {
+            if (!objectsAreEqual(element1, element2)) {
+                return false;
+            }
+        } else {
+            if (element1 !== element2) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+function objectsAreEqual(obj1: any, obj2: any) {
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (keys1.length !== keys2.length) {
+        return false;
+    }
+
+    for (const key of keys1) {
+        const val1 = obj1[key];
+        const val2 = obj2[key];
+
+        if (typeof val1 === 'object' && typeof val2 === 'object') {
+            if (!objectsAreEqual(val1, val2)) {
+                return false;
+            }
+        } else {
+            if (val1 !== val2) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+
+
+function strictEqualObjects(obj1: any, obj2: any) {
+    if (!(obj1 instanceof Object) || !(obj2 instanceof Object)) {
+        return obj1 === obj2;
+    }
+
+    if (Array.isArray(obj1) && Array.isArray(obj2)) {
+        if (obj1.length !== obj2.length) {
+            return false;
+        }
+        for (let i = 0; i < obj1.length; i++) {
+            if (!strictEqualObjects(obj1[i], obj2[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (keys1.length !== keys2.length) {
+        return false;
+    }
+
+    for (const key of keys1) {
+        if (!obj2.hasOwnProperty(key) || !strictEqualObjects(obj1[key], obj2[key])) {
+            return false;
+        }
+    }
+
+    return true;
+}

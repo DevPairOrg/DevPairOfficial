@@ -5,7 +5,14 @@ import { python } from '@codemirror/lang-python';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { parsedData } from '../../interfaces/gemini';
 import { useSocket } from '../../context/Socket';
-import { TestResults, handleJavascriptButton, handlePythonButton, CaseParameters, handleJudgeSubmission } from './util';
+import {
+    handleJavascriptButton,
+    handlePythonButton,
+    handleJudgeSubmission,
+    JudgeResults,
+    seperateLogsAndUserOutputFromStdout,
+    assertResults
+} from './util';
 
 import { useModal, Modal } from '../../context/Modal/Modal';
 import ConsoleOutput from './ConsoleOutput';
@@ -19,11 +26,9 @@ function IDE(props: parsedData) {
 
     const [value, setValue] = useState<string | undefined>(defaultPythonFn); // value of user code inside of IDE
     const [language, setLanguage] = useState<string>('python'); // language for IDE
-    const [params, _setParams] = useState<CaseParameters[] | []>(testCases ? testCases : []); // gathers all the parameters for each test case
 
-    const [userResults, _setUserResults] = useState<TestResults | null>(null); // user results object on submission
+    const [userResults, setUserResults] = useState<JudgeResults | null>(null); // user results object on submission
     const [testCaseView, setTestCaseView] = useState<number | null>(null); // switch which test case your looking at
-    const [logs, _setLogs] = useState<string[] | null>(null); // stoudt console.log statements
 
     useEffect(() => {
         // update modal content when needed
@@ -46,7 +51,6 @@ function IDE(props: parsedData) {
             <ConsoleOutput
                 userResults={userResults}
                 testCaseView={testCaseView}
-                logs={logs}
                 setTestCaseView={setTestCaseView}
             />
         );
@@ -60,7 +64,6 @@ function IDE(props: parsedData) {
     // handle send
     const updateIDERealTime = useCallback(
         (value: string) => {
-            console.log('UPDATE IDE...');
             socket?.emit('update_IDE', {
                 newValue: value,
                 room: channelName as string,
@@ -89,7 +92,7 @@ function IDE(props: parsedData) {
     return (
         <>
             <div id="ide-container">
-                <Modal></Modal> {/* This is needed for the Modal UI to render in */}
+                <Modal></Modal> {/*This is needed for the Modal UI to render in */}
                 <div>
                     <div>Problem Name: {problemName && problemName}</div>
                     <div>Prompt: {problemPrompt && problemPrompt}</div>
@@ -114,23 +117,6 @@ function IDE(props: parsedData) {
                             height: 'auto',
                         }}
                     >
-                        <div id="user-results">
-                            {userResults && userResults.testCase1.assert === true ? (
-                                <div>✔ Test Case 1</div>
-                            ) : (
-                                <div>❌ Test Case 1</div>
-                            )}
-                            {userResults && userResults.testCase2.assert === true ? (
-                                <div>✔ Test Case 2</div>
-                            ) : (
-                                <div>❌ Test Case 2</div>
-                            )}
-                            {userResults && userResults.testCase3.assert === true ? (
-                                <div>✔ Test Case 3</div>
-                            ) : (
-                                <div>❌ Test Case 3</div>
-                            )}
-                        </div>
                         <div style={{ display: 'flex', gap: '5px' }}>
                             <div>Language: </div>
                             <button
@@ -155,7 +141,17 @@ function IDE(props: parsedData) {
                         theme={dracula}
                     />
                     <button
-                        onClick={() => handleJudgeSubmission(value, language, params)}
+                        onClick={ async() => {
+                            const judgeResults: JudgeResults | undefined = await handleJudgeSubmission(value, language, testCases)
+                            if(judgeResults) {
+                                seperateLogsAndUserOutputFromStdout(judgeResults)
+                                assertResults(judgeResults)
+
+                                setUserResults(judgeResults)
+                                openConsoleOutputModal()
+                                setTestCaseView(1)
+                            }
+                        }}
                         id="ide-submit-button"
                         style={{ color: 'red' }}
                     >
