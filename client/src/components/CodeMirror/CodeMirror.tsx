@@ -11,16 +11,20 @@ import {
     handleJudgeSubmission,
     JudgeResults,
     seperateLogsAndUserOutputFromStdout,
-    assertResults
+    assertResults,
+    allTestCasesPassed,
+    addDSAProblemToUserSolved
 } from '../../utility/CodeMirrorHelpers/codeMirrorhelpers';
 
 import { useModal, Modal } from '../../context/Modal/Modal';
 import ConsoleOutput from './ConsoleOutput';
 import './CodeMirror.css';
+import { useAppSelector } from '../../hooks';
 
 function IDE(props: parsedData) {
     const { socket, connectSocket, error } = useSocket();
 
+    const user = useAppSelector((state) => state.session.user)
     const { problemName, problemPrompt, testCases, defaultPythonFn, defaultJsFn, channelName } = props;
     const { setModalContent } = useModal();
 
@@ -144,12 +148,19 @@ function IDE(props: parsedData) {
                         onClick={ async() => {
                             const judgeResults: JudgeResults | undefined = await handleJudgeSubmission(value, language, testCases)
                             if(judgeResults) {
+                                // manually seperate out debugging statements and result assertions
                                 seperateLogsAndUserOutputFromStdout(judgeResults)
                                 assertResults(judgeResults)
 
+                                // handle ConsoleOutput modal
                                 setUserResults(judgeResults)
                                 openConsoleOutputModal()
                                 setTestCaseView(1)
+
+                                // if user has solved problem, append it to the user's solved
+                                if(allTestCasesPassed(judgeResults)) {
+                                    addDSAProblemToUserSolved(user?.id, problemName)
+                                }
                             }
                         }}
                         id="ide-submit-button"

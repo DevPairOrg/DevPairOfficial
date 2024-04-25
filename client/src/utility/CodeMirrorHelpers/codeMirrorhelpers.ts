@@ -137,6 +137,7 @@ export const createJSSubmissionOnLocal = async (
   try {
     const response = await fetch(url, options as any);
     const result = await response.json();
+    console.log("RESULT", result)
     return result;
   } catch (error) {
     console.error(error);
@@ -170,7 +171,7 @@ export const createPySubmissionOnLocal = async (
 
     // # Create a dictionary that maps parameter names to their values
     // args = {name: globals()[name] for name in params.keys()}
-    
+
     // # Call the function with the arguments
     // print(${functionName}(**args))
     const url =
@@ -288,7 +289,14 @@ export function seperateLogsAndUserOutputFromStdout(
     const seperatedStoudt = stoudt.split("\n");
 
     const stoudtLogs = seperatedStoudt.splice(0, seperatedStoudt.length - 2);
-    const userOutput = JSON.parse(seperatedStoudt[seperatedStoudt.length - 2]);
+
+    let userOutput; // parse userOutput only if its not undefined or null
+
+    if(seperatedStoudt[seperatedStoudt.length - 2] === 'undefined' || seperatedStoudt[seperatedStoudt.length - 2] === 'null') {
+      userOutput = undefined
+    } else {
+      userOutput = JSON.parse(seperatedStoudt[seperatedStoudt.length - 2]);
+    }
 
     testCase.stdout = stoudtLogs;
     testCase.userOutput = userOutput;
@@ -442,4 +450,32 @@ function strictEqualObjects(obj1: any, obj2: any) {
   }
 
   return true;
+}
+
+
+// Adding DSA Problem To User Model
+
+export const allTestCasesPassed = (userResults: JudgeResults | null): boolean => {
+    if(!userResults) return false
+
+    return (
+        userResults.testCase1.assert &&
+        userResults.testCase2.assert &&
+        userResults.testCase3.assert
+    );
+};
+
+
+export const addDSAProblemToUserSolved = async (userId: string | undefined, prompt: string | undefined) => {
+    if(!userId || !prompt) return
+
+    const response = await fetch('/api/gemini/add', {
+        method: "POST",
+        body: JSON.stringify({userId, prompt}),
+        headers: { "Content-Type": "application/json"}
+    })
+
+    if(!response.ok) {
+        console.error("Something Went Wrong inside /api/gemini/add from addDSAProblemToUserSolved fetch call")
+    }
 }
