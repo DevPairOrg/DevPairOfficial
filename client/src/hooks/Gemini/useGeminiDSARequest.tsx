@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '..';
 import { generateAndSetGeminiProblem, resetGeminiState } from '../../store/pairedContent';
 import { useSocket } from '../../context/Socket';
+import { toast } from 'react-toastify';
 
 export interface ParsedGeminiResponse {
     problemName: any;
@@ -88,31 +89,25 @@ const useGeminiDSARequest = (channelName: string | undefined) => {
             };
 
             dispatch(generateAndSetGeminiProblem({ isActive: true, generatedProblem: parsedGeminiResponse }));
-
             sendUsersToGeminiDSAComponent(parsedGeminiResponse)
-            // dispatch(generateAndSetGeminiProblem({ isActive: true, generatedProblem: parsedGeminiResponse }));
+
         } else {
+            const notify = () => toast.error('Failed to generate a problem... please try again', {
+                position: "bottom-left",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark"
+                });
+            notify()
+
             console.error('Failed to generate a problem through Gemini API.');
             setFetchError('Failed to generate a problem.');
         }
     };
-
-    // const addQuestionPromptToUserModel = async (questionPrompt: string) => {
-    //     if (!sessionUser) {
-    //         console.error('Error adding question prompt to user model. No signed in user');
-    //         return;
-    //     }
-
-    //     const res = await fetch('/api/gemini/add', {
-    //         method: 'POST',
-    //         body: JSON.stringify({ userId: sessionUser.id, prompt: questionPrompt }),
-    //         headers: { 'Content-Type': 'application/json' },
-    //     });
-
-    //     if (!res.ok) {
-    //         console.error('Error adding question prompt to user model');
-    //     }
-    // };
 
     return { handleGeminiDSARequest, loading, error: fetchError };
 };
