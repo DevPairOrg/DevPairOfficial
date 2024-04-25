@@ -170,7 +170,7 @@ export const createPySubmissionOnLocal = async (
 
     // # Create a dictionary that maps parameter names to their values
     // args = {name: globals()[name] for name in params.keys()}
-    
+
     // # Call the function with the arguments
     // print(${functionName}(**args))
     const url =
@@ -442,4 +442,32 @@ function strictEqualObjects(obj1: any, obj2: any) {
   }
 
   return true;
+}
+
+
+// Adding DSA Problem To User Model
+
+export const allTestCasesPassed = (userResults: JudgeResults | null): boolean => {
+    if(!userResults) return false
+
+    return (
+        userResults.testCase1.assert &&
+        userResults.testCase2.assert &&
+        userResults.testCase3.assert
+    );
+};
+
+
+export const addDSAProblemToUserSolved = async (userId: string | undefined, prompt: string | undefined) => {
+    if(!userId || !prompt) return
+
+    const response = await fetch('/api/gemini/add', {
+        method: "POST",
+        body: JSON.stringify({userId, prompt}),
+        headers: { "Content-Type": "application/json"}
+    })
+
+    if(!response.ok) {
+        console.error("Something Went Wrong inside /api/gemini/add from addDSAProblemToUserSolved fetch call")
+    }
 }
