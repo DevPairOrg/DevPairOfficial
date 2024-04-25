@@ -15,7 +15,7 @@ function ScreenShare(props: { channelName: string }) {
     const remoteUsers = useRemoteUsers();
     const agoraEngine = useAgoraClient();
     const dispatch = useAppDispatch();
-    const screenSharing = useAppSelector((state) => state.pairedContent.screenshare.isActive);
+    const screenSharing = useAppSelector((state) => state.pairedContent.agora.screenshare.isActive);
 
     useRemoteVideoTracks(remoteUsers);
 
