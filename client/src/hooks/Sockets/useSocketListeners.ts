@@ -23,6 +23,7 @@ const useSocketListeners = (
             // console.log('Socket listening to "Joined"', data);
             if (!config.channelName) {
                 // console.log(`Setting channel name to ${data.room}`);
+                localStorage.setItem("room", data.room); // Save the room name to local storage so window can access it for page refreshes
                 setChannelName(data.room);
             }
             if (data.users.length > 1) {
@@ -58,6 +59,8 @@ const useSocketListeners = (
         };
 
         socket.on('user_left', userLeftListener);
+
+        console.log("Socket has listeners🤬🤬🤬🤬🤬🤬" ,socket)
 
         return () => {
             // Cleanup logic here
