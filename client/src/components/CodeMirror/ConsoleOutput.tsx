@@ -40,9 +40,9 @@ const ConsoleOutput: React.FC<ModalContentProps> = ({ userResults, testCaseView,
             <div>
                 <div>
                     <p>Output:</p>
-                    {testCaseView === 1 && <p>{userResults?.testCase1.userOutput}</p>}
-                    {testCaseView === 2 && <p>{userResults?.testCase2.userOutput}</p>}
-                    {testCaseView === 3 && <p>{userResults?.testCase3.userOutput}</p>}
+                    {testCaseView === 1 && <p>{userResults?.testCase1.userOutput || 'undefined'}</p>}
+                    {testCaseView === 2 && <p>{userResults?.testCase2.userOutput || 'undefined'}</p>}
+                    {testCaseView === 3 && <p>{userResults?.testCase3.userOutput || 'undefined'}</p>}
                 </div>
 
                 <div>
@@ -54,9 +54,27 @@ const ConsoleOutput: React.FC<ModalContentProps> = ({ userResults, testCaseView,
 
                 <div>
                     <p>Stoudt:</p>
-                    {testCaseView === 1 && <p>{userResults?.testCase1.stdout}</p>}
-                    {testCaseView === 2 && <p>{userResults?.testCase2.stdout}</p>}
-                    {testCaseView === 3 && <p>{userResults?.testCase3.stdout}</p>}
+                    {testCaseView === 1 && (
+                        <div>
+                            {userResults?.testCase1.stdout.map((output: any, index: number) => (
+                                <p key={index}>{output}</p>
+                            ))}
+                        </div>
+                    )}
+                    {testCaseView === 2 && (
+                        <div>
+                            {userResults?.testCase2.stdout.map((output: any, index: number) => (
+                                <p key={index}>{output}</p>
+                            ))}
+                        </div>
+                    )}
+                    {testCaseView === 3 && (
+                        <div>
+                            {userResults?.testCase3.stdout.map((output: any, index: number) => (
+                                <p key={index}>{output}</p>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

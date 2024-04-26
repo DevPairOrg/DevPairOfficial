@@ -137,6 +137,7 @@ export const createJSSubmissionOnLocal = async (
   try {
     const response = await fetch(url, options as any);
     const result = await response.json();
+    console.log("RESULT", result)
     return result;
   } catch (error) {
     console.error(error);
@@ -288,7 +289,14 @@ export function seperateLogsAndUserOutputFromStdout(
     const seperatedStoudt = stoudt.split("\n");
 
     const stoudtLogs = seperatedStoudt.splice(0, seperatedStoudt.length - 2);
-    const userOutput = JSON.parse(seperatedStoudt[seperatedStoudt.length - 2]);
+
+    let userOutput; // parse userOutput only if its not undefined or null
+
+    if(seperatedStoudt[seperatedStoudt.length - 2] === 'undefined' || seperatedStoudt[seperatedStoudt.length - 2] === 'null') {
+      userOutput = undefined
+    } else {
+      userOutput = JSON.parse(seperatedStoudt[seperatedStoudt.length - 2]);
+    }
 
     testCase.stdout = stoudtLogs;
     testCase.userOutput = userOutput;
