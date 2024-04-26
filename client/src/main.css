@@ -17,6 +17,9 @@
   --dark-text: #0a0f0e;
   --primary-opacity: rgb(32, 204, 9, 0.3);
   --corner-background: hsl(113, 78%, 12%);
+
+  --toastify-color-info: rgb(230, 118, 20);
+  --toastify-icon-color-info: var(--toastify-color-info);
 }
 
 #root {
