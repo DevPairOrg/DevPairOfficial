@@ -26,12 +26,10 @@ def addQuestionPromptToUserModel():
         if not user:
             return {"error": "User not found"}, 404
 
-        parsed_question_name = prompt.split('\n')[1] # get question name from gemini response
-
-        user.completed_leetcode_problems += (parsed_question_name + ', ')
+        user.completed_leetcode_problems += (prompt + ', ')
         db.session.commit()
 
-        return {'message': f'Successfully added {parsed_question_name} to user {user_id}'}
+        return {'message': f'Successfully added {prompt} to user {user_id}'}
 
     except Exception as e:
         print("ERROR --------------->", e)
@@ -58,12 +56,12 @@ def getLeetCodeResponseBits(id):
             convo.send_message(
             f"""
                 For the entire structured response STRICTLY DO NOT include any markdowns such as:
-                (i.e. **BOLD**)            (i.e. ```javascript)            (i.e. ```python)  
+                (i.e. **BOLD**)            (i.e. ```javascript)            (i.e. ```python)
 
                 Context: You are expected to generate a data structure and algorithm practice problem of easy or medium difficulty. Do not generate any problems with linked lists or binary trees. If 'user_solved_problems: <example comma separated list>' specified, do not generate any problems in this list as the user has already successfully solved these. The problem should simulate a real-world scenario and include a comprehensive description and detailed constraints. Only return the following keys: 'PROBLEM NAME', 'CONSTRAINTS', 'DIFFICULTY', and 'QUESTION PROMPT' and in JSON so I can parse with json.loads in python.
 
                 user_solved_problems: {prev_solved_questions}
-            
+
             """
             )
             md_name = convo.last.text
@@ -82,10 +80,10 @@ def getLeetCodeResponseBits(id):
         try:
             convo.send_message(
             f"""
-                Context: You are expected to provide empty functions for the problem you generated. The functions should be named according to the problem and include comments within the functions stating "Your code goes here." Include two separate functions -- one for python and one for javascript. Python: Use pass instead of a return statement within the empty function. JavaScript: Keep the function empty with just the comment and avoid using arrow functions. Do not use Python comment syntax for JavaScript (triple quotes). Parameters for both functions should not have a type assigned to them. Respond in JSON so I can parse with json.loads in python.           
+                Context: You are expected to provide empty functions for the problem you generated. The functions should be named according to the problem and include comments within the functions stating "Your code goes here." Include two separate functions -- one for python and one for javascript. Python: Use pass instead of a return statement within the empty function. JavaScript: Keep the function empty with just the comment and avoid using arrow functions. Do not use Python comment syntax for JavaScript (triple quotes). Parameters for both functions should not have a type assigned to them. Respond in JSON so I can parse with json.loads in python.
                 DO NOT ADD TYPES TO THE FUNCTION PARAMETERS
                 Use # for comments in python and // for comments in javascript
-            
+
             """
             )
 
@@ -107,17 +105,17 @@ def getLeetCodeResponseBits(id):
 
                 problem description: {name_and_prompt['QUESTION PROMPT']}
 
-                Context: You are expected to provide test cases for the problem you generated. Define at least three test cases as an array of objects, each with input and expected output.            
-                For each test case, include:            
-                --INPUT: The inputs needed to test the solution, with multiple parameters separated by SEMICOLONS and the parameter set to the variable it corresponds to in the function signature. (e.g., "nums=[1,2,3]; target=3"). DO NOT SEPARATE INPUT PARAMETERS WITH COMMAS USE SEMICOLONS. 
+                Context: You are expected to provide test cases for the problem you generated. Define at least three test cases as an array of objects, each with input and expected output.
+                For each test case, include:
+                --INPUT: The inputs needed to test the solution, with multiple parameters separated by SEMICOLONS and the parameter set to the variable it corresponds to in the function signature. (e.g., "nums=[1,2,3]; target=3"). DO NOT SEPARATE INPUT PARAMETERS WITH COMMAS USE SEMICOLONS.
 
-                --OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration. 
-                
+                --OUTPUT: The expected output for the given inputs, presented as a straightforward value or description without elaboration.
+
                 This should accurately reflect the problem description.
                 Respond in JSON so I can parse with json.loads in python
 
                 Keep in mind that the test cases should be consistent with the problem description and constraints and array indexes are ALWAYS zero based.
-            
+
             """
             )
 
@@ -137,17 +135,17 @@ def getLeetCodeResponseBits(id):
         try:
             convo.send_message(
             f"""
-                Context: You are expected to provide unit tests for the problem you generated. Define unit test for both Python and JavaScript. For each language, define a test suite that includes a method to run a single test case and a method to run all test cases. The test suite should iterate over the test cases, executing the solution function with each input and using an expression to compare the result to the expected output. Make sure to be consistent with input formatting (e.g., keep arrays as arrays, don't spread them). Follow the example response format provided.            Define test cases as an list of objects, each with input and expected output (these keys should be inside quotations).                         
-                Iterate over test cases, executing the solution function with each input and using expression to compare the result to the expected output in order to return a boolean.            
+                Context: You are expected to provide unit tests for the problem you generated. Define unit test for both Python and JavaScript. For each language, define a test suite that includes a method to run a single test case and a method to run all test cases. The test suite should iterate over the test cases, executing the solution function with each input and using an expression to compare the result to the expected output. Make sure to be consistent with input formatting (e.g., keep arrays as arrays, don't spread them). Follow the example response format provided.            Define test cases as an list of objects, each with input and expected output (these keys should be inside quotations).
+                Iterate over test cases, executing the solution function with each input and using expression to compare the result to the expected output in order to return a boolean.
                 Make sure to be consistent with input formatting (e.g., keep lists as lists, don't spread them).
 
-                For solutions returning arrays:            
-                Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.            
-                Use this method within console.assert to verify the expected array structure and content.              
-                Remember:            
-                Maintain proper formatting for test case inputs and outputs. 
+                For solutions returning arrays:
+                Implement a method to compare arrays by value and order using iteration and strict equality (===) for elements. Ensure the lengths are also equal.
+                Use this method within console.assert to verify the expected array structure and content.
+                Remember:
+                Maintain proper formatting for test case inputs and outputs.
                 Respond in JSON so I can parse with json.loads in python.
-            
+
             """
             )
 

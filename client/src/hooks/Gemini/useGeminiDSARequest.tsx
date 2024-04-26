@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '..';
 import { generateAndSetGeminiProblem, resetGeminiState } from '../../store/pairedContent';
 import { useSocket } from '../../context/Socket';
+import { toast } from 'react-toastify';
 
 export interface ParsedGeminiResponse {
     problemName: any;
@@ -12,6 +13,29 @@ export interface ParsedGeminiResponse {
     defaultPythonFn: any;
     defaultJsFn: any;
 }
+
+// TOASTIFY
+const notifyError = () => toast.error('Failed to generate a problem... please try again', {
+    position: "bottom-left",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "dark"
+    });
+
+const notifyBeta = () => toast.info('Hang tight! Our AI is hard at work crafting a challenging problem for you. This feature is currently in BETA.', {
+    position: "bottom-left",
+    autoClose: 9000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: true,
+    progress: undefined,
+    theme: "dark",
+    });
 
 const useGeminiDSARequest = (channelName: string | undefined) => {
     const { socket, connectSocket, error } = useSocket();
@@ -68,6 +92,7 @@ const useGeminiDSARequest = (channelName: string | undefined) => {
             console.error('Error: No signed in user');
             return;
         }
+        notifyBeta()
 
         setLoading(true);
         const res = await fetch(`/api/gemini/generate/${Number(sessionUser.id)}`); // GENERATE LEETCODE PROBLEM
@@ -88,31 +113,15 @@ const useGeminiDSARequest = (channelName: string | undefined) => {
             };
 
             dispatch(generateAndSetGeminiProblem({ isActive: true, generatedProblem: parsedGeminiResponse }));
-
             sendUsersToGeminiDSAComponent(parsedGeminiResponse)
-            // dispatch(generateAndSetGeminiProblem({ isActive: true, generatedProblem: parsedGeminiResponse }));
+
         } else {
+            notifyError()
+
             console.error('Failed to generate a problem through Gemini API.');
             setFetchError('Failed to generate a problem.');
         }
     };
-
-    // const addQuestionPromptToUserModel = async (questionPrompt: string) => {
-    //     if (!sessionUser) {
-    //         console.error('Error adding question prompt to user model. No signed in user');
-    //         return;
-    //     }
-
-    //     const res = await fetch('/api/gemini/add', {
-    //         method: 'POST',
-    //         body: JSON.stringify({ userId: sessionUser.id, prompt: questionPrompt }),
-    //         headers: { 'Content-Type': 'application/json' },
-    //     });
-
-    //     if (!res.ok) {
-    //         console.error('Error adding question prompt to user model');
-    //     }
-    // };
 
     return { handleGeminiDSARequest, loading, error: fetchError };
 };
