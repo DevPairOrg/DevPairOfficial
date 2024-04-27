@@ -36,27 +36,33 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const connectSocket = useCallback(() => {
         if (user && user.id && !socket) {
             const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
-                transports: ['websocket', 'polling'],
+                transports: ['polling', 'websocket'],
                 reconnection: true,
                 reconnectionAttempts: 5,
                 reconnectionDelay: 2000,
                 reconnectionDelayMax: 5000,
                 autoConnect: false, // Change to false to not auto-connect on instantiation
+                timeout: 20000,
             });
 
-            // console.log('Creating new socket', newSocket);
+            console.log('Creating new socket', newSocket);
 
             newSocket.connect(); // Manually connect
 
             newSocket.on('connect', () => {
-                // console.log('Socket connected', newSocket);
+                console.log('Socket connected', newSocket);
                 setError(null);
             });
 
             newSocket.on('custom_error', (error) => {
-                console.error('Socket error:', error);
+                console.error(`Socket error in ${error.route}:`, error);
                 setError(error.error);
             });
+
+            newSocket.on('connect_error', (error) => {
+                console.error('Socket connection error:', error);
+                setError(error.message);
+              });
 
             newSocket.on('disconnect', (reason) => {
                 console.log('Socket disconnected:', reason);

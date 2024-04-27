@@ -48,7 +48,7 @@ const useSocketListeners = (
         });
 
         const userLeftListener = () => {
-            // console.log('User leaving room');
+            console.log('🍑🍑🍑🍑🍑🍑🍑User leaving room');
             dispatch(clearUser());
             dispatch(resetGeminiState());
             socket.removeAllListeners('joined');
@@ -60,10 +60,10 @@ const useSocketListeners = (
 
         socket.on('user_left', userLeftListener);
 
-        console.log("Socket has listeners🤬🤬🤬🤬🤬🤬" ,socket)
-
         return () => {
             // Cleanup logic here
+
+            console.log('🥑🥑🥑🥑🥑🥑🥑🥑🥑Use socket listeners cleanup');
             socket.off('joined');
             socket.off('user_left');
         };

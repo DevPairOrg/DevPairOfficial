@@ -29,7 +29,7 @@ export interface ServerToClientEvents {
     joined: (data: JoinedEventData) => void;
     user_left: (data: string) => void;
     temp_message_received: (data: PairedChatMessage) => void;
-    custom_error?: (error: { error: string }) => void;
+    custom_error?: (error: { error: string; route: string }) => void;
     friend_removed: (data: { userId: string }) => void;
     friend_added: (data: { friend: User; requestId: number }) => void;
     friend_rejected: (data: { requestId: number }) => void;
