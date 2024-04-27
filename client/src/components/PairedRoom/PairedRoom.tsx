@@ -8,7 +8,6 @@ import useFetchToken from "../../hooks/Agora/useFetchToken";
 import StartCall from "./StartCall";
 import Chat from "./Chat/Chat";
 import VideoCams from "./VideoCams/VideoCams";
-import Footer from "../Footer/Footer";
 import Content from "./Content/Content";
 import { AgoraProvider } from "../../AgoraManager/agoraManager";
 import "./PairedRoom.css";
@@ -83,7 +82,6 @@ const PairedRoom: React.FC = () => {
               </AgoraProvider>
             </AgoraRTCProvider>
           </main>
-          <Footer />
         </>
       ) : (
         <StartCall handleJoinClick={handleJoinClick} loading={loading} />

@@ -6,16 +6,18 @@
   display: flex; /* Flex container */
   flex-direction: column-reverse; /* Reverse column direction */
   color: var(--text); /* Text color */
-  gap: 0.8rem; /* Gap between messages */
+  gap: 0.2rem; /* Gap between messages */
+  background-color: #323232; /* Background color */
+  border-radius: .6rem; /* Border radius */
+  max-height: 80%;
 }
 
 /* Styles for the paired chat container */
 #paired-chat-container {
   display: flex; /* Flex container */
-  justify-content: space-between; /* Space between items */
+  justify-content: center; /* Space between items */
   align-items: center; /* Align items vertically */
   flex-direction: column; /* Column direction */
-  flex: 1; /* Take remaining space */
   padding-right: .3rem; /* Right padding */
   padding-bottom: .3rem; /* Bottom padding */
   gap: .2rem; /* Gap between items */
@@ -30,7 +32,7 @@
   justify-content: center; /* Center align horizontally */
   align-items: center; /* Center align vertically */
   position: absolute; /* Absolute positioning */
-  right: 1%; /* Right position */
+  right: 2%; /* Right position */
   top: 50%; /* Top position */
   transform: translateY(-50%); /* Center vertically */
 }
@@ -49,7 +51,7 @@
   background-color: transparent; /* Transparent background */
   border: none; /* No border */
   resize: none; /* Disable resizing */
-  padding: .2rem 1.6rem .2rem .2rem; /* Padding */
+  padding: .5rem 1.6rem .2rem .5rem; /* Padding */
 }
 
 /* Styles for the message input form container */
@@ -57,21 +59,22 @@
   position: relative; /* Relative positioning */
   width: 100%; /* Full width */
   display: flex; /* Flex container */
-  border: solid var(--primary-opacity) .01rem; /* Border */
-  background-color: #2b2d31; /* Background color */
-  border-radius: .2rem; /* Border radius */
-  height: 100px; /* Height */
+  background-color: rgba(94, 94, 94, 0.7); /* Background color */
+  border-radius: .1rem; /* Border radius */
 }
+
 
 /* Styles for chat messages */
 .chat-message {
-  background-color: var(--primary-opacity); /* Background color */
-  border-radius: 10px; /* Border radius */
+  border-top: solid .01rem var(--primary-opacity); /* Background color */
   padding: 8px 12px; /* Padding */
   display: flex; /* Flex container */
   gap: 0.6rem; /* Gap between elements */
   align-items: center;
 }
+
+
+
 
 /* Styles for user info in messages */
 .message-user-info {

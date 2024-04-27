@@ -23,6 +23,7 @@
 
 .PB-range-slider {
   -webkit-appearance: none;
+  appearance: none;
   height: 4px;
   border-radius: 5px;
   background: #d5dbe1;
