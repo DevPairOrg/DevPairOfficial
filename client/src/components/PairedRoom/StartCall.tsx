@@ -1,5 +1,4 @@
 import PairEntryImg from '/src/assets/images/pair-entry.svg';
-import Footer from '../Footer/Footer';
 
 interface StartCallProps {
     handleJoinClick: () => void;
@@ -26,7 +25,6 @@ const StartCall: React.FC<StartCallProps> = ({ handleJoinClick, loading }) => {
                     </div>
                 </div>
             </main>
-            <Footer />
         </>
     );
 };
