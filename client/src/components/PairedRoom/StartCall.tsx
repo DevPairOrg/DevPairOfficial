@@ -1,4 +1,4 @@
-import CatImage from '/src/assets/images/devpair-loading-screen.png';
+import PairEntryImg from '/src/assets/images/pair-entry.svg';
 import Footer from '../Footer/Footer';
 
 interface StartCallProps {
@@ -13,7 +13,7 @@ const StartCall: React.FC<StartCallProps> = ({ handleJoinClick, loading }) => {
                 <div className="not-joined-wrapper">
                     <h1>Get Started with Video Calling</h1>
                     <div id="join-call-cat-image">
-                        <img src={CatImage} alt="loading-screen" />
+                        <img src={PairEntryImg} alt="loading-screen" />
                     </div>
                     <div id="join-channel-button-container">
                         <button onClick={handleJoinClick} disabled={loading} className="join-channel-button">
