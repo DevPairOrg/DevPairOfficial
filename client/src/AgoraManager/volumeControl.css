@@ -2,10 +2,6 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  position: fixed;
-  bottom: 1%;
-  left: 50%;
-  transform: translate(-50%, 0);
   max-width: 100%;
   gap: .5vw;
 }
