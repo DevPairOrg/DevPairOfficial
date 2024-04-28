@@ -62,14 +62,3 @@
   gap: 5px;
   margin: 1vw;
 }
-
-#share-or-generate-problem-container > button {
-  border: none;
-  padding: 0 1vw;
-  border-radius: 0.5rem;
-  background-color: var(--primary);
-  color: var(--dark-text);
-  font-size: 2vw;
-  font-weight: 500;
-  transition: background-color 0.3s ease, color .3s ease;
-}

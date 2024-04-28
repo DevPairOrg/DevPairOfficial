@@ -4,6 +4,7 @@
   flex: 1;
   max-height: 95%;
   justify-content: space-between;
+  width: 100%;
 }
 
 #IDE-container {
@@ -17,7 +18,8 @@
   border-radius: 0.5rem;
   padding: 0.5rem;
   flex: 1;
-  max-height: 40%;
+  max-height: 35%;
+  width: 100%;
 }
 
 #user-results {
@@ -169,17 +171,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border: none;
+  border: solid #5684D1 0.04rem;
+  border-radius: 0.2rem;
+  padding: 0 0.3rem;
+  gap: .3rem;
+
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
+
 
 .dropdown-arrow {
   transition: transform 0.3s ease-in-out;

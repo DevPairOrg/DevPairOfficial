@@ -142,7 +142,7 @@ function IDE(props: parsedData) {
               display: "flex",
               justifyContent: "space-between",
               height: "auto",
-              padding: ".5rem",
+              padding: "1vw .5rem",
             }}
           >
             <Dropdown
@@ -176,7 +176,7 @@ function IDE(props: parsedData) {
               }}
               disabled={loading}
             >
-              {!loading ? "Regenerate" : "Generating... please wait"}
+              {!loading ? "Regenerate with Gemini" : "Gemini is Generating..."}
               {
                 <img
                   className={loading ? "spinning-gemini" : "gemini-icon"}

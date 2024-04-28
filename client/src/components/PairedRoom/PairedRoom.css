@@ -150,3 +150,41 @@
   max-width: 100%;
   position: relative;
 }
+
+.spinning-gemini-large {
+  animation: spin infinite 2s linear;
+  width: 1.5vw;
+
+}
+
+.gemini-icon-large {
+  width: 1.5vw;
+
+
+}
+
+.gemini-button-large{
+  font-size: 1.3vw;
+  border: solid #9168C0 0.04rem;
+  padding: 0 .5vw;
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: 500;
+  background-color: transparent;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .6vw;
+  transition: border-color 0.3s ease-in-out;
+
+}
+
+.gemini-button-large:hover {
+  scale: 1.01;
+  border-color: #5684D1;
+}
+
+
+
+
