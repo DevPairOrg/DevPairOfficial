@@ -21,7 +21,8 @@
   padding-right: .3rem; /* Right padding */
   padding-bottom: .3rem; /* Bottom padding */
   gap: .2rem; /* Gap between items */
-  flex: .9; /* Take up all available space */
+  flex: 1; /* Take up all available space */
+  max-width: 18vw;
 }
 
 /* Styles for the send message button */

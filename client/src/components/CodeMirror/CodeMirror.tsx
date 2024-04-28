@@ -36,7 +36,7 @@ function IDE(props: parsedData) {
     loading,
     setLoading,
   } = props;
-  const { socket, connectSocket, error } = useSocket();
+  const { socket, error } = useSocket();
   const { handleGeminiDSARequest } = useGeminiDSARequest(channelName);
 
   const user = useAppSelector((state) => state.session.user);
@@ -56,11 +56,11 @@ function IDE(props: parsedData) {
   }, [testCaseView, userResults]);
 
   if (error) console.log("Error in IDE Component: ", error);
-  useEffect(() => {
-    if (!socket) {
-      connectSocket();
-    }
-  }, [socket, connectSocket]);
+  // useEffect(() => {
+  //   if (!socket) {
+  //     connectSocket();
+  //   }
+  // }, [socket, connectSocket]);
 
   const openConsoleOutputModal = () => {
     // opens the console output modal
@@ -222,7 +222,7 @@ function IDE(props: parsedData) {
           </div>
           <CodeMirror
             value={value}
-            height="300px"
+            height="45vh"
             extensions={
               language === "python" ? [python()] : [javascript({ jsx: true })]
             }

@@ -9,6 +9,9 @@
 
 #IDE-container {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 #generated-problem-container {
@@ -89,7 +92,6 @@
 
 #stoudt-container {
   width: 50vw;
-  height: 20vw;
   background-color: #282a36;
 
   display: flex;
