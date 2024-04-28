@@ -1,5 +1,5 @@
 import RemoteAndLocalVolumeComponent from "../../../AgoraManager/volumeControl";
-import shareScreenPlaceholder from "../../../assets/images/share-screen-holder.webp";
+import shareScreenPlaceholder from "../../../assets/images/pair-programming.webp";
 import useGeminiDSARequest from "../../../hooks/Gemini/useGeminiDSARequest";
 import { useAppSelector } from "../../../hooks";
 import PairedScreenShare, {

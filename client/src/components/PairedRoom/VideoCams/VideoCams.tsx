@@ -68,22 +68,23 @@ function VideoCams(props: { channelName: string }) {
     }
   }, [socket, connectSocket]);
 
-    useEffect(() => {
-        // Setup cleanup to close tracks when the component unmounts
-        return () => {
-            localCameraTrack?.close();
-            localMicrophoneTrack?.close();
-        };
-    }, []);
+  useEffect(() => {
+      // Setup cleanup to close tracks when the component unmounts
+      return () => {
+          localCameraTrack?.close();
+          localMicrophoneTrack?.close();
 
-    useEffect(() => {
-        if (localCameraTrack && localMicrophoneTrack) {
-            localMicrophoneTrack.setMuted(true);
-            setMyCameraTrack(localCameraTrack);
-            setLocalCameraTrack(localCameraTrack);
-            setLocalMicrophoneTrack(localMicrophoneTrack);
-        }
-    }, [localCameraTrack, localMicrophoneTrack]);
+      };
+  }, []);
+
+  useEffect(() => {
+      if (localCameraTrack && localMicrophoneTrack) {
+          localMicrophoneTrack.setMuted(true);
+          setMyCameraTrack(localCameraTrack);
+          setLocalCameraTrack(localCameraTrack);
+          setLocalMicrophoneTrack(localMicrophoneTrack);
+      }
+  }, [localCameraTrack, localMicrophoneTrack]);
 
   usePublish([localMicrophoneTrack, localCameraTrack]);
 
@@ -203,7 +204,6 @@ function VideoCams(props: { channelName: string }) {
           if (sendFriendRequest.fulfilled.match(actionResult)) {
             const requestData = actionResult.payload;
             const requestId = Object.keys(requestData)[0]; // Get the request ID
-            console.log("Friend request sent🤬🤬🤬🤬🤬🤬🤬🤬🤬🤬🤬🤬 ", requestData);
             dispatch(sentRequest());
             socket?.emit("sent_request", {requestId: +requestId, room: channelName})
           }
@@ -216,7 +216,6 @@ function VideoCams(props: { channelName: string }) {
 
   return (
     <>
-      <div className="video-wrapper">
         <div id="video-container">
           {deviceLoading ? (
             <div className="videos" style={{ height: 300, width: 300 }}>
@@ -305,7 +304,6 @@ function VideoCams(props: { channelName: string }) {
             </>
           )}
         </div>
-      </div>
     </>
   );
 }
