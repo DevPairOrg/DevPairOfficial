@@ -1,7 +1,13 @@
 #ide-container {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    flex: 1;
+    max-height: 95%;
+    justify-content: space-between;
+}
+
+#IDE-container {
+    flex: 1
 }
 
 #generated-problem-container {
@@ -10,6 +16,8 @@
     border: solid .01rem var(--primary);
     border-radius: .5rem;
     padding: .5rem;
+    flex: 1;
+    max-height: 40%;
 }
 
 #user-results {
@@ -22,13 +30,14 @@
 }
 
 #ide-submit-button {
-    background-color: green;
-    height: 3.5rem;
-    font-size: 1.5rem;
-    width: 200px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    background-color: var(--primary);
+    border: none;
+    border-radius: .1rem;
+    padding: .2rem;
+    font-size: 1.5vw;
 }
+
+
 
 .cm-theme {
     height: auto !important;
@@ -126,4 +135,30 @@
     text-align: center;
 }
 
+
+.spinning-gemini {
+    animation: spin infinite 2s linear;
+    height: 1rem;
+
+}
+
+.gemini-icon {
+    height: 1rem;
+}
+
+#gemini-regenerate-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+}
+
+@keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 
