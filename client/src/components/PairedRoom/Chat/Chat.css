@@ -21,7 +21,7 @@
   padding-right: .3rem; /* Right padding */
   padding-bottom: .3rem; /* Bottom padding */
   gap: .2rem; /* Gap between items */
-  flex: 1; /* Take up all available space */
+  flex: .9; /* Take up all available space */
 }
 
 /* Styles for the send message button */
@@ -32,10 +32,6 @@
   display: flex; /* Flex container */
   justify-content: center; /* Center align horizontally */
   align-items: center; /* Center align vertically */
-  position: absolute; /* Absolute positioning */
-  right: 2%; /* Right position */
-  top: 50%; /* Top position */
-  transform: translateY(-50%); /* Center vertically */
 }
 
 /* Header styles for chat logs */
@@ -52,8 +48,15 @@
   background-color: transparent; /* Transparent background */
   border: none; /* No border */
   resize: none; /* Disable resizing */
-  padding: .5rem 1.6rem .2rem .5rem; /* Padding */
+  font-size: 1vw;
+  outline: none; /* No outline */
 }
+
+.message-input::placeholder {
+  padding-top: .6vw; /* Adjust as needed */
+}
+
+
 
 /* Styles for the message input form container */
 .message-input-form {
@@ -62,6 +65,10 @@
   display: flex; /* Flex container */
   background-color: rgba(94, 94, 94, 0.7); /* Background color */
   border-radius: .1rem; /* Border radius */
+  padding: 0 .3vw;
+  align-items: center;
+  justify-content: space-between;
+
 }
 
 
