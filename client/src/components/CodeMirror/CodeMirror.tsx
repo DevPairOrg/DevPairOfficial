@@ -145,18 +145,22 @@ function IDE(props: parsedData) {
               padding: ".5rem",
             }}
           >
-            <Dropdown options={["Python", "JavaScript"]} defaultOption="Python" handleSelect={(option) => {
+            <Dropdown
+              options={["Python", "JavaScript"]}
+              defaultOption="Python"
+              handleSelect={(option) => {
                 switch (option) {
-                    case "Python":
+                  case "Python":
                     handlePythonButton(setLanguage, setValue, defaultPythonFn);
                     break;
-                    case "JavaScript":
+                  case "JavaScript":
                     handleJavascriptButton(setLanguage, setValue, defaultJsFn);
                     break;
-                    default:
+                  default:
                     break;
                 }
-            }}/>
+              }}
+            />
             <button
               id="gemini-regenerate-button"
               onClick={async () => {
@@ -181,6 +185,40 @@ function IDE(props: parsedData) {
                 />
               }
             </button>
+            <div id="ide-button-container">
+              <button
+                onClick={async () => {
+                  const judgeResults: JudgeResults | undefined =
+                    await handleJudgeSubmission(value, language, testCases);
+                  if (judgeResults) {
+                    // manually seperate out debugging statements and result assertions
+                    seperateLogsAndUserOutputFromStdout(judgeResults);
+                    assertResults(judgeResults);
+
+                    // handle ConsoleOutput modal
+                    setUserResults(judgeResults);
+                    openConsoleOutputModal();
+                    setTestCaseView(1);
+
+                    // if user has solved problem, append it to the user's solved
+                    if (allTestCasesPassed(judgeResults)) {
+                      addDSAProblemToUserSolved(user?.id, problemName);
+                    }
+                  }
+                }}
+                id="ide-submit-button"
+              >
+                Submit
+              </button>
+              {userResults && (
+                <button
+                  onClick={openConsoleOutputModal}
+                  className="show-stoudt-results"
+                >
+                  Show Results...
+                </button>
+              )}
+            </div>
           </div>
           <CodeMirror
             value={value}
@@ -191,39 +229,6 @@ function IDE(props: parsedData) {
             onChange={onChange}
             theme={dracula}
           />
-          <button
-            onClick={async () => {
-              const judgeResults: JudgeResults | undefined =
-                await handleJudgeSubmission(value, language, testCases);
-              if (judgeResults) {
-                // manually seperate out debugging statements and result assertions
-                seperateLogsAndUserOutputFromStdout(judgeResults);
-                assertResults(judgeResults);
-
-                // handle ConsoleOutput modal
-                setUserResults(judgeResults);
-                openConsoleOutputModal();
-                setTestCaseView(1);
-
-                // if user has solved problem, append it to the user's solved
-                if (allTestCasesPassed(judgeResults)) {
-                  addDSAProblemToUserSolved(user?.id, problemName);
-                }
-              }
-            }}
-            id="ide-submit-button"
-            style={{ color: "red" }}
-          >
-            Submit
-          </button>
-          {userResults && (
-            <button
-              onClick={openConsoleOutputModal}
-              className="show-stoudt-results"
-            >
-              Show Results...
-            </button>
-          )}
         </div>
       </div>
     </>

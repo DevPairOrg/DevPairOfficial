@@ -34,10 +34,26 @@
 #ide-submit-button {
   background-color: var(--primary);
   border: none;
-  border-radius: 0.1rem;
-  padding: 0.2rem;
-  font-size: 1.5vw;
+  border-radius: 0.2rem;
+  padding: 0 0.3rem;
+  font-size: 1vw;
+
 }
+
+#ide-submit-button:hover {
+  cursor: pointer;
+  background-color: transparent;
+  border: solid var(--primary-opacity) 0.03rem;
+  color: white;
+
+
+}
+
+#ide-button-container {
+    display: flex;
+    gap: 1vw;
+}
+
 
 .cm-theme {
   height: auto !important;
@@ -47,11 +63,19 @@
 
 .show-stoudt-results {
   background-color: orange;
-  height: 3.5rem;
-  font-size: 1.5rem;
-  margin-left: 10px;
-  color: black;
-  width: 200px;
+  font-size: 1vw;
+  color: var(--dark-text);
+  border: none;
+  border-radius: 0.2rem;
+  padding: 0 0.3rem;
+
+}
+
+.show-stoudt-results:hover {
+  cursor: pointer;
+  background-color: transparent;
+  border: solid orange 0.03rem;
+  color: white;
 }
 
 .stoudt-pass {
