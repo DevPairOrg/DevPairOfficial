@@ -5,19 +5,25 @@ import { useAppSelector } from '../../../hooks';
 import PairedScreenShare, { ContentProps } from '../ScreenShare/ScreenShareContainer';
 import React, { useEffect, useCallback, useState } from 'react';
 import GeminiDSA from './GeminiDSA';
-import { useAppDispatch } from '../../../hooks';
-import { resetGeminiState } from '../../../store/pairedContent';
+import useIdeListeners from '../../../hooks/Sockets/useIdeListeners';
+import { Socket } from "socket.io-client";
+
+// import { useAppDispatch } from '../../../hooks';
+// import { resetGeminiState } from '../../../store/pairedContent';
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler, channelName, socket, connectSocket }) => {
     const { handleGeminiDSARequest } = useGeminiDSARequest(channelName);
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
     const screenSharing = useAppSelector((state) => state.pairedContent.agora.screenshare.isActive);
     const geminiAPIRequest = useAppSelector((state) => state.pairedContent.gemini.isActive);
 
     const [loading, setLoading] = useState<boolean>(false)
+
+    useIdeListeners(socket as Socket);
+
 
     // handle connect
     useEffect(() => {
@@ -26,10 +32,7 @@ const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler, channe
         }
     }, [socket, connectSocket]);
 
-    // handle received
-    const handleLeaveGeminiPageReceived = useCallback(() => {
-        dispatch(resetGeminiState());
-    }, [dispatch]);
+
 
     // handle send
     const sendLeaveGeminiPage = useCallback(() => {
@@ -38,25 +41,12 @@ const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler, channe
         });
     }, [socket, channelName]);
 
-    // attach listeners for sockets
-    useEffect(() => {
-        if (socket && !socket.hasListeners('leave_gemini_page_received')) {
-            socket.on('leave_gemini_page_received', handleLeaveGeminiPageReceived);
-
-            // Clean up: Detach the event listener and dispatch action to clear states messages when unmounting
-            return () => {
-                socket.disconnect();
-                socket.off('leave_gemini_page_received', handleLeaveGeminiPageReceived);
-                dispatch(resetGeminiState());
-            };
-        }
-    }, [dispatch, handleLeaveGeminiPageReceived, socket]);
 
     const renderContent = () => {
         if (screenSharing) {
             return (
                 <>
-                    <PairedScreenShare agoraEngine={agoraEngine} leaveRoomHandler={leaveRoomHandler} />
+                    <PairedScreenShare agoraEngine={agoraEngine} leaveRoomHandler={leaveRoomHandler} socket={null} />
                 </>
             );
         } else if (geminiAPIRequest) {

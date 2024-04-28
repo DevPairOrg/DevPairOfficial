@@ -28,7 +28,7 @@ def authenticated_only(f):
                 return f(*args, **kwargs)
         return wrapped
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "authenticated_only"})
 
 
 @socketio.on("join_room")
@@ -66,7 +66,7 @@ def handle_join_room():
     except Exception as e:
         # Handle exceptions (e.g., room not found, socket connection issue)
         socketio.emit("join_room_error", {"error": str(e)}, to=user.id)
-        socketio.emit('custom_error', {'error': str(e)})
+        socketio.emit('custom_error', {'error': str(e), 'route': "join_room"})
 
 
 @socketio.on("leave_room")
@@ -91,7 +91,7 @@ def handle_leave_room(data):
                 "user_left", f"{current_user.username} has exited the room!", to=data["room"]
             )
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "leave_room"})
 
 
 @socketio.on("temp_chat_message")
@@ -115,7 +115,7 @@ def handle_temp_chat(data):
 
         emit("temp_message_received", response, to=data["room"])
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "temp_chat_message"})
 
 @socketio.on("removed_friend")
 @authenticated_only
@@ -134,7 +134,7 @@ def handle_removed_friend(data):
             "friend_removed", {"userId": data["userId"]}, to=data["room"], include_self=False
         )
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e),  'route': "removed_friend"})
 
 @socketio.on("accepted_request")
 @authenticated_only
@@ -154,7 +154,7 @@ def handle_accepted_request(data):
             "friend_added", {"friend": current_user.to_dict(), "requestId": data["requestId"]}, to=data["room"], include_self=False
         )
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "accepted_request"})
 
 @socketio.on("rejected_request")
 @authenticated_only
@@ -173,7 +173,7 @@ def handle_rejected_request(data):
             "friend_rejected", {"requestId": data["requestId"]}, to=data["room"], include_self=False
         )
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "rejected_request"})
 
 @socketio.on("request_canceled")
 @authenticated_only
@@ -192,7 +192,7 @@ def handle_request_cancelled(data):
             "cancelled_request", {"requestId": data["requestId"]}, to=data["room"], include_self=False
         )
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "request_canceled"})
 
 @socketio.on("sent_request")
 @authenticated_only
@@ -212,7 +212,7 @@ def handle_sent_request(data):
             "received_request", {"request": {request.id: request.sender.to_dict(include_relationships=False)}}, to=data["room"], include_self=False
         )
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "sent_request"})
 
 @socketio.on('user_leaving')
 @authenticated_only
@@ -224,7 +224,7 @@ def handle_user_leaving(data):
         }
         disconnect()
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "user_leaving"})
 
 
 
@@ -247,7 +247,7 @@ def handle_update_IDE(data):
         }
         emit("send_users_to_gemini_dsa_component_received", response, to=data["room"])
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "send_users_to_gemini_dsa_component"})
 
 
 
@@ -271,7 +271,7 @@ def handle_update_IDE(data):
         }
         emit("update_IDE_received", response, to=data["room"])
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "update_IDE"})
 
 
 @socketio.on("leave_gemini_page")
@@ -289,7 +289,7 @@ def handle_update_IDE(data):
     try:
         emit("leave_gemini_page_received", to=data["room"])
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "leave_gemini_page"})
 
 
 @socketio.on('custom_error')

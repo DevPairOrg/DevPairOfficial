@@ -112,7 +112,8 @@ const useGeminiDSARequest = (channelName: string | undefined) => {
                 defaultJsFn: data.geminiResponse["JAVASCRIPT FUNCTION SIGNATURE"]
             };
 
-            dispatch(generateAndSetGeminiProblem({ isActive: true, generatedProblem: parsedGeminiResponse }));
+            // dispatch(generateAndSetGeminiProblem({ isActive: true, generatedProblem: parsedGeminiResponse }));
+
             sendUsersToGeminiDSAComponent(parsedGeminiResponse)
 
         } else {

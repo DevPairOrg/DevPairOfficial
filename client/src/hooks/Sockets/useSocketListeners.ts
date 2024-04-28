@@ -23,6 +23,7 @@ const useSocketListeners = (
             // console.log('Socket listening to "Joined"', data);
             if (!config.channelName) {
                 // console.log(`Setting channel name to ${data.room}`);
+                localStorage.setItem("room", data.room); // Save the room name to local storage so window can access it for page refreshes
                 setChannelName(data.room);
             }
             if (data.users.length > 1) {
@@ -47,7 +48,7 @@ const useSocketListeners = (
         });
 
         const userLeftListener = () => {
-            // console.log('User leaving room');
+            console.log('🍑🍑🍑🍑🍑🍑🍑User leaving room');
             dispatch(clearUser());
             dispatch(resetGeminiState());
             socket.removeAllListeners('joined');
@@ -61,6 +62,8 @@ const useSocketListeners = (
 
         return () => {
             // Cleanup logic here
+
+            console.log('🥑🥑🥑🥑🥑🥑🥑🥑🥑Use socket listeners cleanup');
             socket.off('joined');
             socket.off('user_left');
         };
