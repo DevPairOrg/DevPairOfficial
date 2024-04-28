@@ -4,6 +4,7 @@
   align-items: center;
   max-width: 100%;
   gap: .5vw;
+  padding-top: .5vw;
 }
 
 #toggle-mute {

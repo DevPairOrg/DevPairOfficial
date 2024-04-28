@@ -111,7 +111,7 @@
 
 .share-screen-cats {
   object-fit: contain;
-  max-width: 90%;
+  max-width: 100%;
   filter: brightness(70%);
   border-radius: 1rem;
 }
