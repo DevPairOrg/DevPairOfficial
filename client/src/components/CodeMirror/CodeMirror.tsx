@@ -5,6 +5,8 @@ import { python } from '@codemirror/lang-python';
 import { dracula } from '@uiw/codemirror-theme-dracula';
 import { parsedData } from '../../interfaces/gemini';
 import { useSocket } from '../../context/Socket';
+import useGeminiDSARequest from '../../hooks/Gemini/useGeminiDSARequest';
+
 import {
     handleJavascriptButton,
     handlePythonButton,
@@ -16,16 +18,19 @@ import {
     addDSAProblemToUserSolved
 } from '../../utility/CodeMirrorHelpers/codeMirrorhelpers';
 
-import { useModal, Modal } from '../../context/Modal/Modal';
+import { useModal} from '../../context/Modal/Modal';
 import ConsoleOutput from './ConsoleOutput';
+import GeminiSpinner from '../../assets/icons/svg/google-gemini-icon.svg';
 import './CodeMirror.css';
 import { useAppSelector } from '../../hooks';
 
 function IDE(props: parsedData) {
+    const { problemName, problemPrompt, testCases, defaultPythonFn, defaultJsFn, channelName } = props;
     const { socket, connectSocket, error } = useSocket();
+    const { handleGeminiDSARequest } = useGeminiDSARequest(channelName);
 
     const user = useAppSelector((state) => state.session.user)
-    const { problemName, problemPrompt, testCases, defaultPythonFn, defaultJsFn, channelName } = props;
+    const [loading, setLoading] = useState<boolean>(false);
     const { setModalContent } = useModal();
 
     const [value, setValue] = useState<string | undefined>(defaultPythonFn); // value of user code inside of IDE
@@ -96,7 +101,6 @@ function IDE(props: parsedData) {
     return (
         <>
             <div id="ide-container">
-                <Modal></Modal> {/*This is needed for the Modal UI to render in */}
                 <div id="generated-problem-container">
                     <div style={{fontWeight: 'bold', marginBottom: '5px'}}>{problemName && problemName}</div>
                     <div style={{ marginBottom: '5px'}}>{problemPrompt && problemPrompt}</div>
@@ -105,8 +109,8 @@ function IDE(props: parsedData) {
                             testCases.map((entry) => {
                                 return (
                                     <>
-                                        <div key={Math.random()}>INPUT: {entry.INPUT}</div>
-                                        <div key={Math.random()}>OUTPUT: {entry.OUTPUT}</div>
+                                        <div key={Math.random()}><span style={{fontWeight: 'bold'}}>INPUT:</span> {entry.INPUT}</div>
+                                        <div key={Math.random()}><span style={{fontWeight: 'bold'}}>OUTPUT:</span> {entry.OUTPUT}</div>
                                     </>
                                 );
                             })}
@@ -118,8 +122,8 @@ function IDE(props: parsedData) {
                         style={{
                             display: 'flex',
                             justifyContent: 'space-between',
-                            marginBottom: '5px',
                             height: 'auto',
+                            padding: '.5rem'
                         }}
                     >
                         <div style={{ display: 'flex', gap: '5px' }}>
@@ -137,11 +141,23 @@ function IDE(props: parsedData) {
                                 JavaScript
                             </button>
                         </div>
+                        <button
+                            id="gemini-regenerate-button"
+                            onClick={async () => {
+                                setLoading(true)
+                                await handleGeminiDSARequest()
+                                setLoading(false)
+                            }}
+                            style={{backgroundColor: `transparent`, cursor: `${loading ? 'default' : 'pointer'}`}}
+                            disabled={loading}
+                        >
+                                {!loading ? 'Regenerate' : 'Generating... please wait'}
+                                {<img className={loading? "spinning-gemini": "gemini-icon"} src={GeminiSpinner} alt="loading gemini problem" />}
+                        </button>
                     </div>
                     <CodeMirror
                         value={value}
-                        height="auto"
-                        maxHeight='300px'
+                        height="300px"
                         extensions={language === 'python' ? [python()] : [javascript({ jsx: true })]}
                         onChange={onChange}
                         theme={dracula}
