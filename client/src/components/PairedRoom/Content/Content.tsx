@@ -35,11 +35,11 @@ const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler, channe
 
 
     // handle send
-    const sendLeaveGeminiPage = useCallback(() => {
-        socket?.emit('leave_gemini_page', {
-            room: channelName as string,
-        });
-    }, [socket, channelName]);
+    // const sendLeaveGeminiPage = useCallback(() => {
+    //     socket?.emit('leave_gemini_page', {
+    //         room: channelName as string,
+    //     });
+    // }, [socket, channelName]);
 
 
     const renderContent = () => {
