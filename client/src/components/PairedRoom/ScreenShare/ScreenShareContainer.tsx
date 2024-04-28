@@ -17,7 +17,7 @@ export interface ContentProps {
 const PairedScreenShare: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }) => {
     return (
         <>
-            <AgoraProvider localCameraTrack={null} localMicrophoneTrack={null} leaveRoomHandler={leaveRoomHandler}>
+            <AgoraProvider leaveRoomHandler={leaveRoomHandler}>
                 <AgoraRTCScreenShareProvider client={agoraEngine}>
                     <ScreenShare channelName={config.channelName} />
                 </AgoraRTCScreenShareProvider>
