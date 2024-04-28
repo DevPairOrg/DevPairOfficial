@@ -97,9 +97,9 @@ function IDE(props: parsedData) {
         <>
             <div id="ide-container">
                 <Modal></Modal> {/*This is needed for the Modal UI to render in */}
-                <div>
-                    <div>Problem Name: {problemName && problemName}</div>
-                    <div>Prompt: {problemPrompt && problemPrompt}</div>
+                <div id="generated-problem-container">
+                    <div style={{fontWeight: 'bold', marginBottom: '5px'}}>{problemName && problemName}</div>
+                    <div style={{ marginBottom: '5px'}}>{problemPrompt && problemPrompt}</div>
                     <pre>
                         {testCases &&
                             testCases.map((entry) => {
@@ -112,8 +112,9 @@ function IDE(props: parsedData) {
                             })}
                     </pre>
                 </div>
-                <div>
+                <div id='IDE-container'>
                     <div
+                     id='language-buttons'
                         style={{
                             display: 'flex',
                             justifyContent: 'space-between',
@@ -139,7 +140,8 @@ function IDE(props: parsedData) {
                     </div>
                     <CodeMirror
                         value={value}
-                        height="400px"
+                        height="auto"
+                        maxHeight='300px'
                         extensions={language === 'python' ? [python()] : [javascript({ jsx: true })]}
                         onChange={onChange}
                         theme={dracula}

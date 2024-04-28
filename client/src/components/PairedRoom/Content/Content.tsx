@@ -55,9 +55,9 @@ const Content: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler, channe
                     <GeminiDSA channelName={channelName} />
 
                     {/* Temporary button to reset gemini active state */}
-                    <button onClick={sendLeaveGeminiPage} style={{ color: 'white', backgroundColor: 'red', width: '200px', height: '56px', fontSize: '1.5 rem' }}>
+                    {/* <button onClick={sendLeaveGeminiPage} style={{ color: 'white', backgroundColor: 'red', width: '200px', height: '56px', fontSize: '1.5 rem' }}>
                         Exit
-                    </button>
+                    </button> */}
                 </>
             );
         } else {
