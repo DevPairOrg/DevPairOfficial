@@ -3,9 +3,11 @@ import IDE from "../../CodeMirror/CodeMirror";
 
 interface GeminiDSAProps {
   channelName?: string;
+  loading: boolean;
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const GeminiDSA: React.FC<GeminiDSAProps> = ({ channelName }) => {
+const GeminiDSA: React.FC<GeminiDSAProps> = ({ channelName, loading, setLoading }) => {
   const geminiProblem = useAppSelector(
     (state) => state.pairedContent.gemini.generatedProblem
   );
@@ -20,6 +22,8 @@ const GeminiDSA: React.FC<GeminiDSAProps> = ({ channelName }) => {
         defaultPythonFn={geminiProblem?.defaultPythonFn}
         defaultJsFn={geminiProblem?.defaultJsFn}
         channelName={channelName}
+        loading={loading}
+        setLoading={setLoading}
       />
   );
 };
