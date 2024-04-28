@@ -3,7 +3,6 @@ import { RemoteVideoTrack, useClientEvent, useRemoteUsers, useRemoteVideoTracks 
 import config from '../../../AgoraManager/config';
 import { fetchRTCToken } from '../../../hooks/Agora/fetchRTCToken';
 import ShareScreenComponent from '../../../AgoraManager/screenShare';
-import RemoteAndLocalVolumeComponent from '../../../AgoraManager/volumeControl';
 import useAgoraClient from '../../../hooks/Agora/useAgoraClient';
 import { toggleScreenShare } from '../../../store/pairedContent';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
@@ -79,7 +78,6 @@ function ScreenShare(props: { channelName: string }) {
             {/* Render shared screen to ONLY the user that shared the screen */}
             {screenSharing && <ShareScreenComponent isRemoteScreen={isRemoteScreen} />}
 
-            <RemoteAndLocalVolumeComponent />
         </>
     );
 }
