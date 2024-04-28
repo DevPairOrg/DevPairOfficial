@@ -89,6 +89,8 @@
   position: relative;
   max-width: 100%;
   flex: 4;
+  padding: .5rem;
+  align-items: center;
 }
 
 #share-screen-placeholder {
@@ -103,9 +105,9 @@
   width: 100%;
   object-fit: contain !important;
 }
-#screen-share-container > div > div {
+/* #screen-share-container > div > div {
   background-color: transparent !important;
-}
+} */
 
 .share-screen-cats {
   object-fit: contain;
@@ -146,6 +148,5 @@
   flex-wrap: wrap;
   width: fit-content;
   max-width: 100%;
-  flex: 1;
   position: relative;
 }

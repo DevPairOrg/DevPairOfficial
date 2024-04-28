@@ -1,6 +1,15 @@
 #ide-container {
     display: flex;
     flex-direction: column;
+    height: 100%;
+}
+
+#generated-problem-container {
+    overflow: scroll;
+    background-color: #515151;
+    border: solid .01rem var(--primary);
+    border-radius: .5rem;
+    padding: .5rem;
 }
 
 #user-results {
@@ -116,3 +125,5 @@
     margin: 0px;
     text-align: center;
 }
+
+
