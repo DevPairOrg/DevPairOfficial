@@ -1,0 +1,45 @@
+#remove-friend-modal {
+    width: 100%;
+    background-color: var(--background);
+    padding: .6vw;
+    display: flex;
+    flex-direction: column;
+    gap: 1vw;
+    border-radius: .2rem;
+    font-size: 1.5vw;
+    border: solid 1px var(--primary-opacity);
+}
+
+#remove-friend-modal-buttons {
+    align-self: center;
+    display: flex;
+    gap: 1vw;
+}
+
+#remove-friend-modal-cancel-button,
+#remove-friend-modal-confirm-button {
+    border: none;
+    border-radius: .2rem;
+    padding: 0 .2rem;
+}
+
+#remove-friend-modal-cancel-button {
+    background-color: transparent;
+    color: red;
+    font-size: 1vw;
+    font-weight: bold;
+}
+
+
+#remove-friend-modal-confirm-button {
+    background-color: var(--primary);
+    color: var(--dark-text);
+    font-size: 1vw;
+
+}
+
+#remove-friend-modal-confirm-button:hover {
+    background-color: transparent;
+    color: white;
+    border: solid var(--primary-opacity) 0.03rem
+}
