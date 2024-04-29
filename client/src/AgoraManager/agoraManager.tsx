@@ -9,7 +9,7 @@ const agoraEngine = useRTCClient(AgoraRTC.createClient({ codec: 'vp8', mode: con
 */
 import { IMicrophoneAudioTrack, ICameraVideoTrack } from 'agora-rtc-react';
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import './agoraManager.css';
 
 // Define the shape of the Agora context
