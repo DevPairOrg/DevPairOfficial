@@ -43,7 +43,7 @@ const ShareScreenComponent: React.FC = () => {
     usePublish([screenTrack], screenTrack !== null, screenShareClient.current);
 
     if (isLoading) {
-        return <p style={{ textAlign: 'center' }}>Sharing screen...</p>;
+        return <p style={{ textAlign: 'center', flex: '1', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>Sharing screen...</p>;
     }
     return (
         <>
