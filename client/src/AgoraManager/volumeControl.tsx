@@ -3,7 +3,7 @@ import { useAgoraContext } from './agoraManager';
 import { useRemoteUsers } from 'agora-rtc-react';
 import './volumeControl.css';
 import { useAppSelector, useAppDispatch } from '../hooks';
-import { toggleScreenShare } from '../store/pairedContent';
+import { toggleLocalScreenShare, toggleScreenShare } from '../store/pairedContent';
 
 function RemoteAndLocalVolumeComponent() {
     const agoraContext = useAgoraContext();
@@ -11,6 +11,8 @@ function RemoteAndLocalVolumeComponent() {
     const dispatch = useAppDispatch();
     const [checked, setChecked] = useState<boolean>(false);
     const pairInfo = useAppSelector((state) => state.chatRoom.user);
+    const isLocalShare = useAppSelector(state => state.pairedContent.agora.screenshare.isLocalScreen)
+    const isRemoteScreen = useAppSelector(state => state.pairedContent.agora.screenshare.isRemoteScreen)
     const screenSharing = useAppSelector((state) => state.pairedContent.agora.screenshare.isActive);
     let newVolume: number;
     const handleLocalAudioToggle = () => {
@@ -86,11 +88,23 @@ function RemoteAndLocalVolumeComponent() {
             </label>
 
             <button
-                onClick={() => dispatch(toggleScreenShare(!screenSharing))}
-                id={screenSharing ? 'stop-screen-share' : 'share-screen-button'}
-                aria-label={screenSharing ? 'Stop Screen Share' : 'Share Your Screen'}
+                onClick={() => {
+                    if (!screenSharing) {
+                        dispatch(toggleScreenShare(true));
+                        dispatch(toggleLocalScreenShare(true));
+                    } else if (screenSharing && isRemoteScreen && !isLocalShare) {
+                        dispatch(toggleLocalScreenShare(true));
+                    } else if (screenSharing && !isRemoteScreen && isLocalShare) {
+                        dispatch(toggleScreenShare(false));
+                        dispatch(toggleLocalScreenShare(false));
+                    } else {
+                        dispatch(toggleLocalScreenShare(false));
+                    }
+                }}
+                id={isLocalShare ? 'stop-screen-share' : 'share-screen-button'}
+                aria-label={isLocalShare ? 'Stop Screen Share' : 'Share Your Screen'}
             >
-                {screenSharing ? (
+                {screenSharing && isLocalShare ? (
                     <svg
                         className="controlIcon__25700 centerIcon__6075a"
                         aria-hidden="true"

@@ -8,6 +8,7 @@ import {
   usePublish,
   useRemoteUsers,
   ICameraVideoTrack,
+  useClientEvent,
 } from "agora-rtc-react";
 import config from "../../../AgoraManager/config";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
@@ -35,12 +36,13 @@ import { useSocket } from "../../../context/Socket";
 import RemoveFriendModal from "../../RemoveFriendModal";
 import OpenModalButton from "../../OpenModalButton/OpenModalButton";
 import { useAgoraContext } from "../../../AgoraManager/agoraManager";
+import { toggleScreenShare, toggleRemoteScreenShare } from "../../../store/pairedContent";
 
-function VideoCams(props: { channelName: string }) {
+function VideoCams(props: { channelName: string; agoraEngine: any }) {
     const { setLocalCameraTrack, setLocalMicrophoneTrack } = useAgoraContext();
   const user = useAppSelector((state) => state.session.user);
   const pairInfo = useAppSelector((state) => state.chatRoom.user);
-  const { channelName } = props;
+  const { channelName, agoraEngine,  } = props;
   const [myCameraTrack, setMyCameraTrack] = useState<
     ICameraVideoTrack | undefined
   >(undefined);
@@ -61,6 +63,17 @@ function VideoCams(props: { channelName: string }) {
     token: config.rtcToken,
     uid: user?.videoUid,
   });
+
+  
+  useClientEvent(agoraEngine, "user-published", (user, _) => {
+    console.log("🍓🤬🍓🤬🤬🥳🥳🍓🤬🤬", user.uid === pairInfo?.screenUid);
+    if (user.uid === pairInfo?.screenUid) {
+      dispatch(toggleRemoteScreenShare(true));
+      dispatch(toggleScreenShare(true));
+    }
+  });
+
+
 
   // useEffect(() => {
   //   if (!socket) {
@@ -309,3 +322,4 @@ function VideoCams(props: { channelName: string }) {
 }
 
 export default VideoCams;
+

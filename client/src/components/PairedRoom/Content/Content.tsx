@@ -5,7 +5,7 @@ import { useAppSelector } from "../../../hooks";
 import PairedScreenShare, {
   ContentProps,
 } from "../ScreenShare/ScreenShareContainer";
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import GeminiDSA from "./GeminiDSA";
 import useIdeListeners from "../../../hooks/Sockets/useIdeListeners";
 import { Socket } from "socket.io-client";
@@ -21,8 +21,7 @@ const Content: React.FC<ContentProps> = ({
   agoraEngine,
   leaveRoomHandler,
   channelName,
-  socket,
-  connectSocket,
+  socket
 }) => {
   const { handleGeminiDSARequest } = useGeminiDSARequest(channelName);
   // const dispatch = useAppDispatch();
@@ -38,11 +37,11 @@ const Content: React.FC<ContentProps> = ({
   useIdeListeners(socket as Socket);
 
   // handle connect
-  useEffect(() => {
-    if (!socket && connectSocket) {
-      connectSocket();
-    }
-  }, [socket, connectSocket]);
+  // useEffect(() => {
+  //   if (!socket && connectSocket) {
+  //     connectSocket();
+  //   }
+  // }, [socket, connectSocket]);
 
   // handle send
   // const sendLeaveGeminiPage = useCallback(() => {
@@ -59,6 +58,7 @@ const Content: React.FC<ContentProps> = ({
             agoraEngine={agoraEngine}
             leaveRoomHandler={leaveRoomHandler}
             socket={null}
+
           />
         </>
       );

@@ -1,22 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { RemoteVideoTrack, useClientEvent, useRemoteUsers, useRemoteVideoTracks } from 'agora-rtc-react';
 import config from '../../../AgoraManager/config';
 import { fetchRTCToken } from '../../../hooks/Agora/fetchRTCToken';
 import ShareScreenComponent from '../../../AgoraManager/screenShare';
 import useAgoraClient from '../../../hooks/Agora/useAgoraClient';
-import { toggleScreenShare } from '../../../store/pairedContent';
+import { toggleRemoteScreenShare, toggleScreenShare } from '../../../store/pairedContent';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 
-function ScreenShare(props: { channelName: string }) {
-    const { channelName } = props;
+function ScreenShare(props: { channelName: string}) {
+    const { channelName} = props;
     // const [screenSharing, setScreenSharing] = useState<boolean>(false);
-    const [isRemoteScreen, setIsRemoteScreen] = useState<boolean>(false);
     const remoteUsers = useRemoteUsers();
     const agoraEngine = useAgoraClient();
     const dispatch = useAppDispatch();
     const screenSharing = useAppSelector((state) => state.pairedContent.agora.screenshare.isActive);
 
     useRemoteVideoTracks(remoteUsers);
+    console.log(remoteUsers);
+
 
     const pairInfo = useAppSelector((state) => state.chatRoom.user);
 
@@ -40,17 +41,18 @@ function ScreenShare(props: { channelName: string }) {
 
     useClientEvent(agoraEngine, 'user-left', (user) => {
         if (user.uid === pairInfo?.screenUid) {
-            setIsRemoteScreen(false);
+            dispatch(toggleRemoteScreenShare(false))
             dispatch(toggleScreenShare(false));
         }
     });
 
-    useClientEvent(agoraEngine, 'user-published', (user, _) => {
-        if (user.uid === pairInfo?.screenUid) {
-            setIsRemoteScreen(true);
-            dispatch(toggleScreenShare(true));
-        }
-    });
+    // useClientEvent(agoraEngine, 'user-published', (user, _) => {
+    //     console.log("🍓🤬🍓🤬🤬🥳🥳🍓🤬🤬", user.uid === pairInfo?.screenUid)
+    //     if (user.uid === pairInfo?.screenUid) {
+    //         setIsRemoteScreen(true);
+    //         dispatch(toggleScreenShare(true));
+    //     }
+    // });
 
     return (
         <>
@@ -76,7 +78,7 @@ function ScreenShare(props: { channelName: string }) {
             })}
 
             {/* Render shared screen to ONLY the user that shared the screen */}
-            {screenSharing && <ShareScreenComponent isRemoteScreen={isRemoteScreen} />}
+            {screenSharing && <ShareScreenComponent />}
 
         </>
     );

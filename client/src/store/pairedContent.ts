@@ -7,6 +7,8 @@ interface pairedContentState {
     agora: {
         screenshare: {
             isActive: boolean;
+            isRemoteScreen: boolean;
+            isLocalScreen: boolean;
         };
         media: {
             localCameraTrack: ICameraVideoTrack | null;
@@ -24,6 +26,8 @@ const initialState: pairedContentState = {
     agora: {
         screenshare: {
             isActive: false,
+            isRemoteScreen: false,
+            isLocalScreen: false,
         },
         media: {
             localCameraTrack: null,
@@ -43,6 +47,12 @@ const pairedContentSlice = createSlice({
         // Here, the action payload directly represents the new path string
         toggleScreenShare: (state, action: PayloadAction<boolean>) => {
             state.agora.screenshare.isActive = action.payload;
+        },
+        toggleRemoteScreenShare: (state, action: PayloadAction<boolean>) => {
+            state.agora.screenshare.isRemoteScreen = action.payload;
+        },
+        toggleLocalScreenShare: (state, action: PayloadAction<boolean>) => {
+            state.agora.screenshare.isLocalScreen = action.payload;
         },
         generateAndSetGeminiProblem: (
             state,
@@ -78,7 +88,7 @@ const pairedContentSlice = createSlice({
 });
 
 // Export actions
-export const { toggleScreenShare, generateAndSetGeminiProblem, resetGeminiState, setLocalCamMic, clearLocalCamMic } =
+export const { toggleScreenShare, generateAndSetGeminiProblem, resetGeminiState, setLocalCamMic, clearLocalCamMic, toggleRemoteScreenShare, toggleLocalScreenShare } =
     pairedContentSlice.actions;
 
 // Export reducer

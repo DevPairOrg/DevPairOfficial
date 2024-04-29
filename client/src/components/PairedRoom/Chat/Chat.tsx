@@ -13,7 +13,7 @@ interface ChatProps {
 }
 
 const Chat: React.FC<ChatProps> = ({ channelName }) => {
-  const { socket, connectSocket, error } = useSocket();
+  const { socket, error } = useSocket();
   const messagesStore = useAppSelector((state) => state.chatRoom.messages);
   const [messages, setMessages] = useState<PairedChatMessage[]>([]);
   const [chatInput, setChatInput] = useState<string>("");
@@ -21,11 +21,11 @@ const Chat: React.FC<ChatProps> = ({ channelName }) => {
 
   if (error) console.log("Error in Paired Chat Component: ", error);
 
-  useEffect(() => {
-    if (!socket) {
-      connectSocket();
-    }
-  }, [socket, connectSocket]);
+  // useEffect(() => {
+  //   if (!socket) {
+  //     connectSocket();
+  //   }
+  // }, [socket, connectSocket]);
 
   // Memoized callback for handling received chat messages
   const handleTempMessageReceived = useCallback(

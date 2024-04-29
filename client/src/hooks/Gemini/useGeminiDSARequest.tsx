@@ -38,7 +38,7 @@ const notifyBeta = () => toast.info('Hang tight! Our AI is hard at work crafting
     });
 
 const useGeminiDSARequest = (channelName: string | undefined) => {
-    const { socket, connectSocket, error } = useSocket();
+    const { socket, error } = useSocket();
 
     const dispatch = useAppDispatch();
     const sessionUser = useAppSelector((state) => state.session.user);
@@ -46,11 +46,11 @@ const useGeminiDSARequest = (channelName: string | undefined) => {
     const [fetchError, setFetchError] = useState<string>('');
 
     if (error) console.log('Error in useGeminiDSARequest: ', error);
-    useEffect(() => {
-        if (!socket) {
-            connectSocket();
-        }
-    }, [socket, connectSocket]);
+    // useEffect(() => {
+    //     if (!socket) {
+    //         connectSocket();
+    //     }
+    // }, [socket, connectSocket]);
 
 
     // handle received
