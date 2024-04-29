@@ -40,9 +40,9 @@ export const AgoraProvider: React.FC<AgoraProviderProps> = ({ children, leaveRoo
     const [localCameraTrack, setLocalCameraTrack] = useState<ICameraVideoTrack | null>(null);
     const [localMicrophoneTrack, setLocalMicrophoneTrack] = useState<IMicrophoneAudioTrack | null>(null);
 
-    useEffect(() => {
-        console.log('local mic context', localMicrophoneTrack);
-    });
+    // useEffect(() => {
+    //     console.log('local mic context', localMicrophoneTrack);
+    // });
 
     const value = {
         localCameraTrack,

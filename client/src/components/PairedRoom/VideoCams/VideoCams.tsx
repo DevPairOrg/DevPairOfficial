@@ -94,7 +94,7 @@ function VideoCams(props: { channelName: string }) {
     if (socket) {
       if (!socket.hasListeners("friend_removed")) {
         socket.on("friend_removed", (data) => {
-          console.log("Friend removed event received", data);
+          // console.log("Friend removed event received", data);
           // Dispatch action to update the friend status in the state
           dispatch(friendRemoved(+data.userId));
           dispatch(unfriendUser());
@@ -125,7 +125,7 @@ function VideoCams(props: { channelName: string }) {
 
       if (!socket.hasListeners("received_request")) {
         socket.on("received_request", (data) => {
-          console.log("Received request event received", data);
+          // console.log("Received request event received", data);
           // Dispatch action to update the friend status in the state
           dispatch(receiveRequest(data.request));
 

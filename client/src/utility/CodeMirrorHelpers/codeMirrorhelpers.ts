@@ -133,7 +133,7 @@ export const createJSSubmissionOnLocal = async (
   try {
     const response = await fetch(url, options as any);
     const result = await response.json();
-    console.log("RESULT", result)
+    // console.log("RESULT", result)
     return result;
   } catch (error) {
     console.error(error);
