@@ -44,7 +44,7 @@ function VideoCams(props: { channelName: string }) {
   const [myCameraTrack, setMyCameraTrack] = useState<
     ICameraVideoTrack | undefined
   >(undefined);
-  const { socket, connectSocket } = useSocket();
+  const { socket } = useSocket();
   const sessionUser = useAppSelector((state) => state.session.user);
 
   const { isLoading: isLoadingMic, localMicrophoneTrack } =
@@ -62,11 +62,11 @@ function VideoCams(props: { channelName: string }) {
     uid: user?.videoUid,
   });
 
-  useEffect(() => {
-    if (!socket) {
-      connectSocket();
-    }
-  }, [socket, connectSocket]);
+  // useEffect(() => {
+  //   if (!socket) {
+  //     connectSocket();
+  //   }
+  // }, [socket, connectSocket]);
 
   useEffect(() => {
       // Setup cleanup to close tracks when the component unmounts
@@ -245,7 +245,7 @@ function VideoCams(props: { channelName: string }) {
                     />
                     {pairInfo.isFriend ? (
                       <OpenModalButton
-                        className="follow-user"
+                        className="friend-button"
                         buttonText="Remove Friend"
                         modalComponent={
                           <RemoveFriendModal
@@ -256,30 +256,30 @@ function VideoCams(props: { channelName: string }) {
                         }
                       />
                     ) : pairInfo.isPending ? (
-                      <>
+                      <div className="friend-request-buttons" >
                         <button
-                          className="follow-user"
+                          className="accept-friend"
                           onClick={() => handleVideoFriendRequest("accept")}
                         >
                           Accept
                         </button>
                         <button
-                          className="follow-user"
+                          className="reject-friend"
                           onClick={() => handleVideoFriendRequest("reject")}
                         >
                           Reject
                         </button>
-                      </>
+                      </div>
                     ) : pairInfo.isAwaiting ? (
                       <button
-                        className="follow-user"
+                        className="friend-button"
                         onClick={() => handleVideoFriendRequest("cancel")}
                       >
                         Cancel Request
                       </button>
                     ) : (
                       <button
-                        className="follow-user"
+                        className="friend-button"
                         onClick={() => handleVideoFriendRequest("send")}
                       >
                         Add Friend
