@@ -1,10 +1,11 @@
 .friends-container {
     display: flex;
-    position: absolute;
+    position: sticky;
     bottom: 0;
-    right: 0;
+    left: 0;
     margin-right: 1rem;
     margin-bottom: 0;
+    justify-content: flex-end;
 }
 
 .friends__dropdown-container {

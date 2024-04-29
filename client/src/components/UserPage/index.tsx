@@ -4,15 +4,11 @@ import { useAppDispatch, useAppSelector } from '../../hooks';
 import { RootState } from '../../store';
 import './targetUserSocials.css';
 import './index.css';
-// import Footer from '../Footer/Footer';
 import EditUserPage from './editProfile';
 import PreviewProfile from './PreviewProfile';
 import FriendsDropDown from '../FriendsDropDown/FriendsDropDown';
 import Statistics from './Statistics';
-import { acceptFriendRequest, cancelFriendRequest, rejectFriendRequest, sendFriendRequest } from '../../store/session';
-import { changeAwaitingRequest, changeIsFriend, changePendingRequest, getUser } from '../../store/user';
-// import OpenModalButton from '../OpenModalButton/OpenModalButton';
-// import RemoveFriendModal from '../RemoveFriendModal';
+import { getUser } from '../../store/user';
 import ExternalUserProfile from './ExternalUserProfile';
 import { User } from '../../interfaces/user';
 import { toast, ToastContainer } from 'react-toastify';
@@ -26,9 +22,6 @@ function UserPage() {
     const sessionUser = useAppSelector((state: RootState) => state.session.user);
     const user = useAppSelector((state: RootState) => state.user.data);
 
-    const friends = useAppSelector((state: RootState) => state.session.user?.friends);
-    const sentRequests = useAppSelector((state: RootState) => state.session.user?.sentRequests);
-    const receivedRequests = useAppSelector((state: RootState) => state.session.user?.receivedRequests);
 
     useEffect(() => {
         if (userId && sessionUser && +sessionUser.id === +userId) {
@@ -40,40 +33,6 @@ function UserPage() {
         }
     }, [userId]);
 
-    const handleRequest = async (Id: number, action: string) => {
-        let actionResult;
-
-        switch (action) {
-            case 'accept':
-                actionResult = await dispatch(acceptFriendRequest(Id));
-                if (!isCurrentUserProfile && acceptFriendRequest.fulfilled.match(actionResult)) {
-                    dispatch(changeIsFriend());
-                    dispatch(changePendingRequest());
-                }
-                break;
-            case 'cancel':
-                actionResult = await dispatch(cancelFriendRequest(Id));
-                if (!isCurrentUserProfile && cancelFriendRequest.fulfilled.match(actionResult)) {
-                    dispatch(changeAwaitingRequest());
-                }
-
-                break;
-            case 'reject':
-                actionResult = await dispatch(rejectFriendRequest(Id));
-                if (!isCurrentUserProfile && rejectFriendRequest.fulfilled.match(actionResult)) {
-                    dispatch(changePendingRequest());
-                }
-                break;
-            case 'send':
-                actionResult = await dispatch(sendFriendRequest(Id));
-                if (sendFriendRequest.fulfilled.match(actionResult)) {
-                    dispatch(changeAwaitingRequest());
-                }
-                break;
-            default:
-                break;
-        }
-    };
 
     const notifyWIP = () =>
         toast.info('This page is currently a WIP build.', {
@@ -90,6 +49,7 @@ function UserPage() {
     return (
         <>
             {isCurrentUserProfile && sessionUser ? (
+                <>
                 <div className="user-dash-main-content">
                     <div className="user-dash-navigation">
                         <div
@@ -182,6 +142,8 @@ function UserPage() {
                         {action === 2 && <Statistics />}
                     </div>
                 </div>
+                <FriendsDropDown />
+                </>
             ) : (
                 //!!! RENDER OTHER USER'S PROFILE !!!
                 <>

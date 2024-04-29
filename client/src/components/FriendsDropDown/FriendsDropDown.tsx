@@ -31,10 +31,10 @@ const FriendsDropDown: React.FC = () => {
                                 <>
                                     <div key={index} style={{ display: 'flex' }} className="friend">
                                         <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
-                                            <a href={`/users/${+friend?.id}`} style={{ height: '50px' }}>
+                                            <a href={`/users/${+friend?.id}`} style={{ height: '50px', display: 'flex', alignItems: "center", gap: '1vw' }}>
                                                 <img className="friend-pfp" src={friend?.picUrl} alt="friend-pfp" />
-                                            </a>
                                             <div>{friend?.username}</div>
+                                            </a>
                                         </div>
                                         <TbMail style={{ fill: '#20CC09', backgroundColor: 'transparent' }} />
                                     </div>
