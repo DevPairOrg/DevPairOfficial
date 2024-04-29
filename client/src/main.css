@@ -12,7 +12,7 @@
 
 :root {
   --text: #e5f2e3;
-  --background: #080c0b;
+  --background: rgb(17, 17, 17);
   --primary: #20cc09;
   --dark-text: #0a0f0e;
   --primary-opacity: rgb(32, 204, 9, 0.3);
@@ -43,8 +43,6 @@ body {
   display: flex;
   flex-direction: column;
   background-color: var(--background);
-  background: url('./assets/background.png') right/180% repeat darkviolet;
-  background-blend-mode: multiply;
   margin: 0;
   width: 100dvw;
 }
