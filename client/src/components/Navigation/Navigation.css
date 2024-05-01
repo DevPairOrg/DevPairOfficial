@@ -29,7 +29,7 @@
   display: flex;
   align-items: center; /* Align items vertically */
   gap: 1rem;
-  font-size: 1.5vw; 
+  font-size: 1.5vw !important;
 }
 
 
@@ -55,6 +55,19 @@
   width: 100%; /* Slide in border from left to right on hover */
 }
 
+.profile-setings-button,
+.logout-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: block; /* Ensure buttons fill entire width of parent */
+  padding: 0.5rem 1rem; /* Add padding for better clickable area */
+  width: 100%; /* Ensure buttons fill entire width of parent */
+  text-align: left; /* Align text to the left for better readability */
+  color: #fff; /* Ensure sufficient contrast against the background */
+  font-size: 1vw; /* Set font size relative to viewport width */
+}
+
 
 
 /* @media screen and (max-width: 48em) {
@@ -64,11 +77,11 @@
   }
 
   .nav-links-other {
-    margin-top: 1em; 
+    margin-top: 1em;
   }
 
   .nav-links-other div {
     margin-right: 0;
-    margin-bottom: 0.5em; 
+    margin-bottom: 0.5em;
   }
 } */
