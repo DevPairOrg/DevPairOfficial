@@ -6,9 +6,10 @@
     gap: 8rem;
     color: var(--text); /* Using custom color variable */
     height: fit-content;
-    max-height: 10vh;
-    margin-top: 5vh;
-    padding-bottom: .5rem;
+    /*max-height: 10vh;
+    /*margin-top: 10vh;*/
+    margin: 10vh 0vh 10vh 0vh;
+    padding-bottom: 10vh;
     box-sizing: border-box;
     /* position: absolute; */
 }
