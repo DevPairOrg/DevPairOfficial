@@ -37,6 +37,7 @@
 .landing-page {
   flex: 1;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   width: 100%;
 }
@@ -91,6 +92,88 @@
 
 .landing-text-three {
   font-size: 1.6vw; /* Adjust font size using viewport width unit */
+}
+
+#languages-section{
+  margin-top: 3vw;
+  max-width: 100%;
+  min-height: 20vh;
+
+  padding: 5vh;
+  background: rgb(23,23,23);
+  background: linear-gradient(180deg, rgba(23,23,23,0.7413340336134453) 11%, rgba(50,50,50,1) 54%);
+}
+
+#language-section-description{
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+}
+
+h2{
+  text-align: center;
+  color: #20CC09;
+  font-size: 3rem;
+}
+
+#language-section-description p{
+  font-size: 1.5rem;
+  margin-top: 2vw;
+  text-align: center;
+}
+
+#benefits-section{
+  padding: 5vh;
+  background-color: #323232;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+#benefits-section-description{
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+
+  margin: 3vw 5% 0vw 10% ;
+}
+
+#benefits-section-description p{
+  font-size: 1.5rem;
+  margin: 2vw 0vw 2vw 0vw;
+}
+
+#benefits-section-description h2{
+  margin-bottom: 2vw;
+  text-align: start;
+}
+
+#benefits-section-cards{
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  grid-template-rows: repeat(2, 1fr);
+  column-gap: 30px;
+  row-gap: 30px;
+
+  width: 40%;
+  margin: 3vw 5% 0% 0%;
+  
+}
+
+.benefit-card{
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: space-around;
+  padding: 2vw;
+  border: solid #20CC09 3px;
+  border-radius: 10px;
+}
+
+.benefit-card p{
+  font-size: 1.2rem;
+  margin-top: 2vw;
+  text-align: center;
 }
 
 @media only screen and (max-width: 768px) {
