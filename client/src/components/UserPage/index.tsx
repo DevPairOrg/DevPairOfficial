@@ -96,35 +96,34 @@ function UserPage() {
   return (
     <>
       {isCurrentUserProfile && sessionUser ? (
-        <>
-          <main id="user-profile-main">
-            <div id="user-profile-header">
-              <span>Dashboard</span>
-            </div>
-            <div id="user-profile-container">
-              <div id="user-profile-sidebar">
-                <button id="db-button" onClick={() => setAction(0)}>
-                  Start
-                </button>
-                <button
-                  id="db-button"
-                  onClick={() => {
-                    setAction(1);
-                    setEditMode(false);
-                  }}
-                >
-                  Profile
-                </button>
-                <button id="db-button" onClick={() => setAction(2)}>
-                  Friends
-                </button>
-                <button id="db-button" onClick={() => setAction(3)}>
-                  Requests - {sessionUser.totalPending}
-                </button>
+            <div className="user-dash-main-content">
+
+              <div className="user-dash-navigation">
+                  <div
+                    onClick={() => setAction(0)}
+                    style={{background: `${action === 0 ? '' : 'linear-gradient(to bottom, #171717 80%, rgb(14, 14, 14, 1) 100%)'}`}}
+                  >
+                    <p style={{color: `${action === 0 ? '#20CC09' : 'white'}`}}>Dashboard</p>
+                  </div>
+                  <div
+                    onClick={() => {
+                      setAction(1)
+                      setEditMode(false)
+                    }}
+                    style={{background: `${action === 1 ? '' : 'linear-gradient(to bottom, #171717 80%, rgb(14, 14, 14, 1) 100%)'}`}}
+                  >
+                    <p style={{color: `${action === 1 ? '#20CC09' : 'white'}`}}>Profile</p>
+                  </div>
+                  <div
+                    onClick={() => setAction(2)}
+                    style={{background: `${action === 2 ? '' : 'linear-gradient(to bottom, #171717 80%, rgb(14, 14, 14, 1) 100%)'}`}}
+                  >
+                    <p style={{color: `${action === 2 ? '#20CC09' : 'white'}`}}>Statistics</p>
+                  </div>
               </div>
+
               <div id="user-profile-content-container">
                 {action === 0 && (
-                  <>
                     <div className="container2">
                       <div className="container_terminal"></div>
 
@@ -165,7 +164,6 @@ function UserPage() {
                         </div>
                       </a>
                     </div>
-                  </>
                 )}
                 {action === 1 && editMode ? (
                   <EditUserPage setEditMode={setEditMode} />
@@ -289,9 +287,6 @@ function UserPage() {
                 )}
               </div>
             </div>
-          </main>
-          <Footer />
-        </>
       ) : (
         //!!! RENDER OTHER USER'S PROFILE !!!
         <>
