@@ -115,6 +115,8 @@
 
   .terminal_promt {
     display: flex;
+    width: 100%;
+    overflow: hidden;
   }
 
   .terminal_promt span {
@@ -124,6 +126,7 @@
   .terminal_user {
     color: #7eda28;
     font-size: 3rem;
+    text-wrap: wrap;
   }
 
   .terminal_location {
@@ -134,6 +137,7 @@
   .terminal_bling {
     color: #dddddd;
     font-size: 3rem;
+    text-wrap: wrap;
   }
 
   .terminal_cursor {
@@ -208,8 +212,8 @@
   gap: 15px;
 }
 .user-dash-navigation > div {
-  width: 180px;
-  height: 35px;
+  width: 190px;
+  height: 42px;
   border-top-left-radius: 7px;
   border-top-right-radius: 7px;
   background-color: #171717;
