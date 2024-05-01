@@ -7,6 +7,7 @@ import "./index.css";
 import Footer from "../Footer/Footer";
 import EditUserPage from "./editProfile";
 import PreviewProfile from "./PreviewProfile";
+import FriendsDropDown from "../FriendsDropDown/FriendsDropDown";
 import {
   acceptFriendRequest,
   cancelFriendRequest,
@@ -295,6 +296,7 @@ function UserPage() {
       ) : (
         //!!! RENDER OTHER USER'S PROFILE !!!
         <>
+          <FriendsDropDown/>
           <main id="target-profile-main">
             <div id="target-profile-container">
               <div id="targetuser-profile-split">
@@ -640,7 +642,7 @@ function UserPage() {
               </div>
             </div>
           </main>
-          <Footer />
+
         </>
       )}
     </>
