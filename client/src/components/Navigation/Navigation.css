@@ -55,7 +55,15 @@
   width: 100%; /* Slide in border from left to right on hover */
 }
 
+@media only screen and (max-width: 768px) {
+  .logo{
+    max-width: 14vw;
+  }
 
+  .nav-links-login-and-signout{
+    font-size: 1.4rem;
+  }
+}
 
 /* @media screen and (max-width: 48em) {
   .nav-links {

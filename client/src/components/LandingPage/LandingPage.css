@@ -1,10 +1,3 @@
-/*
-#cat-two {
-  position: absolute;
-  top: 40%;
-  left: 75%;
-}*/
-
 #cool-image {
   position: absolute;
   top: 0;
@@ -68,19 +61,6 @@
   margin-top: 3vh;
 }
 
-/*
-.landing-page-cool-image {
-  flex: 1; /* Take up remaining space 
-  max-width: 40%; /* Allow image to take up to 50% of parent
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  position: relative;
-  gap: .8rem;
-}
-*/
-  
 .landing-page-get-started {
   border: none;
   padding: 0 1vw; /* Adjust padding using viewport width unit */
@@ -115,7 +95,7 @@
   max-width: 100%;
   
   background: rgb(23,23,23);
-  background: linear-gradient(180deg, rgba(23,23,23,0.8253676470588236) 0%, rgba(23,23,23,1) 24%, rgba(25,25,25,1) 79%, rgba(50,50,50,1) 100%);
+  background: linear-gradient(180deg, rgba(23,23,23,0.6460959383753502) 0%, rgba(23,23,23,1) 24%, rgba(25,25,25,1) 79%, rgba(50,50,50,1) 100%);
 }
 
 #language-section-description{
@@ -254,8 +234,21 @@ h2{
   margin-top: 5vh;
 }
 
+@media only screen and (max-width: 430px ){
+  #imgBanner{
+    display: none;
+  }
+}
 
 @media only screen and (max-width: 768px) {
+  #header-section{
+    margin-top: 10vh;
+  }
+
+  #imgBanner{
+    display: none;
+  }
+
   .landing-page {
     flex-direction: column; /* Stack content vertically on small screens */
   }
@@ -264,19 +257,6 @@ h2{
     max-width: 100%; /* Allow both description and image to take full width on small screens */
     margin-top: -10vw;
   }
-
-  /*
-  .landing-page-cool-pic {
-    margin-right: 0;
-    object-fit: cover;
-  }
-
-  .landing-page-cool-image {
-    max-height: fit-content;
-    justify-content: center;
-    align-items: center;
-    max-width: 70%;
-  }*/
 
   .landing-text-one {
     font-size: 3vw; /* Adjust font size using viewport width unit */
@@ -293,6 +273,21 @@ h2{
   .languages-card img{
     width: 15vw;
     height: 15vw;
+  }
+
+  #benefits-section{
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #benefits-section-description{
+    width: 80%;
+    margin: 3vw 0vw 0vw 0vw;
+  }
+
+  #benefits-section-cards{
+    width: 80%;
+    margin-right: 0vh;
   }
 }
 

@@ -2,14 +2,6 @@ import { RootState } from '../../store';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 
-{/*
-import chat1 from '../../assets/images/chat1.png';
-import chat2 from '../../assets/images/chat2.png';
-import comic1 from '../../assets/images/comic1.png';
-import comic2 from '../../assets/images/comic2.png';
-import comic3 from '../../assets/images/comic3.png';
- */}
-
 {/*Language Icons*/}
 import flask from '../../assets/images/flask-logo.png'
 import react from '../../assets/images/react-logo.png'
@@ -56,26 +48,6 @@ function LandingPage() {
         <>
             <main className="landing-page">
                 <section id='header-section'>
-                    {/*<div className="landing-page-cool-image">
-                        <div id="cat-one">
-                            <img src={chat1} alt="first-cat-sitting-and-coding" className="bouncy-cats-one" />
-                        </div>
-                        <div className="comix-bubbles-container">
-                            <div className="comic-one">
-                                <img src={comic1} alt="first-chat-bubble-from-cats" id="comic1-one" />
-                            </div>
-                            <div className="comic-two">
-                                <img src={comic2} alt="second-chat-bubble-from-cats" id="comic2-two" />
-                            </div>
-                            <div className="comic-three">
-                                <img src={comic3} alt="third-chat-bubble-from-cats" id="comic3-three" />
-                            </div>
-                        </div>
-                        <div className="second-cat-div">
-                            <img src={chat2} alt="second-cat-sitting-and-coding" id="cat-two" className="bouncy-cats-two" />
-                        </div>
-                    </div>*/}
-
                     <div id="imgBanner">
                         <img src={bannerImg} alt="Image of a circle filled with wavy green lines. On top of it there are simple icons representing people connected via a straight line downward to the lines inside the circle." />
                     </div>
