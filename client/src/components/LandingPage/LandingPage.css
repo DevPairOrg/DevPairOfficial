@@ -232,6 +232,7 @@ h2{
   justify-content: space-around;
   background-color: #171717;
   margin-top: 5vh;
+  margin-bottom: 7vw;
 }
 
 @media only screen and (max-width: 425px ){
@@ -242,6 +243,7 @@ h2{
   #welcome-message{
     font-size: 2.5rem;
   }
+
 }
 
 @media only screen and (max-width: 1200px) {
