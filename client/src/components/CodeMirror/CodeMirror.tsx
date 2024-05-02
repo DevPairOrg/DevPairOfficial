@@ -6,6 +6,8 @@ import { dracula } from "@uiw/codemirror-theme-dracula";
 import { parsedData } from "../../interfaces/gemini";
 import { useSocket } from "../../context/Socket";
 import useGeminiDSARequest from "../../hooks/Gemini/useGeminiDSARequest";
+import { ToastContainer } from "react-toastify";
+
 
 import {
   handleJavascriptButton,
@@ -109,6 +111,18 @@ function IDE(props: parsedData) {
 
   return (
     <>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
       <div id="ide-container">
         <div id="generated-problem-container">
           <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
