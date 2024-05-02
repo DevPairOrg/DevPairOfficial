@@ -17,7 +17,7 @@ function Navigation({ isLoaded }: NavigationProps) {
     const currentRoute = useAppSelector((state) => state.userPath.currentPath);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    console.log(currentRoute);
+    // console.log(currentRoute);
 
     //sessionUser is returning true even if there is no user logged in because it is returning the user object { errors: [] }
     //so we need to check if there is a user object and if there are no errors in the user object

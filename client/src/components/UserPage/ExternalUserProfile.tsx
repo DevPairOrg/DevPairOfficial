@@ -18,8 +18,6 @@ const ExternalUserProfile: React.FC<User> = (externalUser) => {
     const dispatch = useAppDispatch();
     const [isCurrentUserProfile, setIsCurrentProfile] = useState<boolean>(false);
 
-    console.log('what is this', isFriend);
-
     useEffect(() => {
         if (userId && sessionUser && +sessionUser.id === +userId) {
             setIsCurrentProfile(true);

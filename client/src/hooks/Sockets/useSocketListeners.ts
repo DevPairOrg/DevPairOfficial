@@ -29,7 +29,7 @@ const useSocketListeners = (
             if (data.users.length > 1) {
                 // console.log('There is more than one user, a pair.');
                 const pair = data.users.find((pair) => pair.id !== user?.id);
-                
+
                 if (pair) {
                     pair.isFriend = user?.friends.some(friend => +friend.id === +pair.id) || false;
                     if (user && user.receivedRequests) {
@@ -48,7 +48,7 @@ const useSocketListeners = (
         });
 
         const userLeftListener = () => {
-            console.log('🍑🍑🍑🍑🍑🍑🍑User leaving room');
+            // console.log('🍑🍑🍑🍑🍑🍑🍑User leaving room');
             dispatch(clearUser());
             dispatch(resetGeminiState());
             socket.removeAllListeners('joined');
@@ -63,7 +63,7 @@ const useSocketListeners = (
         return () => {
             // Cleanup logic here
 
-            console.log('🥑🥑🥑🥑🥑🥑🥑🥑🥑Use socket listeners cleanup');
+            // console.log('🥑🥑🥑🥑🥑🥑🥑🥑🥑Use socket listeners cleanup');
             socket.off('joined');
             socket.off('user_left');
         };
