@@ -7,7 +7,8 @@
     color: var(--text); /* Using custom color variable */
     height: fit-content;
     max-height: 10vh;
-    padding-bottom: .5rem;
+    /*margin-top: 10vh;*/
+    padding-bottom: 10vh;
     box-sizing: border-box;
     /* position: absolute; */
 }

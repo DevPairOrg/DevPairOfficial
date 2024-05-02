@@ -1,12 +1,23 @@
 import { RootState } from '../../store';
 import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
-import chat1 from '../../assets/images/chat1.png';
-import chat2 from '../../assets/images/chat2.png';
-import comic1 from '../../assets/images/comic1.png';
-import comic2 from '../../assets/images/comic2.png';
-import comic3 from '../../assets/images/comic3.png';
+
+{/*Language Icons*/}
+import flask from '../../assets/images/flask-logo.png'
+import react from '../../assets/images/react-logo.png'
+import python from '../../assets/images/python-logo.png'
+import redux from '../../assets/images/redux-logo.png'
+import agora from '../../assets/images/Agora.png'
+import gemini from '../../assets/images/gemini-logo.png'
+
+{/*Images*/}
+import bannerImg from '../../assets/images/banner-img.png'
+import meetFriends from '../../assets/images/meet-friends.png'
+import improveSocial from '../../assets/images/improve-socials.png'
+import improveCoding from '../../assets/images/improve-coding.png'
+import breakBarrier from '../../assets/images/break-barriers.png'
 import PageHeader from '../ScrambleText/ScrambleText';
+
 import './LandingPage.css';
 import Footer from '../Footer/Footer';
 import { useAppSelector } from '../../hooks';
@@ -37,50 +48,128 @@ function LandingPage() {
     return (
         <>
             <main className="landing-page">
-                <div className="landing-page-cool-image">
-                    <div id="cat-one">
-                        <img src={chat1} alt="first-cat-sitting-and-coding" className="bouncy-cats-one" />
+                <section id='header-section'>
+                    <div id="imgBanner">
+                        <img src={bannerImg} alt="Image of a circle filled with wavy green lines. On top of it there are simple icons representing people connected via a straight line downward to the lines inside the circle." />
                     </div>
-                    <div className="comix-bubbles-container">
-                        <div className="comic-one">
-                            <img src={comic1} alt="first-chat-bubble-from-cats" id="comic1-one" />
-                        </div>
-                        <div className="comic-two">
-                            <img src={comic2} alt="second-chat-bubble-from-cats" id="comic2-two" />
-                        </div>
-                        <div className="comic-three">
-                            <img src={comic3} alt="third-chat-bubble-from-cats" id="comic3-three" />
-                        </div>
+                    
+
+                    <div className="landing-page-description">
+                        <PageHeader title="DevPair!" />
+                        <>
+                            <div className="landing-text-one">
+                                <span className="accent">Connect</span> and collaborate with developers worldwide
+                            </div>
+                            <div className="landing-text-two">
+                                <span className="accent">Grind</span> DS&A questions to enhance your skills
+                            </div>
+                            <div className="landing-text-three">
+                                <span className="accent">Unleash</span> Your Developer Potential!
+                            </div>
+                        </>
+                        {loggedIn ? (
+                            <button className="landing-page-get-started" onClick={handleJoinRoom}>
+                                Join a Room!
+                            </button>
+                        ) : (
+                            <button className="landing-page-get-started" onClick={handleGetStarted}>
+                                Get Started
+                            </button>
+                        )}
                     </div>
-                    <div className="second-cat-div">
-                        <img src={chat2} alt="second-cat-sitting-and-coding" id="cat-two" className="bouncy-cats-two" />
+                </section>
+                
+                <section id="languages-section"> 
+                    <div id='language-section-description'>
+                            <h2>Technologies we use</h2>
+
+                            <p id='test'>The DevPair community works with a myriad of technologies used both for <span className='accent'>professional</span> and <span className="accent">personal</span> projects, helping each other expand our knowledge about them through collaboration.</p>
                     </div>
-                </div>
-                <div className="landing-page-description">
-                    <PageHeader title="DevPair!" />
-                    <>
-                        <div className="landing-text-one">
-                            <span className="accent">Connect</span> and collaborate with developers worldwide
+
+                    <div id='languages-lineup'>
+                        <div className='languages-card'>
+                            <img alt='Flask icon' src={flask}  id='flask'/>
+                            <p>Flask Socket.io</p>
                         </div>
-                        <div className="landing-text-two">
-                            <span className="accent">Grind</span> DS&A questions to enhance your skills
+                        <div className='languages-card'>
+                            <img alt='React Icon' src={react}  />
+                            <p>React</p>
                         </div>
-                        <div className="landing-text-three">
-                            <span className="accent">Unleash</span> Your Developer Potential!
+                        <div className='languages-card'>
+                            <img alt='Python Icon' src={python}/>
+                            <p>Python</p>
                         </div>
-                    </>
+                        <div className='languages-card'>
+                            <img alt='Resux Icon' src={redux} id='redux' />
+                            <p>Redux</p>
+                        </div>
+                        <div className='languages-card'>
+                            <img alt='Gemini Icon' src={gemini} id='gemini'/>
+                            <p>Gemini</p>
+                        </div>
+                        <div className='languages-card'>
+                            <img alt='Agora Icon' src={agora} id='agora' />
+                            <p>Agora</p>
+                        </div>
+
+                    </div>
+                </section>
+
+                 
+                <section id='benefits-section'>
+
+                    <div id='benefits-section-description'>
+                        <h2>Benefits of working with DevPair</h2>
+
+                        <p>We at DevPair know how hard it can be to break into Data structuring and algorithms, <span className="accent">especially</span> to those with <span className="accent">limited time and resources.</span> That's why we strive to <span className="accent">connect</span> developers around the globe through our community!</p>
+
+                        <p>Because of that, we developed a streamlined way to video call, chat and befriend other developers, <span className="accent"> whenever and wherever</span> you want, in the hopes of not only <span className="accent">improving</span> your <span className="accent">coding</span> skills but also your <span className="accent">social</span> skills, opening up new professional and personal <span className="accent">opportunities!</span></p>
+                    </div>
+                    
+                    <div id='benefits-section-cards'>
+                        <div className='benefit-card'>
+                            <img alt='Green lined icon image depicting two simple humanoid figures high-fiving.' src={meetFriends}></img>
+                            <p>Meet new friends and coworkers</p>
+                        </div>
+
+                        <div className='benefit-card'>
+                            <img alt='Green lined icon image depicting a humanoid figure surrounded by speech bubbles.' src={improveSocial}></img>
+                            <p>Improve your communication skills</p>
+                        </div>
+
+                        <div className='benefit-card'>
+                            <img alt='Green lined icon image depicting a chain link being broken.' src={breakBarrier}></img>
+                            <p>Break down social barriers</p>
+                        </div>
+
+                        <div className='benefit-card'>
+                            <img alt='Green lined icon image depicting a humanoid figure typing on a laptop with one hand raised holding a lightbulb.' src={improveCoding}></img>
+                            <p>Improve your coding skills</p>
+                        </div>
+
+                    </div>
+                </section>
+
+                <section id='call-to-action'>
+                    <div>
+                        <h2>Join our community!</h2>
+                        <p>Start expanding your horizons today</p>
+                    </div>
+                    
                     {loggedIn ? (
-                        <button className="landing-page-get-started" onClick={handleJoinRoom}>
-                            Join a Room!
-                        </button>
-                    ) : (
-                        <button className="landing-page-get-started" onClick={handleGetStarted}>
-                            Get Started
-                        </button>
-                    )}
-                </div>
+                            <button className="landing-page-get-started" onClick={handleJoinRoom}>
+                                Join a Room!
+                            </button>
+                        ) : (
+                            <button className="landing-page-get-started" onClick={handleGetStarted}>
+                                Get Started
+                            </button>
+                        )}
+
+                </section>
+                   
+                <Footer />
             </main>
-            <Footer />
         </>
     );
 }
