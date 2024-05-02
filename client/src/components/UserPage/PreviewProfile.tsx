@@ -35,7 +35,7 @@ function PreviewProfile({ setEditMode }: PreviewProfileProps) {
                       {sessionUser.friends.length ?? 0} Friends
                     </span>
                     <span>
-                      0 problems solved
+                      {(sessionUser as any)?.completedLeetcodeProblems.split(",").length - 1} completed problems
                   </span>
                 </div>
               </div>
