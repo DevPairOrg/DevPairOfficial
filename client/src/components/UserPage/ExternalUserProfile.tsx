@@ -1,18 +1,101 @@
 import SocialLinksButtons from './SocialLinksButtons';
 import './ExternalUserProfile.css';
 import { User } from '../../interfaces/user';
-import { useAppSelector } from '../../hooks';
-import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../hooks';
+import React, { useEffect, useState } from 'react';
 import { IoIosArrowBack } from 'react-icons/io';
+import OpenModalButton from '../OpenModalButton/OpenModalButton';
+import RemoveFriendModal from '../RemoveFriendModal';
+import { getUser, changeIsFriend, changePendingRequest, changeAwaitingRequest } from '../../store/user';
+import { sendFriendRequest, cancelFriendRequest, rejectFriendRequest } from '../../store/session';
+import { acceptFriendRequest } from '../../store/session';
+import { useParams } from 'react-router-dom';
 
 const ExternalUserProfile: React.FC<User> = (externalUser) => {
+    const { userId } = useParams();
     const sessionUser = useAppSelector((s) => s.session.user);
-    const [isFriend, setIsFriend] = useState(false);
-    const friends = sessionUser?.friends?.filter((friend) => friend.id == externalUser.id) || [];
+    const isFriend = externalUser.isFriend;
+    const dispatch = useAppDispatch();
+    const [isCurrentUserProfile, setIsCurrentProfile] = useState<boolean>(false);
+
+    console.log('what is this', isFriend);
 
     useEffect(() => {
-        setIsFriend(friends.length > 0);
-    }, [friends.length]);
+        if (userId && sessionUser && +sessionUser.id === +userId) {
+            setIsCurrentProfile(true);
+        } else {
+            if (userId && !externalUser) {
+                dispatch(getUser(+userId));
+            }
+        }
+    }, [userId]);
+
+    const handleRequest = async (Id: number, action: string) => {
+        let actionResult;
+        let sentId;
+        let receivedId;
+        if (sessionUser) {
+            for (const [key, value] of Object.entries(sessionUser.sentRequests)) {
+                if (value?.id === userId) {
+                    sentId = +key + 1;
+                    break;
+                }
+            }
+            for (const [key, value] of Object.entries(sessionUser.receivedRequests)) {
+                if (value?.id === userId) {
+                    receivedId = key;
+                    break;
+                }
+            }
+        }
+
+        switch (action) {
+            case 'accept':
+                if (sessionUser && sessionUser.receivedRequests) {
+                    const id = Object.entries(sessionUser.receivedRequests).find(
+                        ([_key, value]) => value.id === externalUser?.id
+                    )?.[0];
+                    if (id) actionResult = await dispatch(acceptFriendRequest(+id));
+                    if (!isCurrentUserProfile && acceptFriendRequest.fulfilled.match(actionResult)) {
+                        dispatch(changeIsFriend());
+                        dispatch(changePendingRequest());
+                    }
+                }
+                break;
+            case 'cancel':
+                if (sessionUser && sessionUser.sentRequests) {
+                    const id = Object.entries(sessionUser.sentRequests).find(
+                        ([_key, value]) => value.id === externalUser?.id
+                    )?.[0];
+                    if (id) actionResult = await dispatch(cancelFriendRequest(+id));
+                    if (!isCurrentUserProfile && cancelFriendRequest.fulfilled.match(actionResult)) {
+                        dispatch(changeAwaitingRequest());
+                    }
+                }
+
+                break;
+            case 'reject':
+                if (sessionUser && sessionUser.receivedRequests) {
+                    const id = Object.entries(sessionUser.receivedRequests).find(
+                        ([_key, value]) => value.id === externalUser?.id
+                    )?.[0];
+                    if (id) actionResult = await dispatch(rejectFriendRequest(+id));
+                    if (!isCurrentUserProfile && rejectFriendRequest.fulfilled.match(actionResult)) {
+                        dispatch(changePendingRequest());
+                    }
+                }
+
+                break;
+            case 'send':
+                actionResult = await dispatch(sendFriendRequest(+Id));
+                if (sendFriendRequest.fulfilled.match(actionResult)) {
+                    dispatch(changeAwaitingRequest());
+                }
+                break;
+            default:
+                break;
+        }
+    };
 
     return (
         <>
@@ -45,9 +128,49 @@ const ExternalUserProfile: React.FC<User> = (externalUser) => {
                         </div>
                         <div className="buttons">
                             {isFriend ? (
-                                <button className="unfollow-button">Unfollow</button>
+                                <OpenModalButton
+                                    className="profile-buttons"
+                                    buttonText="Remove Friend"
+                                    modalComponent={
+                                        <RemoveFriendModal
+                                            user={externalUser}
+                                            realtime={false}
+                                            channelName={undefined}
+                                        />
+                                    }
+                                />
+                            ) : externalUser.awaitingRequest ? (
+                                <>
+                                    <p>Friend Request Sent...</p>
+                                    <button
+                                        className="profile-buttons"
+                                        onClick={() => handleRequest(+externalUser.id, 'cancel')}
+                                    >
+                                        Cancel
+                                    </button>
+                                </>
+                            ) : externalUser.pendingRequest ? (
+                                <>
+                                    <button
+                                        className="profile-buttons"
+                                        onClick={() => handleRequest(+externalUser.id, 'accept')}
+                                    >
+                                        Accept
+                                    </button>
+                                    <button
+                                        className="profile-buttons"
+                                        onClick={() => handleRequest(+externalUser.id, 'reject')}
+                                    >
+                                        Reject
+                                    </button>
+                                </>
                             ) : (
-                                <button className="follow-button">Follow</button>
+                                <button
+                                    className="profile-buttons"
+                                    onClick={() => handleRequest(+externalUser.id, 'send')}
+                                >
+                                    Send Friend Request
+                                </button>
                             )}
                         </div>
                     </div>
