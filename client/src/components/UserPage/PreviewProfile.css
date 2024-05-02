@@ -127,7 +127,7 @@
 }
 
 #user-socials-container {
-    display: flex;
-    justify-content: flex-start;
-    margin-top: 20px;
+    display: flex !important;
+    justify-content: flex-start !important;
+    margin-top: 20px !important;
 }
