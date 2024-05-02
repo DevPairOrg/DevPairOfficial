@@ -1,0 +1,48 @@
+.friends-container {
+    display: flex;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin-right: 1rem;
+    margin-bottom: 0;
+}
+
+.friends__dropdown-container {
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    box-shadow: 0px 0px 10px black;
+    min-width: 18rem;
+}
+
+.friends-button {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #323232;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    border: none;
+}
+
+.friend {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #323232;
+    padding: 0.5rem 1rem;
+    border-bottom: 1px solid black;
+    font-size: 1.1rem;
+}
+
+.friends__dropdown-container > div:last-child {
+    border: none;
+}
+
+.friend-pfp {
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+}

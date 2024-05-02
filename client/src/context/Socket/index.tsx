@@ -45,27 +45,27 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
                 timeout: 20000,
             });
 
-            console.log('Creating new socket', newSocket);
+            // console.log('Creating new socket', newSocket);
 
             newSocket.connect(); // Manually connect
 
             newSocket.on('connect', () => {
-                console.log('Socket connected', newSocket);
+                // console.log('Socket connected', newSocket);
                 setError(null);
             });
 
             newSocket.on('custom_error', (error) => {
-                console.error(`Socket error in ${error.route}:`, error);
+                // console.error(`Socket error in ${error.route}:`, error);
                 setError(error.error);
             });
 
             newSocket.on('connect_error', (error) => {
-                console.error('Socket connection error:', error);
+                // console.error('Socket connection error:', error);
                 setError(error.message);
-              });
+            });
 
             newSocket.on('disconnect', (reason) => {
-                console.log('Socket disconnected:', reason);
+                // console.log('Socket disconnected:', reason);
                 setSocket(null);
             });
 
@@ -77,7 +77,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         // Define a cleanup function that disconnects the socket
         const disconnectOnLeave = () => {
             if (socket) {
-                console.log('Running disconnect cleanup function.');
+                // console.log('Running disconnect cleanup function.');
                 socket.emit('user_leaving', { userId: user?.id });
                 socket.disconnect();
                 dispatch(resetGeminiState());
@@ -96,9 +96,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
                     socket.emit('user_leaving', { userId: user?.id });
                     socket.disconnect();
                     dispatch(resetGeminiState());
-                    console.log('Disconnecting user from socket due to route change...');
+                    // console.log('Disconnecting user from socket due to route change...');
                 } else {
-                    console.log('No existing socket, disconnect not necessary.');
+                    // console.log('No existing socket, disconnect not necessary.');
+                    return;
                 }
             }
         }

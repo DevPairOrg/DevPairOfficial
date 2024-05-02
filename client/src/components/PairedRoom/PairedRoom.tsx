@@ -49,7 +49,7 @@ const PairedRoom: React.FC = () => {
   }, [socket, channelName]);
 
   const handleJoinClick = () => {
-    console.log("Join Button Clicked");
+    // console.log("Join Button Clicked");
 
     setLoading(true);
     if (!socket) connectSocket();

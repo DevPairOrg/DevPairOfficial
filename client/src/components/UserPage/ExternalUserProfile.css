@@ -1,0 +1,95 @@
+.external-profile-main {
+    width: 100%;
+    height: 100%;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    box-shadow: 5px 5px 5px black;
+}
+
+.external-profile-container {
+    display: flex;
+    justify-content: space-between;
+    background-color: #323232;
+}
+
+.external-profile-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    background-color: #323232;
+    height: 94.6vh;
+    padding: 1.5rem 3rem;
+}
+
+.external-profile-main .profile-header {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.external-profile-main .back-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+    color: #20CC09;
+    margin-bottom: 2.5rem;
+    font-size: 28px;
+    border: none;
+}
+
+.external-profile-main .user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-around;
+}
+
+.external-profile-main .username {
+    color: #20CC09;
+    font-size: 48px;
+    font-weight: 700;
+}
+.external-profile-main .joined-date {
+    font-size: 24px;
+}
+.external-profile-main .friends-count {
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+}
+.external-profile-main .problems-count {
+    color: white;
+    font-size: 24px;
+    font-weight: 600;
+}
+.external-profile-main .statistics {
+    display: flex;
+    justify-content: space-between;
+    gap: 3rem;
+}
+.external-profile-main .about {
+    font-size: 48px;
+    font-weight: 700;
+}
+.external-profile-main .description {
+    font-size: 18px;
+    font-weight: 400;
+}
+.external-profile-main .follow-button {
+    background-color: #323232;
+    border: 1px solid #20CC09;
+    font-size: 28px;
+    padding: 0.5rem 1.5rem;
+    border-radius: 15px;
+}
+.external-profile-main .unfollow-button {
+    background-color: #20CC09;
+    color: white;
+    font-size: 28px;
+    padding: 0.5rem 1.5rem;
+    border-radius: 15px;
+}
+
+.external-profile-main .buttons {
+    padding-top: 4rem;
+}
