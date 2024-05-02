@@ -1,7 +1,6 @@
 from app.models import db, User, environment, SCHEMA
 from sqlalchemy.sql import text
 import random
-import string
 
 
 # Adds a demo user, you can add other users here if you want
@@ -20,12 +19,18 @@ def seed_users():
         'DSA enthusiast with a knack for solving complex problems.'
     ]
 
-    usernames = set()  # To ensure uniqueness
-    while len(usernames) < 20:  # Generating 20 unique usernames
-        new_username = ''.join(random.choices(string.ascii_letters + string.digits, k=random.randint(4, 7)))
-        usernames.add(new_username)
+    # List of sample names to choose from
+    name_samples = [
+        "Skyler", "Jordan", "Taylor", "Morgan", "Riley",
+        "Casey", "Avery", "Rory", "Jamie", "Alex",
+        "Dakota", "Quinn", "Peyton", "Reese", "Emerson",
+        "Finley", "Rowan", "Blair", "Eden", "Elliot"
+    ]
 
-    for i, username in enumerate(usernames, 1):
+    # Randomly shuffle the list and select the first 20 unique names
+    selected_usernames = set(name_samples[:20])
+
+    for i, username in enumerate(selected_usernames, 1):
         email = f'{username}@example.com'
         pic_url = random.choice(pic_urls)
         about = random.choice(about_texts)
