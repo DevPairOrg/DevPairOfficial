@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useAppSelector } from "../../hooks";
+import { useAppSelector, useAppDispatch } from "../../hooks";
 import { useSocket } from "../../context/Socket";
 import { AgoraRTCProvider } from "agora-rtc-react";
 import useAgoraClient from "../../hooks/Agora/useAgoraClient";
@@ -10,6 +10,7 @@ import Chat from "./Chat/Chat";
 import VideoCams from "./VideoCams/VideoCams";
 import Content from "./Content/Content";
 import { AgoraProvider } from "../../AgoraManager/agoraManager";
+import { setJoinedReducer } from "../../store/pairedContent";
 import "./PairedRoom.css";
 
 const PairedRoom: React.FC = () => {
@@ -25,6 +26,7 @@ const PairedRoom: React.FC = () => {
 
   useSocketListeners(socket, channelName, setChannelName, user);
   useFetchToken({ channelName, setJoined });
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     // Event listener to leave room and close socket when the page refreshes
@@ -65,10 +67,14 @@ const PairedRoom: React.FC = () => {
     socket?.emit("leave_room", { room: channelName });
     socket?.disconnect();
     setJoined(false);
+    dispatch(setJoinedReducer(false))
     setChannelName("");
     setLoading(false);
   };
 
+  if(joined) {
+    dispatch(setJoinedReducer(true))
+  }
 
   return (
     <>

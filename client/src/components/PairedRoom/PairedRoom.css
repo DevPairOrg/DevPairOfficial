@@ -3,13 +3,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  background-image: url('../../assets/background.png');
+  background-size: 50%;
+  background-position: center;
+  background-repeat: repeat;
 }
 
 #video-main-wrapper {
   display: flex;
   flex: 1;
   width: 100%;
-  
+
 }
 
 /** BUTTON STYLING */
@@ -185,7 +189,3 @@
   scale: 1.01;
   border-color: #5684D1;
 }
-
-
-
-

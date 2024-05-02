@@ -56,7 +56,7 @@ function Footer() {
                 </div>
             </div>
             <div className="developer-container">
-                <div className="developer-name">Sebastian Stovell</div>
+                <div className="developer-name">Sebastian Stovall</div>
                 <div className="developer-links-container">
                     <div className="developer-github">
                         <a className="github" href="https://github.com/SebastianStovall" target="_blank">

@@ -6,7 +6,7 @@
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  /*background-color: #323232;*/
+  background-color: #323232;
 }
 
 .landing-page-description {
@@ -26,7 +26,6 @@
   animation: fadeIn .5s ease-in-out 1s forwards;
   width: 40vw;
   height: 30vw;
-  
 }
 
 #header-section{
@@ -66,7 +65,7 @@
 
 #languages-section{
   max-width: 100%;
-  
+
   background: rgb(23,23,23);
   background: linear-gradient(180deg, rgba(23,23,23,0.6460959383753502) 0%, rgba(23,23,23,1) 24%, rgba(25,25,25,1) 79%, rgba(50,50,50,1) 100%);
 }
@@ -105,7 +104,7 @@ h2{
   justify-content: space-evenly;
   margin-top: 1vw;
   width: 100%;
-  
+
   mask-image: linear-gradient(90deg, hsl(0 0% 0% / 0), hsl(0, 0%, 0%) 20%, hsl(0 0% 0% / 1) 80%, hsl(0 0% 0% / 0));
 }
 
@@ -116,7 +115,7 @@ h2{
   justify-content: flex-end;
   gap: 2vw;
   margin-top: 5vh;
-} 
+}
 
 .languages-card img{
   width: 12vw;
@@ -178,7 +177,7 @@ h2{
 
   width: 40%;
   margin: 3vw 5% 0% 0%;
-  
+
 }
 
 .benefit-card{
@@ -259,7 +258,7 @@ h2{
 
   .landing-page-description {
     max-width: 100%; /* Allow both description and image to take full width on small screens */
-  
+
   }
 
   .landing-text-one {
@@ -312,7 +311,7 @@ h2{
 
   #call-to-action p{
     text-align: center;
-    
+
   }
 
   .landing-page-get-started{

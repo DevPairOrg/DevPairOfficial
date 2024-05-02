@@ -11,6 +11,7 @@ import agora from '../../assets/images/Agora.png'
 import gemini from '../../assets/images/gemini-logo.png'
 
 {/*Images*/}
+import backgroundOverlay from '../../assets/background.png'
 import bannerImg from '../../assets/images/banner-img.png'
 import meetFriends from '../../assets/images/meet-friends.png'
 import improveSocial from '../../assets/images/improve-socials.png'
@@ -48,11 +49,11 @@ function LandingPage() {
     return (
         <>
             <main className="landing-page">
-                <section id='header-section'>
+                <section id='header-section' style={{backgroundImage: `url(${backgroundOverlay})`, backgroundSize: '50%', backgroundPosition: 'center', backgroundRepeat: 'repeat'}}>
                     <div id="imgBanner">
                         <img src={bannerImg} alt="Image of a circle filled with wavy green lines. On top of it there are simple icons representing people connected via a straight line downward to the lines inside the circle." />
                     </div>
-                    
+
 
                     <div className="landing-page-description">
                         <PageHeader title="DevPair!" />
@@ -78,8 +79,8 @@ function LandingPage() {
                         )}
                     </div>
                 </section>
-                
-                <section id="languages-section"> 
+
+                <section id="languages-section">
                     <div id='language-section-description'>
                             <h2>Technologies we use</h2>
 
@@ -115,7 +116,7 @@ function LandingPage() {
                     </div>
                 </section>
 
-                 
+
                 <section id='benefits-section'>
 
                     <div id='benefits-section-description'>
@@ -125,7 +126,7 @@ function LandingPage() {
 
                         <p>Because of that, we developed a streamlined way to video call, chat and befriend other developers, <span className="accent"> whenever and wherever</span> you want, in the hopes of not only <span className="accent">improving</span> your <span className="accent">coding</span> skills but also your <span className="accent">social</span> skills, opening up new professional and personal <span className="accent">opportunities!</span></p>
                     </div>
-                    
+
                     <div id='benefits-section-cards'>
                         <div className='benefit-card'>
                             <img alt='Green lined icon image depicting two simple humanoid figures high-fiving.' src={meetFriends}></img>
@@ -156,7 +157,7 @@ function LandingPage() {
                             <h2>Join our community!</h2>
                             <p>Start expanding your horizons today</p>
                         </div>
-                        
+
                         {loggedIn ? (
                                 <button className="landing-page-get-started" onClick={handleJoinRoom}>
                                     Join a Room!
@@ -169,7 +170,7 @@ function LandingPage() {
                     </div>
 
                 </section>
-                   
+
                 <Footer />
             </main>
         </>

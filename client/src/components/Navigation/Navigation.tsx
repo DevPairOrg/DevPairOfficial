@@ -6,6 +6,8 @@ import './Navigation.css';
 import { logout } from '../../store/session';
 import { useAppSelector } from '../../hooks';
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import backgroundOverlay from '../../assets/background.png'
 
 interface NavigationProps {
     isLoaded: boolean;
@@ -13,8 +15,10 @@ interface NavigationProps {
 
 function Navigation({ isLoaded }: NavigationProps) {
     // Assuming `state.session.user` is of type User | null
+    const location = useLocation()
     const sessionUser = useAppSelector((state: RootState) => state.session.user);
     const currentRoute = useAppSelector((state) => state.userPath.currentPath);
+    const hasJoined = useAppSelector((state) => state.pairedContent.hasJoined)
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     let paramsUserId;
@@ -50,7 +54,7 @@ function Navigation({ isLoaded }: NavigationProps) {
     };
 
     return (
-        <header className="nav-container">
+        <header className="nav-container" style={{backgroundImage: `${ (location.pathname === '/' || (location.pathname === '/code-collab' && hasJoined === false) ) ? `url(${backgroundOverlay})` : ''}`, backgroundSize: '50%', backgroundPosition: 'center', backgroundRepeat: 'repeat'}}>
             <div className="nav-links">
                 <div className="nav-links-home">
                     <NavLink to="/" className="nav-links-home">

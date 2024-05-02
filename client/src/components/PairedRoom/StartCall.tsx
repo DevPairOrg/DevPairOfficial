@@ -10,6 +10,7 @@ const StartCall: React.FC<StartCallProps> = ({ handleJoinClick, loading }) => {
         <>
             <main id="video-main-wrapper">
                 <div className="not-joined-wrapper">
+                    {/* style={{backgroundImage: `url(${backgroundOverlay})`, backgroundSize: '50%', backgroundPosition: 'center', backgroundRepeat: 'repeat'}} */}
                     <h1>Get Started with Video Calling</h1>
                     <div id="join-call-cat-image">
                         <img src={PairEntryImg} alt="loading-screen" />
