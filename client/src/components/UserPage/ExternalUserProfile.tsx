@@ -1,37 +1,63 @@
 import SocialLinksButtons from './SocialLinksButtons';
 import './ExternalUserProfile.css';
 import { User } from '../../interfaces/user';
+import { useAppSelector } from '../../hooks';
+import { useEffect, useState } from 'react';
+import { IoIosArrowBack } from 'react-icons/io';
 
 const ExternalUserProfile: React.FC<User> = (externalUser) => {
+    const sessionUser = useAppSelector((s) => s.session.user);
+    const [isFriend, setIsFriend] = useState(false);
+    const friends = sessionUser?.friends?.filter((friend) => friend.id == externalUser.id) || [];
+
+    useEffect(() => {
+        setIsFriend(friends.length > 0);
+    }, [friends.length]);
+
     return (
         <>
-            <main className="external-profile-main">
-                <div className="external-profile-container">
-                    <h1>External User Profile</h1>
-                    <div>
-                        <button>[Arrowleft] Go Back</button>
-                        <div className="section-profile-header">
-                            <img src="#" alt="profile-picture"></img>
-                            <div>
-                                <div>Friend Name</div>
-                                <div>Joined Date</div>
-                                <div>
-                                    <div># of Friends</div>
-                                    <div># of Problems Solved</div>
+            <div className="external-profile-main">
+                <div className="external-profile-wrapper">
+                    <div className="external-profile-container">
+                        <div>
+                            <button className="back-button">
+                                <IoIosArrowBack style={{ fill: '#20CC09' }} />
+                                <span>Go Back</span>
+                            </button>
+                            <div className="profile-header">
+                                <img
+                                    src={externalUser.picUrl}
+                                    alt="profile-picture"
+                                    style={{ width: '250px', height: '250px', borderRadius: '10%' }}
+                                />
+                                <div className="user-info">
+                                    <div className="username">{externalUser?.username}</div>
+                                    <div className="joined-date">Joined July 2024</div>
+                                    <div className="statistics">
+                                        <div className="friends-count">{externalUser?.friends?.length} Friends</div>
+                                        <div className="problems-count">
+                                            {(externalUser as any)?.completedLeetcodeProblems?.split(',').length - 1}{' '}
+                                            Problems Solved
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                        <div className="buttons">
+                            {isFriend ? (
+                                <button className="unfollow-button">Unfollow</button>
+                            ) : (
+                                <button className="follow-button">Follow</button>
+                            )}
+                        </div>
                     </div>
-                    <button>Follow</button>
+                    <div>
+                        <div className="about">About Me:</div>
+                        <div className="description">{externalUser?.about}</div>
+                    </div>
+                    <SocialLinksButtons {...externalUser} />
                 </div>
-                <h1>About Me:</h1>
-                <div>
-                    Lorem ipsum dolor sit amet, consectetur adipisicing elit. Doloremque voluptatem placeat delectus
-                    ipsa saepe voluptas molestias sapiente distinctio tenetur fuga? Impedit praesentium officiis
-                    excepturi. Rerum iure earum dolor aliquam nemo?
-                </div>
-                <SocialLinksButtons {...externalUser} />
-            </main>
+            </div>
         </>
     );
 };
