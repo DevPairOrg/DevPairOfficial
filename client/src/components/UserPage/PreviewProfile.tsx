@@ -10,52 +10,41 @@ function PreviewProfile({ setEditMode }: PreviewProfileProps) {
     const sessionUser = useAppSelector((state) => state.session.user);
 
     return (
-        <div id="profile-main">
-            <div id="profile-header">
-                <p>Profile Preview</p>
-                <button className="profile-buttons" onClick={() => setEditMode(true)}>
-                    Edit Profile
-                </button>
-            </div>
+      <div id="profile-main">
 
       <div id="profile-split">
         <div id="profile-content">
           {sessionUser && (
             <div id="info-container">
-              <div id="pfp">
-                <img
-                  src={
-                    sessionUser.picUrl
-                      ? sessionUser.picUrl
-                      : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
-                  }
-                  alt="pfp"
-                ></img>
+              <div>
+                <div id="pfp">
+                  <img
+                    src={
+                      sessionUser.picUrl
+                        ? sessionUser.picUrl
+                        : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
+                    }
+                    alt="pfp"
+                  ></img>
+                </div>
+                <div id="info">
+                  <span>{sessionUser.username}</span>
+                  <span>Joined July 2022</span>
+                  <div className="profile-buttons-container">
+                    <span>
+                      {sessionUser.friends.length ?? 0} Friends
+                    </span>
+                    <span>
+                      0 problems solved
+                  </span>
+                </div>
               </div>
-              <div id="info">
-                <span>{sessionUser.username}</span>
-                <span>Joined July 2022</span>
-                <span>
-                  {sessionUser.friends.length ?? 0} Friends
-                </span>
-                <div className="profile-buttons-container">
-                <button
-                  className="profile-buttons"
-                  onClick={() =>
-                    alert("This is a preview, you cannot message yourself")
-                  }
-                >
-                  DM
+            </div>
+
+              <div className='edit-profile-button'>
+                <button className="profile-buttons" onClick={() => setEditMode(true)}>
+                  Edit Profile
                 </button>
-                <button
-                  className="profile-buttons"
-                  onClick={() =>
-                    alert("This is a preview, you cannot follow yourself")
-                  }
-                >
-                  Follow
-                </button>
-              </div>
               </div>
 
             </div>

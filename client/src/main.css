@@ -62,8 +62,8 @@ body::before {
 
 main {
   flex: 1;
-  width: 100%;
-  max-height: 90vh;;
+  /* width: 100%; */
+  /* max-height: 90vh; */
 }
 
 button {
