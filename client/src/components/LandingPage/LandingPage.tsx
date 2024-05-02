@@ -8,6 +8,7 @@ import react from '../../assets/images/react-logo.png'
 import python from '../../assets/images/python-logo.png'
 import redux from '../../assets/images/redux-logo.png'
 import agora from '../../assets/images/Agora.png'
+import gemini from '../../assets/images/gemini-logo.png'
 
 {/*Images*/}
 import bannerImg from '../../assets/images/banner-img.png'
@@ -88,7 +89,7 @@ function LandingPage() {
                     <div id='languages-lineup'>
                         <div className='languages-card'>
                             <img alt='Flask icon' src={flask}  id='flask'/>
-                            <p>Flask</p>
+                            <p>Flask Socket.io</p>
                         </div>
                         <div className='languages-card'>
                             <img alt='React Icon' src={react}  />
@@ -103,9 +104,14 @@ function LandingPage() {
                             <p>Redux</p>
                         </div>
                         <div className='languages-card'>
+                            <img alt='Gemini Icon' src={gemini} id='gemini'/>
+                            <p>Gemini</p>
+                        </div>
+                        <div className='languages-card'>
                             <img alt='Agora Icon' src={agora} id='agora' />
                             <p>Agora</p>
                         </div>
+
                     </div>
                 </section>
 
