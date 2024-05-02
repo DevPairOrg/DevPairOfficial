@@ -1,11 +1,11 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { RootState } from '../../store/index';
-import ProfileButton from './ProfileButton';
 import { useAppDispatch } from '../../hooks';
 import name from '../../assets/devpair-logos/svg/devpair-high-resolution-logo-transparent.svg';
 import './Navigation.css';
 import { logout } from '../../store/session';
 import { useAppSelector } from '../../hooks';
+import { useEffect, useState } from 'react';
 
 interface NavigationProps {
     isLoaded: boolean;
@@ -17,7 +17,18 @@ function Navigation({ isLoaded }: NavigationProps) {
     const currentRoute = useAppSelector((state) => state.userPath.currentPath);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    // console.log(currentRoute);
+    let paramsUserId;
+    const [isUserDashboard, setIsUserDashBoard] = useState(paramsUserId == sessionUser?.id || false);
+
+    useEffect(() => {
+        const extractUserIdFromParams = () => {
+            if (currentRoute?.includes('/users/')) {
+                paramsUserId = currentRoute.split('/')[2];
+                setIsUserDashBoard(paramsUserId == sessionUser?.id);
+            }
+        };
+        extractUserIdFromParams();
+    }, [sessionUser, currentRoute]);
 
     //sessionUser is returning true even if there is no user logged in because it is returning the user object { errors: [] }
     //so we need to check if there is a user object and if there are no errors in the user object
@@ -56,10 +67,24 @@ function Navigation({ isLoaded }: NavigationProps) {
                                         <NavLink to={`/users/${sessionUser.id}`}>Dashboard</NavLink>
                                     </div>
                                 </>
+                            ) : isUserDashboard ? (
+                                <>
+                                    <div>
+                                        <NavLink to="/">Home</NavLink>
+                                    </div>
+                                    <div>
+                                        <NavLink to="mailto:support@devpair.com?subject=Contact%20Us!">
+                                            Contact Us
+                                        </NavLink>
+                                    </div>
+                                </>
                             ) : (
                                 <>
                                     <div>
                                         <NavLink to="/">Home</NavLink>
+                                    </div>
+                                    <div onClick={handleDashBoardButton}>
+                                        <NavLink to={`/users/${sessionUser.id}`}>Dashboard</NavLink>
                                     </div>
                                     <div>
                                         <NavLink to="mailto:support@devpair.com?subject=Contact%20Us!">
