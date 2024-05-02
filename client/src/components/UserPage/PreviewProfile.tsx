@@ -10,31 +10,36 @@ function PreviewProfile({ setEditMode }: PreviewProfileProps) {
     const sessionUser = useAppSelector((state) => state.session.user);
 
     return (
-        <div id="profile-main">
-            <div id="profile-split">
-                <div id="profile-content">
-                    {sessionUser && (
-                        <div id="info-container">
-                            <div>
-                                <div id="pfp">
-                                    <img
-                                        src={
-                                            sessionUser.picUrl
-                                                ? sessionUser.picUrl
-                                                : 'https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740'
-                                        }
-                                        alt="pfp"
-                                    ></img>
-                                </div>
-                                <div id="info">
-                                    <span>{sessionUser.username}</span>
-                                    <span>Joined July 2022</span>
-                                    <div className="profile-buttons-container">
-                                        <span>{sessionUser.friends.length ?? 0} Friends</span>
-                                        <span>0 problems solved</span>
-                                    </div>
-                                </div>
-                            </div>
+      <div id="profile-main">
+
+      <div id="profile-split">
+        <div id="profile-content">
+          {sessionUser && (
+            <div id="info-container">
+              <div>
+                <div id="pfp">
+                  <img
+                    src={
+                      sessionUser.picUrl
+                        ? sessionUser.picUrl
+                        : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
+                    }
+                    alt="pfp"
+                  ></img>
+                </div>
+                <div id="info">
+                  <span>{sessionUser.username}</span>
+                  <span>Joined July 2022</span>
+                  <div className="profile-buttons-container">
+                    <span>
+                      {sessionUser.friends.length ?? 0} Friends
+                    </span>
+                    <span>
+                      {(sessionUser as any)?.completedLeetcodeProblems.split(",").length - 1} completed problems
+                  </span>
+                </div>
+              </div>
+            </div>
 
                             <div className="edit-profile-button">
                                 <button className="profile-buttons" onClick={() => setEditMode(true)}>

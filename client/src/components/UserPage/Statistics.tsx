@@ -1,11 +1,14 @@
+import { useAppSelector } from '../../hooks'
 import './statistics.css'
 
 function Statistics() {
+    const sessionUser = useAppSelector((state) => state.session.user);
+
     return (
         <div id="statistics-main">
             <div className='statistics-info-section'>
                 <div>
-                    <h2>54</h2>
+                    <h2>{(sessionUser as any)?.completedLeetcodeProblems.split(",").length - 1}</h2>
                     <p>Problems Solved</p>
                 </div>
                 <div>
