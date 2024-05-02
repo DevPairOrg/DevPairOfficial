@@ -8,10 +8,10 @@ class FriendshipStatus(Enum):
     REJECTED = 'rejected'
 
 class FriendRequest(db.Model):
-    __tablename__ = 'friend_requests'  # Explicit table name
+    __tablename__ = 'friend_requests' 
 
     if environment == "production":
-        __table_args__ = {'schema': SCHEMA}  # Optional schema for production
+        __table_args__ = {'schema': SCHEMA}
 
     id = db.Column(db.Integer, primary_key=True)
     sender_id = db.Column(db.Integer, ForeignKey(add_prefix_for_prod('users.id')))
@@ -30,7 +30,6 @@ friends_association = db.Table(
     'friends_association',
     db.Column('user_id', db.Integer, ForeignKey(add_prefix_for_prod('users.id')), primary_key=True),
     db.Column('friend_id', db.Integer, ForeignKey(add_prefix_for_prod('users.id')), primary_key=True),
-    # Additional columns if needed (e.g., date_added)
 )
 
 if environment == "production":

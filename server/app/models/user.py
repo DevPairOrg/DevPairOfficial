@@ -2,6 +2,7 @@ from .db import db, environment, SCHEMA, add_prefix_for_prod
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 import uuid
+from .friends import FriendshipStatus
 
 
 class User(db.Model, UserMixin):
@@ -56,7 +57,7 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    def to_dict(self, include_relationships=True, include_friend_requests=False):
+    def to_dict(self, other_user=None, include_relationships=True, include_friend_requests=False, check_friend=False):
         data = {
             'id': self.id,
             'username': self.username,
@@ -78,6 +79,25 @@ class User(db.Model, UserMixin):
         if include_friend_requests:
             data['sentRequests'] = {request.id: request.receiver.to_dict(include_relationships=False) for request in self.sent_friend_requests}
             data['receivedRequests'] = {request.id: request.sender.to_dict(include_relationships=False) for request in self.received_friend_requests}
+            data['totalPending'] = len(self.sent_friend_requests) + len(self.received_friend_requests)
 
+
+        if check_friend:
+            data['isFriend'] = other_user in self.friends
+            data['awaitingRequest'] = other_user in [request.sender for request in self.received_friend_requests]
+            data['pendingRequest'] =  other_user in [request.receiver for request in self.sent_friend_requests]
 
         return data
+    
+    def is_friends(self, other_user):
+        """
+        Checks if the current user is friends with another user.
+
+        Args:
+            other_user (User): The user to check friendship with.
+
+        Returns:
+            bool: True if friends, False otherwise.
+        """
+
+        return other_user in self.friends

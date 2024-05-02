@@ -1,134 +1,252 @@
-import { useState, useCallback, MouseEventHandler } from 'react';
-import CodeMirror from '@uiw/react-codemirror';
-import { javascript } from '@codemirror/lang-javascript';
-import { python } from '@codemirror/lang-python';
-import { dracula } from '@uiw/codemirror-theme-dracula';
-import { parsedData } from '../../interfaces/gemini';
-import './CodeMirror.css';
+import { useState, useEffect, useCallback } from "react";
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { python } from "@codemirror/lang-python";
+import { dracula } from "@uiw/codemirror-theme-dracula";
+import { parsedData } from "../../interfaces/gemini";
+import { useSocket } from "../../context/Socket";
+import useGeminiDSARequest from "../../hooks/Gemini/useGeminiDSARequest";
+import { ToastContainer } from "react-toastify";
+
+
+import {
+  handleJavascriptButton,
+  handlePythonButton,
+  handleJudgeSubmission,
+  JudgeResults,
+  seperateLogsAndUserOutputFromStdout,
+  assertResults,
+  allTestCasesPassed,
+  addDSAProblemToUserSolved,
+} from "../../utility/CodeMirrorHelpers/codeMirrorhelpers";
+
+import { useModal } from "../../context/Modal/Modal";
+import ConsoleOutput from "./ConsoleOutput";
+import GeminiSpinner from "../../assets/icons/svg/google-gemini-icon.svg";
+import "./CodeMirror.css";
+import { useAppSelector } from "../../hooks";
+import Dropdown from "./LanguageDropdown";
 
 function IDE(props: parsedData) {
-    const { problemName, problemPrompt, testCases, pythonUnitTest, jsUnitTest, defaultPythonFn, defaultJsFn } = props;
+  const {
+    problemName,
+    problemPrompt,
+    testCases,
+    defaultPythonFn,
+    defaultJsFn,
+    channelName,
+    loading,
+    setLoading,
+  } = props;
+  const { socket, error } = useSocket();
+  const { handleGeminiDSARequest } = useGeminiDSARequest(channelName);
 
-    const [value, setValue] = useState<string | undefined>(defaultPythonFn);
-    const [userResults, setUserResults] = useState<boolean[]>([]);
-    const [language, setLanguage] = useState<string>('python');
+  const user = useAppSelector((state) => state.session.user);
+  const { setModalContent } = useModal();
 
-    const onChange = useCallback((val: string) => {
-        // console.log('val:', val);
-        setValue(val);
-    }, []);
+  const [value, setValue] = useState<string | undefined>(defaultPythonFn); // value of user code inside of IDE
+  const [language, setLanguage] = useState<string>("python"); // language for IDE
 
-    const handleSubmission = async () => {
-        try {
-            const response = await fetch('/api/problem/test', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Accept: 'application/json',
-                },
-                body: JSON.stringify({
-                    code: value,
-                    language: language,
-                    problemUnitTest: language === 'python' ? pythonUnitTest : jsUnitTest,
-                }),
-            });
+  const [userResults, setUserResults] = useState<JudgeResults | null>(null); // user results object on submission
+  const [testCaseView, setTestCaseView] = useState<number | null>(null); // switch which test case your looking at
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
+  useEffect(() => {
+    // update modal content when needed
+    if (userResults && testCaseView) {
+      openConsoleOutputModal();
+    }
+  }, [testCaseView, userResults]);
 
-            const data = await response.json();
-            // console.log('response from backend', data);
+  if (error) console.log("Error in IDE Component: ", error);
+  // useEffect(() => {
+  //   if (!socket) {
+  //     connectSocket();
+  //   }
+  // }, [socket, connectSocket]);
 
-            if (data.testResults && typeof data.testResults === 'object') {
-                const testResultsArray = Object.values(data.testResults);
+  const openConsoleOutputModal = () => {
+    // opens the console output modal
 
-                // Ensure all elements are boolean before setting the state
-                const areAllBooleans = testResultsArray.every((result) => typeof result === 'boolean');
-                if (areAllBooleans) {
-                    setUserResults(testResultsArray as boolean[]);
-                } else {
-                    console.error('Not all test results are booleans.');
-                }
-            }
-        } catch (error) {
-            console.error('An error occurred:', error);
-        }
-    };
-
-    // useEffect(() => {
-    //     console.log('userResults', userResults);
-    // });
-
-    // Python or Javascript User Options
-    const handlePythonButton: MouseEventHandler<HTMLButtonElement> = (e) => {
-        e.preventDefault();
-        setLanguage('python');
-        setValue(defaultPythonFn);
-    };
-    const handleJavascriptButton: MouseEventHandler<HTMLButtonElement> = (e) => {
-        e.preventDefault();
-        setLanguage('javascript');
-        setValue(defaultJsFn);
-    };
-
-    return (
-        <>
-            <div id="ide-container">
-                <div>
-                    <div>Problem Name: {problemName && problemName}</div>
-                    <div>Prompt: {problemPrompt && problemPrompt}</div>
-                    <pre>{testCases && testCases}</pre>
-                </div>
-                <div>
-                    <div
-                        style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            marginBottom: '5px',
-                            height: 'auto',
-                        }}
-                    >
-                        <div id="user-results">
-                            {userResults && userResults[0] === true ? (
-                                <div>✔ Test Case 1</div>
-                            ) : (
-                                <div>❌ Test Case 1</div>
-                            )}
-                            {userResults && userResults[1] === true ? (
-                                <div>✔ Test Case 2</div>
-                            ) : (
-                                <div>❌ Test Case 2</div>
-                            )}
-                            {userResults && userResults[2] === true ? (
-                                <div>✔ Test Case 3</div>
-                            ) : (
-                                <div>❌ Test Case 3</div>
-                            )}
-                        </div>
-                        <div style={{ display: 'flex', gap: '5px' }}>
-                            <div>Language: </div>
-                            <button onClick={handlePythonButton} id="python-button">
-                                Python
-                            </button>
-                            <button onClick={handleJavascriptButton} id="javascript-button">
-                                JavaScript
-                            </button>
-                        </div>
-                    </div>
-                    <CodeMirror
-                        value={value}
-                        height="400px"
-                        extensions={language === 'python' ? [python()] : [javascript({ jsx: true })]}
-                        onChange={onChange}
-                        theme={dracula}
-                    />
-                    <button onClick={handleSubmission} id="ide-submit-button">
-                        Submit!
-                    </button>
-                </div>
-            </div>
-        </>
+    setModalContent(
+      <ConsoleOutput
+        userResults={userResults}
+        testCaseView={testCaseView}
+        setTestCaseView={setTestCaseView}
+      />
     );
+  };
+
+  // handle received
+  const handleIDEReceived = useCallback((data: { newValue: string }) => {
+    setValue(data.newValue);
+  }, []);
+
+  // handle send
+  const updateIDERealTime = useCallback(
+    (value: string) => {
+      socket?.emit("update_IDE", {
+        newValue: value,
+        room: channelName as string,
+      });
+    },
+    [socket, value, channelName]
+  );
+
+  useEffect(() => {
+    if (socket && !socket.hasListeners("update_IDE_received")) {
+      socket.on("update_IDE_received", handleIDEReceived);
+
+      // Clean up: Detach the event listener and dispatch action to clear states messages when unmounting
+      return () => {
+        socket.off("update_IDE_received", handleIDEReceived);
+      };
+    }
+  }, [handleIDEReceived, socket]);
+
+  const onChange = (value: string) => {
+    // NOTE* onChange function for react code mirror automatically takes in value param which is the IDE value string
+    setValue(value);
+    updateIDERealTime(value);
+  };
+
+  return (
+    <>
+      <ToastContainer
+        position="bottom-left"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="light"
+      />
+      <div id="ide-container">
+        <div id="generated-problem-container">
+          <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
+            {problemName && problemName}
+          </div>
+          <div style={{ marginBottom: "5px" }}>
+            {problemPrompt && problemPrompt}
+          </div>
+          <pre>
+            {testCases &&
+              testCases.map((entry) => {
+                return (
+                  <>
+                    <div key={Math.random()}>
+                      <span style={{ fontWeight: "bold" }}>INPUT:</span>{" "}
+                      {entry.INPUT}
+                    </div>
+                    <div key={Math.random()}>
+                      <span style={{ fontWeight: "bold" }}>OUTPUT:</span>{" "}
+                      {entry.OUTPUT}
+                    </div>
+                  </>
+                );
+              })}
+          </pre>
+        </div>
+        <div id="IDE-container">
+          <div
+            id="language-buttons"
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              height: "auto",
+              padding: "1vw .5rem",
+            }}
+          >
+            <Dropdown
+              options={["Python", "JavaScript"]}
+              defaultOption="Python"
+              handleSelect={(option) => {
+                switch (option) {
+                  case "Python":
+                    handlePythonButton(setLanguage, setValue, defaultPythonFn);
+                    break;
+                  case "JavaScript":
+                    handleJavascriptButton(setLanguage, setValue, defaultJsFn);
+                    break;
+                  default:
+                    break;
+                }
+              }}
+            />
+            <button
+              id="gemini-regenerate-button"
+              onClick={async () => {
+                if (setLoading) {
+                  setLoading(true);
+                  await handleGeminiDSARequest();
+                  setLoading(false);
+                }
+              }}
+              style={{
+                backgroundColor: `transparent`,
+                cursor: `${loading ? "default" : "pointer"}`,
+              }}
+              disabled={loading}
+            >
+              {!loading ? "Regenerate with Gemini" : "Gemini is Generating..."}
+              {
+                <img
+                  className={loading ? "spinning-gemini" : "gemini-icon"}
+                  src={GeminiSpinner}
+                  alt="loading gemini problem"
+                />
+              }
+            </button>
+            <div id="ide-button-container">
+              <button
+                onClick={async () => {
+                  const judgeResults: JudgeResults | undefined =
+                    await handleJudgeSubmission(value, language, testCases);
+                  if (judgeResults) {
+                    // manually seperate out debugging statements and result assertions
+                    seperateLogsAndUserOutputFromStdout(judgeResults);
+                    assertResults(judgeResults);
+
+                    // handle ConsoleOutput modal
+                    setUserResults(judgeResults);
+                    openConsoleOutputModal();
+                    setTestCaseView(1);
+
+                    // if user has solved problem, append it to the user's solved
+                    if (allTestCasesPassed(judgeResults)) {
+                      addDSAProblemToUserSolved(user?.id, problemName);
+                    }
+                  }
+                }}
+                id="ide-submit-button"
+              >
+                Submit
+              </button>
+              {userResults && (
+                <button
+                  onClick={openConsoleOutputModal}
+                  className="show-stoudt-results"
+                >
+                  Show Results...
+                </button>
+              )}
+            </div>
+          </div>
+          <CodeMirror
+            value={value}
+            height="45vh"
+            extensions={
+              language === "python" ? [python()] : [javascript({ jsx: true })]
+            }
+            onChange={onChange}
+            theme={dracula}
+          />
+        </div>
+      </div>
+    </>
+  );
 }
+
 export default IDE;

@@ -1,7 +1,6 @@
 from app.models import db, User, environment, SCHEMA
 from sqlalchemy.sql import text
 import random
-import string
 
 
 # Adds a demo user, you can add other users here if you want
@@ -20,12 +19,18 @@ def seed_users():
         'DSA enthusiast with a knack for solving complex problems.'
     ]
 
-    usernames = set()  # To ensure uniqueness
-    while len(usernames) < 20:  # Generating 20 unique usernames
-        new_username = ''.join(random.choices(string.ascii_letters + string.digits, k=random.randint(4, 7)))
-        usernames.add(new_username)
+    # List of sample names to choose from
+    name_samples = [
+        "Skyler", "Jordan", "Taylor", "Morgan", "Riley",
+        "Casey", "Avery", "Rory", "Jamie", "Alex",
+        "Dakota", "Quinn", "Peyton", "Reese", "Emerson",
+        "Finley", "Rowan", "Blair", "Eden", "Elliot"
+    ]
 
-    for i, username in enumerate(usernames, 1):
+    # Randomly shuffle the list and select the first 20 unique names
+    selected_usernames = set(name_samples[:20])
+
+    for i, username in enumerate(selected_usernames, 1):
         email = f'{username}@example.com'
         pic_url = random.choice(pic_urls)
         about = random.choice(about_texts)
@@ -48,7 +53,11 @@ def seed_users():
     demo = User(
         username='Demo', email='demo@aa.io', password='password', pic_url='https://images.unsplash.com/photo-1618641986557-1ecd230959aa?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', about='Aute commodo est reprehenderit consequat incididunt excepteur. Commodo excepteur labore culpa non amet consequat Lorem ex veniam in veniam ex laboris excepteur. Dolor et cupidatat commodo enim irure ea et cillum excepteur minim cupidatat officia. Eiusmod quis sit mollit ullamco laborum consequat pariatur. Excepteur cupidatat quis commodo minim veniam. Ut ad occaecat nisi elit cupidatat veniam commodo nisi cupidatat. Labore ea ullamco ad nostrud non excepteur.', link_github='https://i.imgur.com/1eLi7iL.jpeg', link_linkedin='https://i.imgur.com/1eLi7iL.jpeg', link_portfolio='https://i.imgur.com/1eLi7iL.jpeg', link_leetcode='https://i.imgur.com/1eLi7iL.jpeg')
 
+    demo2 = User(
+        username='Test', email='test@aa.io', password='password', pic_url='https://images.unsplash.com/photo-1618641986557-1ecd230959aa?q=80&w=2574&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', about='Aute commodo est reprehenderit consequat incididunt excepteur. Commodo excepteur labore culpa non amet consequat Lorem ex veniam in veniam ex laboris excepteur. Dolor et cupidatat commodo enim irure ea et cillum excepteur minim cupidatat officia. Eiusmod quis sit mollit ullamco laborum consequat pariatur. Excepteur cupidatat quis commodo minim veniam. Ut ad occaecat nisi elit cupidatat veniam commodo nisi cupidatat. Labore ea ullamco ad nostrud non excepteur.', link_github='https://i.imgur.com/1eLi7iL.jpeg', link_linkedin='https://i.imgur.com/1eLi7iL.jpeg', link_portfolio='https://i.imgur.com/1eLi7iL.jpeg', link_leetcode='https://i.imgur.com/1eLi7iL.jpeg')
+
     db.session.add(demo)
+    db.session.add(demo2)
 
     db.session.commit()
 

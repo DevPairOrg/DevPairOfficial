@@ -36,12 +36,13 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
     const connectSocket = useCallback(() => {
         if (user && user.id && !socket) {
             const newSocket: Socket<ServerToClientEvents, ClientToServerEvents> = io({
-                transports: ['websocket', 'polling'],
+                transports: ['polling', 'websocket'],
                 reconnection: true,
                 reconnectionAttempts: 5,
                 reconnectionDelay: 2000,
                 reconnectionDelayMax: 5000,
                 autoConnect: false, // Change to false to not auto-connect on instantiation
+                timeout: 20000,
             });
 
             // console.log('Creating new socket', newSocket);
@@ -54,12 +55,17 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
             });
 
             newSocket.on('custom_error', (error) => {
-                console.error('Socket error:', error);
+                // console.error(`Socket error in ${error.route}:`, error);
                 setError(error.error);
             });
 
+            newSocket.on('connect_error', (error) => {
+                // console.error('Socket connection error:', error);
+                setError(error.message);
+            });
+
             newSocket.on('disconnect', (reason) => {
-                console.log('Socket disconnected:', reason);
+                // console.log('Socket disconnected:', reason);
                 setSocket(null);
             });
 
@@ -71,7 +77,7 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
         // Define a cleanup function that disconnects the socket
         const disconnectOnLeave = () => {
             if (socket) {
-                console.log('Running disconnect cleanup function.');
+                // console.log('Running disconnect cleanup function.');
                 socket.emit('user_leaving', { userId: user?.id });
                 socket.disconnect();
                 dispatch(resetGeminiState());
@@ -90,9 +96,10 @@ export const SocketProvider: React.FC<SocketProviderProps> = ({ children }) => {
                     socket.emit('user_leaving', { userId: user?.id });
                     socket.disconnect();
                     dispatch(resetGeminiState());
-                    console.log('Disconnecting user from socket due to route change...');
+                    // console.log('Disconnecting user from socket due to route change...');
                 } else {
-                    console.log('No existing socket, disconnect not necessary.');
+                    // console.log('No existing socket, disconnect not necessary.');
+                    return;
                 }
             }
         }

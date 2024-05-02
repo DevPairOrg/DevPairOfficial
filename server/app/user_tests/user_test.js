@@ -1,25 +1,29 @@
-function isPalindrome(x) {
+function removeDuplicates(array) {
     // Your code goes here
-   if (x < 0) return false;
-    let reverse = 0, y = x;
-    while (y > 0) {
-        const lastDigit = y % 10;
-        reverse = (reverse * 10) + lastDigit;
-        y = Math.floor(y / 10);
-    }
-    console.log('test', reverse)
-    return x === reverse;
+    return "ASDFASDASD"
 }
 
 
-const testCases = [
-    { input: 121, expected: true },
-    { input: -121, expected: false },
-    { input: 10, expected: false }
-];
+function runTests() {
+    const testResults = {}
 
-testCases.forEach(({ input, expected }, index) => {
-    const result = isPalindrome(input);
-    console.assert(result === expected, `Test case ${index + 1} failed`);
-    console.log(`Test case ${index + 1}`, result === expected);
-});
+    const testCases = [
+        {input: [1,1,2], expected: 2},
+        {input: [0,0,1,1,1,2,2,3,3,4], expected: 5},
+        {input: [1,2,3], expected: 3}
+    ];
+
+    function arraysEqual(a, b) {
+        return a.length === b.length && a.every((value, index) => value === b[index]);
+    }
+
+    testCases.forEach(({ input, expected }, index) => {
+        const result = removeDuplicates(input);
+        testResults[`testCase${index + 1}`] = {userOutput: result, expected: expected, assert: arraysEqual(result, expected)}
+    });
+
+    return JSON.stringify(testResults)
+}
+
+const testResults = runTests()
+console.log(testResults)

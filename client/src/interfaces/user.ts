@@ -1,6 +1,10 @@
-import { FollowingObject, FollowingState } from './following';
+import { FollowingState } from './following';
 
 type UserWithoutFriends = Omit<User, 'friends'>;
+
+export interface Request {
+    [requestId: number]: UserWithoutFriends
+}
 
 export interface User {
     id: string;
@@ -17,15 +21,18 @@ export interface User {
     portfolio: string;
     leetcode: string;
 
-    following: FollowingObject[];
-    followers: FollowingObject[];
-
     friends: User[];
-    sentRequests: { requestId: UserWithoutFriends }; // User = user that the request is going to
-    receivedRequests: { requestId: UserWithoutFriends }; // User = user that sent YOU a request
+    sentRequests: Request; // User = user that the request is going to
+    receivedRequests: Request; // User = user that sent YOU a request
+    totalPending: number;
+
+    isFriend?: boolean;
+    awaitingRequest?: boolean; // If the user is awaiting a response to sent request
+    pendingRequest?: boolean;
 
     errors: string;
 }
+
 
 export interface TargetUserProps {
     targetUser: User;

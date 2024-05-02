@@ -23,6 +23,8 @@ if [ ! -f "$env_file" ]; then
     echo "VITE_APP_ID=<your app id>" > "$env_file" # > creates and overwrites
     echo "APP_CERTIFICATE=<your certificate>" >> "$env_file" # >> appends
     echo "RTC_TOKEN=<your rtc token>" >> "$env_file"
+    echo "VITE_X_AUTH_TOKEN=<your judget0 auth token>" >> "$env_file"
+    echo "VITE_X_AUTH_USER=<your judge0 auth user>" >> "$env_file"
 
     echo ".env file created."
 else
@@ -54,6 +56,8 @@ if [ ! -f "$env_file" ]; then
     echo "DATABASE_URL=sqlite:///dev.db" >> "$env_file" # >> appends
     echo "SCHEMA=devpairofficial" >> "$env_file"
     echo "GEMINI_API_KEY=<your gemini api key>" >> "$env_file"
+    echo "RAPID_API_KEY=<your rapid api key>" >> "$env_file"
+    echo "RAPID_API_HOST=<your rapid host url>" >> "$env_file"
     echo "S3_IMAGE_BUCKET=<your aws bucket>" >> "$env_file"
     echo "S3_IMAGE_KEY=<your aws key>" >> "$env_file"
     echo "S3_IMAGE_SECRET=<your aws secret>" >> "$env_file"
@@ -74,6 +78,8 @@ run_with_pipenv() {
     else
         echo "Migrations folder found. Skipping initialization."
     fi
+    pipenv run flask seed undo
+    pipenv run flask db upgrade
     pipenv run flask db migrate
     pipenv run flask db upgrade
     pipenv run flask seed all
@@ -90,6 +96,8 @@ run_with_venv() {
     else
         echo "Migrations folder found. Skipping initialization."
     fi
+    flask seed undo
+    flask db upgrade
     flask db migrate
     flask db upgrade
     flask seed all

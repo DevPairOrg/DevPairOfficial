@@ -3,25 +3,26 @@ import { useAgoraContext } from './agoraManager';
 import { useRemoteUsers } from 'agora-rtc-react';
 import './volumeControl.css';
 import { useAppSelector, useAppDispatch } from '../hooks';
-import { toggleScreenShare } from '../store/pairedContent';
+import { toggleLocalScreenShare, toggleScreenShare } from '../store/pairedContent';
 
 function RemoteAndLocalVolumeComponent() {
     const agoraContext = useAgoraContext();
     const remoteUsers = useRemoteUsers();
     const dispatch = useAppDispatch();
-    // const { screenSharing, setScreenSharing } = props;
-    const [checked, setChecked] = useState<boolean>(true);
+    const [checked, setChecked] = useState<boolean>(false);
     const pairInfo = useAppSelector((state) => state.chatRoom.user);
-    const screenSharing = useAppSelector((state) => state.pairedContent.screenshare.isActive);
-
+    const isLocalShare = useAppSelector(state => state.pairedContent.agora.screenshare.isLocalScreen)
+    const isRemoteScreen = useAppSelector(state => state.pairedContent.agora.screenshare.isRemoteScreen)
+    const screenSharing = useAppSelector((state) => state.pairedContent.agora.screenshare.isActive);
+    let newVolume: number;
     const handleLocalAudioToggle = () => {
-        const newVolume = checked === false ? 100 : 0;
+        newVolume = checked === false ? 100 : 0;
+        // when checked = true, microphone = enabled;
         if (checked === true) {
             agoraContext.localMicrophoneTrack?.setMuted(true);
         } else {
             agoraContext.localMicrophoneTrack?.setMuted(false);
         }
-        // console.log("newvolume", newVolume);
         agoraContext.localMicrophoneTrack?.setVolume(newVolume);
         setChecked(!checked);
     };
@@ -87,12 +88,23 @@ function RemoteAndLocalVolumeComponent() {
             </label>
 
             <button
-                // onClick={() => setScreenSharing(!screenSharing)}
-                onClick={() => dispatch(toggleScreenShare(!screenSharing))}
-                id={screenSharing ? 'stop-screen-share' : 'share-screen-button'}
-                aria-label={screenSharing ? 'Stop Screen Share' : 'Share Your Screen'}
+                onClick={() => {
+                    if (!screenSharing) {
+                        dispatch(toggleScreenShare(true));
+                        dispatch(toggleLocalScreenShare(true));
+                    } else if (screenSharing && isRemoteScreen && !isLocalShare) {
+                        dispatch(toggleLocalScreenShare(true));
+                    } else if (screenSharing && !isRemoteScreen && isLocalShare) {
+                        dispatch(toggleScreenShare(false));
+                        dispatch(toggleLocalScreenShare(false));
+                    } else {
+                        dispatch(toggleLocalScreenShare(false));
+                    }
+                }}
+                id={isLocalShare ? 'stop-screen-share' : 'share-screen-button'}
+                aria-label={isLocalShare ? 'Stop Screen Share' : 'Share Your Screen'}
             >
-                {screenSharing ? (
+                {screenSharing && isLocalShare ? (
                     <svg
                         className="controlIcon__25700 centerIcon__6075a"
                         aria-hidden="true"

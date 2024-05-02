@@ -2,12 +2,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  position: fixed;
-  bottom: 1%;
-  left: 50%;
-  transform: translate(-50%, 0);
   max-width: 100%;
   gap: .5vw;
+  padding-top: .5vw;
+  margin-top: auto;
 }
 
 #toggle-mute {
@@ -23,6 +21,7 @@
 
 .PB-range-slider {
   -webkit-appearance: none;
+  appearance: none;
   height: 4px;
   border-radius: 5px;
   background: #d5dbe1;

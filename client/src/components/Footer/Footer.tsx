@@ -22,15 +22,15 @@ function Footer() {
                 </div>
             </div>
             <div className="developer-container">
-                <div className="developer-name">John Wofford</div>
+                <div className="developer-name">Mariana Reynaga</div>
                 <div className="developer-links-container">
                     <div className="developer-github">
-                        <a className="github" href="https://github.com/jwoff1991" target="_blank">
+                        <a className="github" href="https://github.com/maru-reyna" target="_blank">
                             <img src={GitHubIcon} alt="GitHub Icon" style={{ width: '18px', height: '18px' }} />
                         </a>
                     </div>
                     <div className="developer-linkedin">
-                        <a className="linkedin" href="https://www.linkedin.com/in/jonathanbwofford/" target="_blank">
+                        <a className="linkedin" href="https://www.linkedin.com/in/mariana-r-2a4a58256/" target="_blank">
                             <img src={LinkedInIcon} alt="GitHub Icon" style={{ width: '18px', height: '18px' }} />
                         </a>
                     </div>
@@ -56,17 +56,36 @@ function Footer() {
                 </div>
             </div>
             <div className="developer-container">
-                <div className="developer-name">Saad Anwer</div>
+                <div className="developer-name">Sebastian Stovell</div>
                 <div className="developer-links-container">
                     <div className="developer-github">
-                        <a className="github" href="https://github.com/anwersaad0" target="_blank">
+                        <a className="github" href="https://github.com/SebastianStovall" target="_blank">
                             <img src={GitHubIcon} alt="GitHub Icon" style={{ width: '18px', height: '18px' }} />
                         </a>
                     </div>
                     <div className="developer-linkedin">
                         <a
                             className="linkedin"
-                            href="https://www.linkedin.com/in/saad-anwer-01aab317a/"
+                            href="https://www.linkedin.com/in/sebastian-stovall-a17a8a211/"
+                            target="_blank"
+                        >
+                            <img src={LinkedInIcon} alt="GitHub Icon" style={{ width: '18px', height: '18px' }} />
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div className="developer-container">
+                <div className="developer-name">Jennifer Lee</div>
+                <div className="developer-links-container">
+                    <div className="developer-github">
+                        <a className="github" href="https://github.com/CodeJellee" target="_blank">
+                            <img src={GitHubIcon} alt="GitHub Icon" style={{ width: '18px', height: '18px' }} />
+                        </a>
+                    </div>
+                    <div className="developer-linkedin">
+                        <a
+                            className="linkedin"
+                            href="https://www.linkedin.com/in/lee-pac-swe/"
                             target="_blank"
                         >
                             <img src={LinkedInIcon} alt="GitHub Icon" style={{ width: '18px', height: '18px' }} />

@@ -3,6 +3,8 @@ from flask_socketio import SocketIO, emit, join_room, leave_room, close_room, di
 from flask_login import current_user
 import random, time, functools, datetime, logging
 
+from app.models import FriendRequest
+
 origins = []
 
 # socketio = SocketIO(logger=True, engineio_logger=True, cors_allowed_origins=origins) # this is for error-handling, remove this so you dont get stacks of logs
@@ -26,7 +28,7 @@ def authenticated_only(f):
                 return f(*args, **kwargs)
         return wrapped
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "authenticated_only"})
 
 
 @socketio.on("join_room")
@@ -64,7 +66,7 @@ def handle_join_room():
     except Exception as e:
         # Handle exceptions (e.g., room not found, socket connection issue)
         socketio.emit("join_room_error", {"error": str(e)}, to=user.id)
-        socketio.emit('custom_error', {'error': str(e)})
+        socketio.emit('custom_error', {'error': str(e), 'route': "join_room"})
 
 
 @socketio.on("leave_room")
@@ -89,7 +91,7 @@ def handle_leave_room(data):
                 "user_left", f"{current_user.username} has exited the room!", to=data["room"]
             )
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "leave_room"})
 
 
 @socketio.on("temp_chat_message")
@@ -113,7 +115,104 @@ def handle_temp_chat(data):
 
         emit("temp_message_received", response, to=data["room"])
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "temp_chat_message"})
+
+@socketio.on("removed_friend")
+@authenticated_only
+def handle_removed_friend(data):
+    """
+        Emits a message to the specified room that the friendship between users has been removed.
+
+        Expected data:
+        {
+            "room": "example_room_name",
+            "userId": "example_user_id"
+        }
+    """
+    try:
+        emit(
+            "friend_removed", {"userId": data["userId"]}, to=data["room"], include_self=False
+        )
+    except Exception as e:
+        emit('custom_error', {'error': str(e),  'route': "removed_friend"})
+
+@socketio.on("accepted_request")
+@authenticated_only
+def handle_accepted_request(data):
+    """
+        Emits a message to the specified room that the friendship between users has been accepted.
+
+        Expected data:
+        {
+            "room": "example_room_name",
+            "userId": "example_user_id"
+            "requestId": "example_request_id"
+        }
+    """
+    try:
+        emit(
+            "friend_added", {"friend": current_user.to_dict(), "requestId": data["requestId"]}, to=data["room"], include_self=False
+        )
+    except Exception as e:
+        emit('custom_error', {'error': str(e), 'route': "accepted_request"})
+
+@socketio.on("rejected_request")
+@authenticated_only
+def handle_rejected_request(data):
+    """
+        Emits a message to the specified room that the friendship between users has been rejected.
+
+        Expected data:
+        {
+            "room": "example_room_name",
+            "requestId": "example_request_id"
+        }
+    """
+    try:
+        emit(
+            "friend_rejected", {"requestId": data["requestId"]}, to=data["room"], include_self=False
+        )
+    except Exception as e:
+        emit('custom_error', {'error': str(e), 'route': "rejected_request"})
+
+@socketio.on("request_canceled")
+@authenticated_only
+def handle_request_cancelled(data):
+    """
+        Emits a message to the specified room that the friendship request has been cancelled.
+
+        Expected data:
+        {
+            "room": "example_room_name",
+            "requestId": "example_request_id"
+        }
+    """
+    try:
+        emit(
+            "cancelled_request", {"requestId": data["requestId"]}, to=data["room"], include_self=False
+        )
+    except Exception as e:
+        emit('custom_error', {'error': str(e), 'route': "request_canceled"})
+
+@socketio.on("sent_request")
+@authenticated_only
+def handle_sent_request(data):
+    """
+        Emits a message to the specified room that a friendship request has been sent.
+
+        Expected data:
+        {
+            "room": "example_room_name",
+            "requestId": "example_request_id"
+        }
+    """
+    try:
+        request = FriendRequest.query.get(data["requestId"])
+        emit(
+            "received_request", {"request": {request.id: request.sender.to_dict(include_relationships=False)}}, to=data["room"], include_self=False
+        )
+    except Exception as e:
+        emit('custom_error', {'error': str(e), 'route': "sent_request"})
 
 @socketio.on('user_leaving')
 @authenticated_only
@@ -125,7 +224,73 @@ def handle_user_leaving(data):
         }
         disconnect()
     except Exception as e:
-        emit('custom_error', {'error': str(e)})
+        emit('custom_error', {'error': str(e), 'route': "user_leaving"})
+
+
+
+@socketio.on("send_users_to_gemini_dsa_component")
+@authenticated_only
+def handle_update_IDE(data):
+    """
+    sends both users to the gemini dsa problem IDE component
+
+    Expected data:
+        {
+            "fetchData": "example_parsed_gemini_response_data",
+            "room": "example_room_name"
+        }
+
+    """
+    try:
+        response = {
+            "parsedGeminiResponse": data["fetchData"],
+        }
+        emit("send_users_to_gemini_dsa_component_received", response, to=data["room"])
+    except Exception as e:
+        emit('custom_error', {'error': str(e), 'route': "send_users_to_gemini_dsa_component"})
+
+
+
+
+@socketio.on("update_IDE")
+@authenticated_only
+def handle_update_IDE(data):
+    """
+    updates the IDE for both users
+
+    Expected data:
+        {
+            "newValue": "example_ide_value",
+            "room": "example_room_name"
+        }
+
+    """
+    try:
+        response = {
+            "newValue": data["newValue"],
+        }
+        emit("update_IDE_received", response, to=data["room"])
+    except Exception as e:
+        emit('custom_error', {'error': str(e), 'route': "update_IDE"})
+
+
+@socketio.on("leave_gemini_page")
+@authenticated_only
+def handle_update_IDE(data):
+    """
+    exits gemini IDE page for both users
+
+    Expected data:
+        {
+            "room": "example_room_name"
+        }
+
+    """
+    try:
+        emit("leave_gemini_page_received", to=data["room"])
+    except Exception as e:
+        emit('custom_error', {'error': str(e), 'route': "leave_gemini_page"})
+
 
 @socketio.on('custom_error')
 def epipe_error(e):

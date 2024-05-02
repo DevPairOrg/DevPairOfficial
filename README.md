@@ -1,9 +1,6 @@
 # $${\color{blue}G}{\color{red}o}{\color{yellow}o}{\color{blue}g}{\color{green}l}{\color{red}e}\space AI \space Hackathon \space DevPair$$
 <!-- FORMAT FOR THIS STYLING: $${\color{red}Welcome \space \color{lightblue}To \space \color{orange}Stackoverflow}$$ -->
-$${\color{red}by \space \color{lightblue}Minh, \space \color{lightblue}Melinda, \space \color{lightblue}Sebastian}$$
-
-# The Official DevPair Repository
-- ### This is where we'll be constantly updating this project to its full potential.
+$${\color{red}by \space \color{lightblue}Minh \space Tran, \space \color{lightblue}Melinda \space Cortez, \space \color{lightblue}Sebastian \space Stovall, Jennifer \space Lee, \space Mariana \space Reynaga}$$
 
 # About
 - **Accessibility-Focused with Gemini AI**: Enhances user pairing for Data Structures & Algorithms practice by introducing personalized LeetCode problems and automatic solution testing through Gemini AI.
@@ -21,7 +18,7 @@ $${\color{red}by \space \color{lightblue}Minh, \space \color{lightblue}Melinda, 
 2. Chatting
 3. Screen Sharing
 4. Gemini AI
-5. IDE DS&A Tests
+5. IDE & DS&A
 6. User Friends
 
 ### Features Coming Soon
@@ -46,9 +43,11 @@ $${\color{red}by \space \color{lightblue}Minh, \space \color{lightblue}Melinda, 
 - Agora-RTC: A technology enhancing WebRTC with additional features for high-quality real-time voice and video communication, crucial for applications requiring live interaction.
 ### AI and Machine Learning:
 - Google AI Gemini API: A cutting-edge API from Google AI, designed to provide advanced artificial intelligence and machine learning capabilities. This could include anything from natural language processing, image recognition, to predictive analytics, significantly enriching the application's features and user experience.
+### Online Code Execution System:
+- Judge0: A Robust, scalable, and open-source online code execution system that can be used to build a wide range of applications that need online code execution features.
 
-# Project Demo
-- Updated Demo Showcase Coming Soon..
+<!-- # Project Demo
+- Updated Demo Showcase Coming Soon.. -->
 <!--
 ![Splash-Screen](client/src/assets/readme-demo-images/splash-page.png)
 ![Demo-User](client/src/assets/readme-demo-images/demo-user.png)
@@ -84,18 +83,22 @@ $${\color{red}by \space \color{lightblue}Minh, \space \color{lightblue}Melinda, 
     2. Setup a `bucket`
     3. Grab the AWS `Key` and `Secret`
 
+- Judge0
+    1. Setup [judge0](https://judge0.com/#pricing)
+    2. Grab `Auth Token` & `Auth User`
+
 ## Method 1: Use setup.sh script
 - Run the install script in the terminal
     - `sh setup.sh`
         - This script will create a `.env` with necessary variables and values for the user to initialize the project and install all dependencies on the client and server.
 - Terminal 1:
     - `cd into client`
-    - In `.env`, set AppId, App Certificate, RTC Token.
+    - `.env`: set values
     - `npm run dev`
 - Terminal 2:
     - `cd into server`
-    - In `.env`, set AWS S3 and Gemini API Key.
-    - After setting the keys, in the terminal for /server, type `exit` (this is to re-enter the shell with the updated .env variables)
+    - `.env`: set values
+    - After setting the values, in the terminal for /server, type `exit` (this is to re-enter the shell with the updated .env variables)
     - `pipenv shell`
     - `flask run`
 

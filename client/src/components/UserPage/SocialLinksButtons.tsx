@@ -1,9 +1,6 @@
-import { TargetUserProps } from '../../interfaces/user';
-import './targetUserSocials.css';
+import { User } from '../../interfaces/user';
 
-function TargetUserSocials(props: TargetUserProps) {
-    const { linkedin, github, portfolio, leetcode } = props.targetUser;
-
+const SocialLinksButtons: React.FC<User> = (user) => {
     return (
         <>
             <div id="target-user-socials-container">
@@ -13,10 +10,10 @@ function TargetUserSocials(props: TargetUserProps) {
                         <button
                             className="card1"
                             onClick={() => {
-                                if (!linkedin) {
+                                if (!user.linkedin) {
                                     alert('No link provided.');
                                 } else {
-                                    window.open(linkedin, '_blank', 'noopener,noreferrer');
+                                    window.open(user.linkedin, '_blank', 'noopener,noreferrer');
                                 }
                             }}
                         >
@@ -60,10 +57,10 @@ function TargetUserSocials(props: TargetUserProps) {
                         <button
                             className="card2"
                             onClick={() => {
-                                if (!portfolio) {
+                                if (!user.portfolio) {
                                     alert('No link provided.');
                                 } else {
-                                    window.open(portfolio, '_blank', 'noopener,noreferrer');
+                                    window.open(user.portfolio, '_blank', 'noopener,noreferrer');
                                 }
                             }}
                         >
@@ -130,10 +127,10 @@ function TargetUserSocials(props: TargetUserProps) {
                         <button
                             className="card3"
                             onClick={() => {
-                                if (!github) {
+                                if (!user.github) {
                                     alert('No link provided.');
                                 } else {
-                                    window.open(github, '_blank', 'noopener,noreferrer');
+                                    window.open(user.github, '_blank', 'noopener,noreferrer');
                                 }
                             }}
                         >
@@ -151,10 +148,10 @@ function TargetUserSocials(props: TargetUserProps) {
                         <button
                             className="card4"
                             onClick={() => {
-                                if (!leetcode) {
+                                if (!user.leetcode) {
                                     alert('No link provided.');
                                 } else {
-                                    window.open(leetcode, '_blank', 'noopener,noreferrer');
+                                    window.open(user.leetcode, '_blank', 'noopener,noreferrer');
                                 }
                             }}
                         >
@@ -185,6 +182,6 @@ function TargetUserSocials(props: TargetUserProps) {
             </div>
         </>
     );
-}
+};
 
-export default TargetUserSocials;
+export default SocialLinksButtons;

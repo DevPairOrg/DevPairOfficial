@@ -10,49 +10,41 @@ function PreviewProfile({ setEditMode }: PreviewProfileProps) {
     const sessionUser = useAppSelector((state) => state.session.user);
 
     return (
-        <div id="profile-main">
-            <div id="profile-header">
-                <p>Profile Preview</p>
-                <button className="profile-buttons" onClick={() => setEditMode(true)}>
-                    Edit Profile
-                </button>
+      <div id="profile-main">
+
+      <div id="profile-split">
+        <div id="profile-content">
+          {sessionUser && (
+            <div id="info-container">
+              <div>
+                <div id="pfp">
+                  <img
+                    src={
+                      sessionUser.picUrl
+                        ? sessionUser.picUrl
+                        : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
+                    }
+                    alt="pfp"
+                  ></img>
+                </div>
+                <div id="info">
+                  <span>{sessionUser.username}</span>
+                  <span>Joined July 2022</span>
+                  <div className="profile-buttons-container">
+                    <span>
+                      {sessionUser.friends.length ?? 0} Friends
+                    </span>
+                    <span>
+                      {(sessionUser as any)?.completedLeetcodeProblems.split(",").length - 1} completed problems
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <div id="profile-split">
-                <div id="profile-content">
-                    {sessionUser && (
-                        <div id="info-container">
-                            <div id="pfp">
-                                <img
-                                    src={
-                                        sessionUser.picUrl
-                                            ? sessionUser.picUrl
-                                            : 'https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740'
-                                    }
-                                    alt="pfp"
-                                ></img>
-                            </div>
-                            <div id="info">
-                                <span>{sessionUser.username}</span>
-                                <span>Joined July 2022</span>
-                                <span>
-                                    {sessionUser.following?.length ?? 0} Following /{' '}
-                                    {sessionUser.followers?.length ?? 0} Followers
-                                </span>
-                                <div className="profile-buttons-container">
-                                    <button
-                                        className="profile-buttons"
-                                        onClick={() => alert('This is a preview, you cannot message yourself')}
-                                    >
-                                        DM
-                                    </button>
-                                    <button
-                                        className="profile-buttons"
-                                        onClick={() => alert('This is a preview, you cannot follow yourself')}
-                                    >
-                                        Follow
-                                    </button>
-                                </div>
+                            <div className="edit-profile-button">
+                                <button className="profile-buttons" onClick={() => setEditMode(true)}>
+                                    Edit Profile
+                                </button>
                             </div>
                         </div>
                     )}
@@ -241,75 +233,6 @@ function PreviewProfile({ setEditMode }: PreviewProfileProps) {
                         </div>
                     )}
                 </div>
-
-                {/* <div id="targetuser-friends-container">
-            <div id="targetuser-following">
-              <div id="targetuser-following-container">
-                <h2>Following</h2>
-                <div className="hr-line-primary"></div>
-                {sessionUser &&
-                  sessionUser.following.length > 0 &&
-                  sessionUser.following.map((follow: { followed: { id: any; username: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; picUrl: string | undefined; }; }, i: any) => {
-                    return (
-                      <>
-                        <a href={`/users/${follow.followed.id}`}>
-                          <div
-                            key={follow.followed.username + i}
-                            id="following-container"
-                          >
-                            <div id="follower-image-container">
-                              <img
-                                src={
-                                  follow?.followed?.picUrl
-                                    ? follow?.followed?.picUrl
-                                    : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
-                                }
-                                alt="followed-user-pic"
-                              />
-                            </div>
-                            <div id="friends-username">
-                              {follow.followed.username}
-                            </div>
-                          </div>
-                        </a>
-                      </>
-                    );
-                  })}
-              </div>
-              <div id="targetuser-followers-container">
-                <h2>Followers</h2>
-                <div className="hr-line-primary"></div>
-                {sessionUser &&
-                  sessionUser.followers.length > 0 &&
-                  sessionUser.followers.map((follower: { follower: { id: any; username: string | number | boolean | ReactElement<any, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | null | undefined; picUrl: string | undefined; }; }, i: any) => {
-                    return (
-                      <>
-                        <a href={`/users/${follower.follower.id}`}>
-                          <div
-                            key={follower.follower.username + i}
-                            id="following-container"
-                          >
-                            <div id="follower-image-container">
-                              <img
-                                src={
-                                  follower?.follower?.picUrl
-                                    ? follower?.follower?.picUrl
-                                    : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
-                                }
-                                alt="follower-user-pic"
-                              />
-                            </div>
-                            <div id="friends-username">
-                              {follower.follower.username}
-                            </div>
-                          </div>
-                        </a>
-                      </>
-                    );
-                  })}
-              </div>
-            </div>
-          </div>*/}
             </div>
         </div>
     );
