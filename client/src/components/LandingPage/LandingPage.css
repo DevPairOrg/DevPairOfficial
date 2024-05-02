@@ -234,17 +234,17 @@ h2{
   margin-top: 5vh;
 }
 
-@media only screen and (max-width: 430px ){
+@media only screen and (max-width: 425px ){
   #imgBanner{
     display: none;
   }
+
+  #welcome-message{
+    font-size: 2.5rem;
+  }
 }
 
-@media only screen and (max-width: 768px) {
-  #header-section{
-    margin-top: 10vh;
-  }
-
+@media only screen and (max-width: 1200px) {
   #imgBanner{
     display: none;
   }
@@ -255,7 +255,7 @@ h2{
 
   .landing-page-description {
     max-width: 100%; /* Allow both description and image to take full width on small screens */
-    margin-top: -10vw;
+    /*margin-top: -10vw;*/
   }
 
   .landing-text-one {
@@ -271,13 +271,25 @@ h2{
   }
 
   .languages-card img{
-    width: 15vw;
+    width: 13vw;
     height: 15vw;
+  }
+
+  #flask{
+    width: 14vw;
+  }
+
+  #agora{
+    width: 16vw;
   }
 
   #benefits-section{
     flex-direction: column;
     align-items: center;
+  }
+
+  #benefits-section-description h2{
+    text-align: center;
   }
 
   #benefits-section-description{
@@ -288,6 +300,22 @@ h2{
   #benefits-section-cards{
     width: 80%;
     margin-right: 0vh;
+  }
+
+  #call-to-action{
+    flex-direction: column;
+  }
+
+  #call-to-action p{
+    text-align: center;
+    
+  }
+
+  .landing-page-get-started{
+    margin-top: 3vw;
+    height: 5vw;
+    font-size: 1.7rem;
+    align-self: center;
   }
 }
 
