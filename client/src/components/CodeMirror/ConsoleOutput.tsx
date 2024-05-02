@@ -14,7 +14,7 @@ const ConsoleOutput: React.FC<ModalContentProps> = ({ userResults, testCaseView,
                 userResults?.testCase1.assert
                 && userResults.testCase2.assert
                 && userResults.testCase3.assert
-                ? 'stoudt-pass' : 'stoudt-fail'
+                ? 'stdout-pass' : 'stdout-fail'
             }>
                 {userResults?.testCase1.assert
                 && userResults.testCase2.assert
@@ -53,7 +53,7 @@ const ConsoleOutput: React.FC<ModalContentProps> = ({ userResults, testCaseView,
                 </div>
 
                 <div>
-                    <p>Stoudt:</p>
+                    <p>Stdout:</p>
                     {testCaseView === 1 && (
                         <div>
                             {userResults?.testCase1.stdout.map((output: any, index: number) => (

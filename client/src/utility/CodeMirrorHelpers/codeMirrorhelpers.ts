@@ -21,23 +21,19 @@ export interface JudgeResults {
 
 // *SWITCH IDE LANGUAGE
 export const handlePythonButton = (
-  e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   setLanguage: React.Dispatch<React.SetStateAction<string>>,
   setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
   defaultPythonFn: string | undefined
 ) => {
-  e.preventDefault();
   setLanguage("python");
   setValue(defaultPythonFn);
 };
 
 export const handleJavascriptButton = (
-  e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   setLanguage: React.Dispatch<React.SetStateAction<string>>,
   setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
   defaultJsFn: string | undefined
 ) => {
-  e.preventDefault();
   setLanguage("javascript");
   setValue(defaultJsFn);
 };

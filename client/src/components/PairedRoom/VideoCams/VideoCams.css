@@ -3,21 +3,20 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  max-width: 100%;
-  max-height: 50%;
+  max-width: 15vw;
+  max-height: 15vw;
   border: solid var(--primary-opacity) 0.1rem;
   overflow: hidden;
   position: relative;
-
 }
 
 #video-container {
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: space-around;
-  max-width: 100%;
+  max-width: 18vw;
   flex: 1;
-  padding-left: 0.5rem;
 }
 
 .cat-waiting {
@@ -26,33 +25,70 @@
   font-size: 1.5vw;
 }
 
-#follow-user {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background-color: var(--primary-opacity);
-    max-width: fit-content;
-    padding: .2rem;
-    border: none;
-    cursor: pointer;
-    z-index: 2;
-    border-radius: .2rem;
-    font: 1vw;
-    font-weight: 500;
+.friend-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: var(--primary-opacity);
+  max-width: fit-content;
+  padding: 0.2rem;
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+  border-radius: 0.2rem;
+  font-size: .7vw;
+  font-weight: 500;
+}
+
+.friend-request-buttons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 0.3rem;
+  z-index: 2;
 
 }
 
-#follow-user:hover {
-    background-color: var(--primary);
-    color: var(--dark-text)
+.accept-friend,
+.reject-friend {
+  max-width: fit-content;
+  padding: 0.1rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.2rem;
+  font-size: .7vw;
+  font-weight: 500;
 }
+
+.accept-friend {
+  background-color: var(--primary-opacity);
+}
+
+.reject-friend {
+  background-color: rgba(255, 0, 0, 0.459)
+}
+
+
+.friend-button:hover,
+.accept-friend:hover {
+  background-color: var(--primary);
+  color: var(--dark-text);
+}
+
+.reject-friend:hover {
+  background-color: rgba(255, 0, 0, 0.692);
+  color: var(--dark-text);
+}
+
+
 
 .video-username {
-    position: absolute;
-    z-index: 2;
-    top: 0;
-    left: 0;
-    padding-left: .2rem;
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  left: 0;
+  padding-left: 0.2rem;
 }
 
 #share-or-generate-problem-container {
@@ -60,16 +96,5 @@
   justify-content: center;
   align-items: center;
   gap: 5px;
-  margin: 1vw;
-}
-
-#share-or-generate-problem-container > button {
-  border: none;
-  padding: 0 1vw;
-  border-radius: 0.5rem;
-  background-color: var(--primary);
-  color: var(--dark-text);
-  font-size: 2vw;
-  font-weight: 500;
-  transition: background-color 0.3s ease, color .3s ease;
+  padding: 0.5vw;
 }

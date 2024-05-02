@@ -8,7 +8,6 @@ import useFetchToken from "../../hooks/Agora/useFetchToken";
 import StartCall from "./StartCall";
 import Chat from "./Chat/Chat";
 import VideoCams from "./VideoCams/VideoCams";
-import Footer from "../Footer/Footer";
 import Content from "./Content/Content";
 import { AgoraProvider } from "../../AgoraManager/agoraManager";
 import "./PairedRoom.css";
@@ -20,6 +19,8 @@ const PairedRoom: React.FC = () => {
   const [channelName, setChannelName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
+
+
   const agoraEngine = useAgoraClient();
 
   useSocketListeners(socket, channelName, setChannelName, user);
@@ -29,7 +30,9 @@ const PairedRoom: React.FC = () => {
     // Event listener to leave room and close socket when the page refreshes
     window.addEventListener("beforeunload", (_e) => {
       if (socket) {
-        socket.emit("leave_room", { room: localStorage.getItem("room") as string });
+        socket.emit("leave_room", {
+          room: localStorage.getItem("room") as string,
+        });
         localStorage.removeItem("room");
         socket.removeAllListeners();
         socket.close();
@@ -39,7 +42,9 @@ const PairedRoom: React.FC = () => {
     return () => {
       window.removeEventListener("beforeunload", (_e) => {
         if (socket) {
-          socket.emit("leave_room", { room: localStorage.getItem("room") as string });
+          socket.emit("leave_room", {
+            room: localStorage.getItem("room") as string,
+          });
           localStorage.removeItem("room");
           socket.removeAllListeners();
           socket.close();
@@ -64,6 +69,7 @@ const PairedRoom: React.FC = () => {
     setLoading(false);
   };
 
+
   return (
     <>
       {joined ? (
@@ -71,19 +77,17 @@ const PairedRoom: React.FC = () => {
           <main id="video-main-wrapper">
             <AgoraRTCProvider client={agoraEngine}>
               <AgoraProvider leaveRoomHandler={leaveRoomHandler}>
-                <VideoCams channelName={channelName} />
+                <VideoCams channelName={channelName} agoraEngine={agoraEngine} />
                 <Content
                   agoraEngine={agoraEngine}
                   channelName={channelName}
                   leaveRoomHandler={leaveRoomHandler}
                   socket={socket}
-                  connectSocket={connectSocket}
                 />
                 <Chat channelName={channelName} agoraEngine={agoraEngine} />
               </AgoraProvider>
             </AgoraRTCProvider>
           </main>
-          <Footer />
         </>
       ) : (
         <StartCall handleJoinClick={handleJoinClick} loading={loading} />

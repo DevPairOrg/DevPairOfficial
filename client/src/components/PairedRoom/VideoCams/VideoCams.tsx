@@ -8,6 +8,7 @@ import {
   usePublish,
   useRemoteUsers,
   ICameraVideoTrack,
+  useClientEvent,
 } from "agora-rtc-react";
 import config from "../../../AgoraManager/config";
 import { useAppDispatch, useAppSelector } from "../../../hooks";
@@ -35,16 +36,17 @@ import { useSocket } from "../../../context/Socket";
 import RemoveFriendModal from "../../RemoveFriendModal";
 import OpenModalButton from "../../OpenModalButton/OpenModalButton";
 import { useAgoraContext } from "../../../AgoraManager/agoraManager";
+import { toggleScreenShare, toggleRemoteScreenShare } from "../../../store/pairedContent";
 
-function VideoCams(props: { channelName: string }) {
+function VideoCams(props: { channelName: string; agoraEngine: any }) {
     const { setLocalCameraTrack, setLocalMicrophoneTrack } = useAgoraContext();
   const user = useAppSelector((state) => state.session.user);
   const pairInfo = useAppSelector((state) => state.chatRoom.user);
-  const { channelName } = props;
+  const { channelName, agoraEngine,  } = props;
   const [myCameraTrack, setMyCameraTrack] = useState<
     ICameraVideoTrack | undefined
   >(undefined);
-  const { socket, connectSocket } = useSocket();
+  const { socket } = useSocket();
   const sessionUser = useAppSelector((state) => state.session.user);
 
   const { isLoading: isLoadingMic, localMicrophoneTrack } =
@@ -62,28 +64,40 @@ function VideoCams(props: { channelName: string }) {
     uid: user?.videoUid,
   });
 
-  useEffect(() => {
-    if (!socket) {
-      connectSocket();
+  
+  useClientEvent(agoraEngine, "user-published", (user, _) => {
+    console.log("🍓🤬🍓🤬🤬🥳🥳🍓🤬🤬", user.uid === pairInfo?.screenUid);
+    if (user.uid === pairInfo?.screenUid) {
+      dispatch(toggleRemoteScreenShare(true));
+      dispatch(toggleScreenShare(true));
     }
-  }, [socket, connectSocket]);
+  });
 
-    useEffect(() => {
-        // Setup cleanup to close tracks when the component unmounts
-        return () => {
-            localCameraTrack?.close();
-            localMicrophoneTrack?.close();
-        };
-    }, []);
 
-    useEffect(() => {
-        if (localCameraTrack && localMicrophoneTrack) {
-            localMicrophoneTrack.setMuted(true);
-            setMyCameraTrack(localCameraTrack);
-            setLocalCameraTrack(localCameraTrack);
-            setLocalMicrophoneTrack(localMicrophoneTrack);
-        }
-    }, [localCameraTrack, localMicrophoneTrack]);
+
+  // useEffect(() => {
+  //   if (!socket) {
+  //     connectSocket();
+  //   }
+  // }, [socket, connectSocket]);
+
+  useEffect(() => {
+      // Setup cleanup to close tracks when the component unmounts
+      return () => {
+          localCameraTrack?.close();
+          localMicrophoneTrack?.close();
+
+      };
+  }, []);
+
+  useEffect(() => {
+      if (localCameraTrack && localMicrophoneTrack) {
+          localMicrophoneTrack.setMuted(true);
+          setMyCameraTrack(localCameraTrack);
+          setLocalCameraTrack(localCameraTrack);
+          setLocalMicrophoneTrack(localMicrophoneTrack);
+      }
+  }, [localCameraTrack, localMicrophoneTrack]);
 
   usePublish([localMicrophoneTrack, localCameraTrack]);
 
@@ -203,7 +217,6 @@ function VideoCams(props: { channelName: string }) {
           if (sendFriendRequest.fulfilled.match(actionResult)) {
             const requestData = actionResult.payload;
             const requestId = Object.keys(requestData)[0]; // Get the request ID
-            // console.log("Friend request sent🤬🤬🤬🤬🤬🤬🤬🤬🤬🤬🤬🤬 ", requestData);
             dispatch(sentRequest());
             socket?.emit("sent_request", {requestId: +requestId, room: channelName})
           }
@@ -216,7 +229,6 @@ function VideoCams(props: { channelName: string }) {
 
   return (
     <>
-      <div className="video-wrapper">
         <div id="video-container">
           {deviceLoading ? (
             <div className="videos" style={{ height: 300, width: 300 }}>
@@ -246,7 +258,7 @@ function VideoCams(props: { channelName: string }) {
                     />
                     {pairInfo.isFriend ? (
                       <OpenModalButton
-                        className="follow-user"
+                        className="friend-button"
                         buttonText="Remove Friend"
                         modalComponent={
                           <RemoveFriendModal
@@ -257,30 +269,30 @@ function VideoCams(props: { channelName: string }) {
                         }
                       />
                     ) : pairInfo.isPending ? (
-                      <>
+                      <div className="friend-request-buttons" >
                         <button
-                          className="follow-user"
+                          className="accept-friend"
                           onClick={() => handleVideoFriendRequest("accept")}
                         >
                           Accept
                         </button>
                         <button
-                          className="follow-user"
+                          className="reject-friend"
                           onClick={() => handleVideoFriendRequest("reject")}
                         >
                           Reject
                         </button>
-                      </>
+                      </div>
                     ) : pairInfo.isAwaiting ? (
                       <button
-                        className="follow-user"
+                        className="friend-button"
                         onClick={() => handleVideoFriendRequest("cancel")}
                       >
                         Cancel Request
                       </button>
                     ) : (
                       <button
-                        className="follow-user"
+                        className="friend-button"
                         onClick={() => handleVideoFriendRequest("send")}
                       >
                         Add Friend
@@ -305,9 +317,9 @@ function VideoCams(props: { channelName: string }) {
             </>
           )}
         </div>
-      </div>
     </>
   );
 }
 
 export default VideoCams;
+

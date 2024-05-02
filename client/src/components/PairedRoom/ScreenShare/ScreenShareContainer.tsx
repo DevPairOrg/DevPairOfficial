@@ -11,13 +11,13 @@ export interface ContentProps {
     leaveRoomHandler: () => void;
     channelName?: string;
     socket?: Socket<ServerToClientEvents, ClientToServerEvents> | null
-    connectSocket?: () => void
+
 }
 
 const PairedScreenShare: React.FC<ContentProps> = ({ agoraEngine, leaveRoomHandler }) => {
     return (
         <>
-            <AgoraProvider localCameraTrack={null} localMicrophoneTrack={null} leaveRoomHandler={leaveRoomHandler}>
+            <AgoraProvider leaveRoomHandler={leaveRoomHandler}>
                 <AgoraRTCScreenShareProvider client={agoraEngine}>
                     <ScreenShare channelName={config.channelName} />
                 </AgoraRTCScreenShareProvider>

@@ -1,118 +1,249 @@
 #ide-container {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-height: 95%;
+  justify-content: space-between;
+  width: 100%;
+}
+
+#IDE-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#generated-problem-container {
+  overflow: scroll;
+  background-color: #515151;
+  border: solid 0.01rem var(--primary);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  flex: 1;
+  max-height: 35%;
+  width: 100%;
 }
 
 #user-results {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
-#python-button, #javascript-button, #ide-submit-button {
-    color: black;
+#python-button,
+#javascript-button,
+#ide-submit-button {
+  color: black;
 }
 
 #ide-submit-button {
-    background-color: green;
-    height: 3.5rem;
-    font-size: 1.5rem;
-    width: 200px;
-    margin-top: 10px;
-    margin-bottom: 10px;
+  background-color: var(--primary);
+  border: none;
+  border-radius: 0.2rem;
+  padding: 0 0.3rem;
+  font-size: 1vw;
+
 }
+
+#ide-submit-button:hover {
+  cursor: pointer;
+  background-color: transparent;
+  border: solid var(--primary-opacity) 0.03rem;
+  color: white;
+
+
+}
+
+#ide-button-container {
+    display: flex;
+    gap: 1vw;
+}
+
 
 .cm-theme {
-    height: auto !important;
+  height: auto !important;
 }
-
 
 /* Modal Stylings */
 
 .show-stoudt-results {
-    background-color: orange;
-    height: 3.5rem;
-    font-size: 1.5rem;
-    margin-left: 10px;
-    color: black;
-    width: 200px;
+  background-color: orange;
+  font-size: 1vw;
+  color: var(--dark-text);
+  border: none;
+  border-radius: 0.2rem;
+  padding: 0 0.3rem;
+
+}
+
+.show-stoudt-results:hover {
+  cursor: pointer;
+  background-color: transparent;
+  border: solid orange 0.03rem;
+  color: white;
 }
 
 .stoudt-pass {
-    color: green;
+  color: green;
 }
 .stoudt-fail {
-    color: rgb(203, 31, 31);
+  color: rgb(203, 31, 31);
 }
 
 #stoudt-container {
-    width: 50vw;
-    height: 20vw;
-    background-color: #282A36;
+  width: 50vw;
+  background-color: #282a36;
 
-    display: flex;
-    flex-direction: column;
-    padding: 20px;
-
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
 }
 #stoudt-container > p {
-    font-size: 24px;
-    font-weight: 500;
+  font-size: 24px;
+  font-weight: 500;
 }
 
 #test-case-swap {
-    display: flex;
-    gap: 15px;
-    margin-top: 5px;
-    margin-bottom: 18px;
+  display: flex;
+  gap: 15px;
+  margin-top: 5px;
+  margin-bottom: 18px;
 }
 
 #selected-test-case-button {
-    background-color: #ffffff24;
+  background-color: #ffffff24;
 }
 
 .test-case-button {
-    padding-left: 10px;
-    padding-right: 10px;
-    display: flex;
-    gap: 10px;
-    font-weight: 500;
-    color: white;
-    background-color: #282A36;
-    border-radius: .5rem;
-    border: none;
-    align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
+  display: flex;
+  gap: 10px;
+  font-weight: 500;
+  color: white;
+  background-color: #282a36;
+  border-radius: 0.5rem;
+  border: none;
+  align-items: center;
 }
 .test-case-button:hover {
-    --tw-text-opacity: 1;
-    color: rgb(255 255 255 / var(--tw-text-opacity));
-    background-color: #ffffff24;
-    cursor: pointer;
+  --tw-text-opacity: 1;
+  color: rgb(255 255 255 / var(--tw-text-opacity));
+  background-color: #ffffff24;
+  cursor: pointer;
 }
 
-
 #stoudt-container > div:last-child {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 #stoudt-container > div:last-child > div {
-    background-color: #ffffff24;
-    border-radius: .5rem;
-    padding: 10px;
+  background-color: #ffffff24;
+  border-radius: 0.5rem;
+  padding: 10px;
 }
 
 .pass-green {
-    color: green;
-    font-size: 30px;
-    padding: 0px;
-    margin: 0px;
-    text-align: center;
+  color: green;
+  font-size: 30px;
+  padding: 0px;
+  margin: 0px;
+  text-align: center;
 }
 .fail-red {
-    color: red;
-    font-size: 30px;
-    padding: 0px;
-    margin: 0px;
-    text-align: center;
+  color: red;
+  font-size: 30px;
+  padding: 0px;
+  margin: 0px;
+  text-align: center;
 }
+
+.spinning-gemini {
+  animation: spin infinite 2s linear;
+  height: 1rem;
+}
+
+.gemini-icon {
+  height: 1rem;
+}
+
+#gemini-regenerate-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: solid #5684D1 0.04rem;
+  border-radius: 0.2rem;
+  padding: 0 0.3rem;
+  gap: .3rem;
+
+}
+
+
+
+.dropdown-arrow {
+  transition: transform 0.3s ease-in-out;
+}
+
+.dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.dropdown {
+    background-color: #323232;
+    position: relative;
+    border-radius: .3rem;
+
+}
+
+.dropdown-btn {
+    border: none;
+    background-color: #323232;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .5vw;
+    padding: .3rem;
+    width: 8vw;
+    border-radius: .3rem;
+}
+
+.dropdown-btn.open {
+    border-top-left-radius: .3rem;
+    border-top-right-radius: .3rem;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+
+.dropdown-btn, .dropdown-menu li {
+    font-size: .9vw; /* Adjust as needed */
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    z-index: 1; /* Ensure the dropdown appears above other elements */
+    /* Other styles... */
+    background-color: #323232;
+    width: 100%;
+    border-top: solid .01rem var(--primary);
+    border-bottom-left-radius: .3rem;
+    border-bottom-right-radius: .3rem;
+
+  }
+  .dropdown-menu li {
+    padding: .3rem;
+    cursor: pointer;
+    border-bottom: solid .01rem #7f7f7f;
+  }
+
+  .dropdown-menu li:last-child {
+    border-bottom: none;
+  }
+
+
+  .dropdown-menu li:hover {
+    background-color: #7f7f7f;
+    
+  }

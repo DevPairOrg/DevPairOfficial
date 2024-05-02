@@ -7,6 +7,8 @@ export interface parsedData {
     defaultPythonFn: string | undefined;
     defaultJsFn: string | undefined;
     channelName?: string | undefined
+    loading?: boolean | undefined;
+    setLoading?: React.Dispatch<React.SetStateAction<boolean>> | undefined;
   }
 
   export interface TestCase {

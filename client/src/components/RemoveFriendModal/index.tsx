@@ -8,6 +8,7 @@ import { changeIsFriend } from "../../store/user";
 import { unfriendUser } from "../../store/chatRoom";
 import { useSocket } from "../../context/Socket";
 import { UserDict } from "../../interfaces/socket";
+import "./RemoveFriendModal.css";
 
 function RemoveFriendModal({
   user,
@@ -24,17 +25,23 @@ function RemoveFriendModal({
   const { socket } = useSocket();
   const sessionUser = useAppSelector((state) => state.session.user);
 
-
   const handleRemoveFriend = async () => {
     setError("");
     const actionResult = await dispatch(removeFriend(+user.id));
     if (removeFriend.fulfilled.match(actionResult) && !realtime) {
       dispatch(changeIsFriend());
       closeModal();
-    } else if (removeFriend.fulfilled.match(actionResult) && realtime && channelName!== undefined) {
+    } else if (
+      removeFriend.fulfilled.match(actionResult) &&
+      realtime &&
+      channelName !== undefined
+    ) {
       dispatch(unfriendUser());
       if (sessionUser) {
-        socket?.emit("removed_friend", { userId: sessionUser.id, room: channelName });
+        socket?.emit("removed_friend", {
+          userId: sessionUser.id,
+          room: channelName,
+        });
       }
       closeModal();
     } else {
@@ -43,12 +50,14 @@ function RemoveFriendModal({
   };
 
   return (
-    <>
+    <div id="remove-friend-modal">
       <p>Are you sure you want to remove {user.username} as your friend?</p>
       {error && <p className="errors">{error}</p>}
-      <button>Cancel</button>
-      <button onClick={handleRemoveFriend}>Remove Friend</button>
-    </>
+      <div id="remove-friend-modal-buttons">
+        <button id="remove-friend-modal-cancel-button" >Cancel</button>
+        <button id="remove-friend-modal-confirm-button" onClick={handleRemoveFriend}>Remove Friend</button>
+      </div>
+    </div>
   );
 }
 
