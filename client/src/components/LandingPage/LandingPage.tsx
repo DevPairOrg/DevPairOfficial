@@ -150,21 +150,23 @@ function LandingPage() {
                     </div>
                 </section>
 
-                <section id='call-to-action'>
-                    <div>
-                        <h2>Join our community!</h2>
-                        <p>Start expanding your horizons today</p>
+                <section id='call-to-action-section'>
+                    <div id='call-to-action'>
+                        <div>
+                            <h2>Join our community!</h2>
+                            <p>Start expanding your horizons today</p>
+                        </div>
+                        
+                        {loggedIn ? (
+                                <button className="landing-page-get-started" onClick={handleJoinRoom}>
+                                    Join a Room!
+                                </button>
+                            ) : (
+                                <button className="landing-page-get-started" onClick={handleGetStarted}>
+                                    Get Started
+                                </button>
+                            )}
                     </div>
-                    
-                    {loggedIn ? (
-                            <button className="landing-page-get-started" onClick={handleJoinRoom}>
-                                Join a Room!
-                            </button>
-                        ) : (
-                            <button className="landing-page-get-started" onClick={handleGetStarted}>
-                                Get Started
-                            </button>
-                        )}
 
                 </section>
                    

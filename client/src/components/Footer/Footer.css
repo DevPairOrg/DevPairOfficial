@@ -8,9 +8,12 @@
     height: fit-content;
     max-height: 10vh;
     /*margin-top: 10vh;*/
-    padding-bottom: 10vh;
+    padding: 8vh 0vh 10vh 0vh;
     box-sizing: border-box;
     /* position: absolute; */
+
+    background: rgb(50,50,50);
+    background: linear-gradient(180deg, rgba(50,50,50,0.6993172268907564) 0%, rgba(23,23,23,1) 38%);
 }
 
 .developer-container {
@@ -21,8 +24,6 @@
     align-items: center;
     padding: 0.5rem 0;
     gap: .5rem
-
-    /* border: red solid 2px; */
 
 }
 
