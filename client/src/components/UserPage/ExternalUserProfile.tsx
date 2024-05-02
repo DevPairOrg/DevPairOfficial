@@ -30,22 +30,6 @@ const ExternalUserProfile: React.FC<User> = (externalUser) => {
 
     const handleRequest = async (Id: number, action: string) => {
         let actionResult;
-        let sentId;
-        let receivedId;
-        if (sessionUser) {
-            for (const [key, value] of Object.entries(sessionUser.sentRequests)) {
-                if (value?.id === userId) {
-                    sentId = +key + 1;
-                    break;
-                }
-            }
-            for (const [key, value] of Object.entries(sessionUser.receivedRequests)) {
-                if (value?.id === userId) {
-                    receivedId = key;
-                    break;
-                }
-            }
-        }
 
         switch (action) {
             case 'accept':
