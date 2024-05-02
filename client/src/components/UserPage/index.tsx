@@ -7,6 +7,7 @@ import "./index.css";
 import Footer from "../Footer/Footer";
 import EditUserPage from "./editProfile";
 import PreviewProfile from "./PreviewProfile";
+import Statistics from "./Statistics";
 import {
   acceptFriendRequest,
   cancelFriendRequest,
@@ -21,6 +22,7 @@ import {
 } from "../../store/user";
 import OpenModalButton from "../OpenModalButton/OpenModalButton";
 import RemoveFriendModal from "../RemoveFriendModal";
+import { toast, ToastContainer } from "react-toastify";
 
 function UserPage() {
   const { userId } = useParams();
@@ -93,6 +95,18 @@ function UserPage() {
     }
   };
 
+
+  const notifyWIP = () => toast.info('This page is currently a WIP build.', {
+    position: "bottom-left",
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: true,
+    progress: undefined,
+    theme: "dark",
+    });
+
   return (
     <>
       {isCurrentUserProfile && sessionUser ? (
@@ -108,6 +122,7 @@ function UserPage() {
                   <div
                     onClick={() => {
                       setAction(1)
+                      notifyWIP()
                       setEditMode(false)
                     }}
                     style={{background: `${action === 1 ? '' : 'linear-gradient(to bottom, #171717 80%, rgb(14, 14, 14, 1) 100%)'}`}}
@@ -115,7 +130,10 @@ function UserPage() {
                     <p style={{color: `${action === 1 ? '#20CC09' : 'white'}`}}>Profile</p>
                   </div>
                   <div
-                    onClick={() => setAction(2)}
+                    onClick={() => {
+                      notifyWIP()
+                      setAction(2)
+                    }}
                     style={{background: `${action === 2 ? '' : 'linear-gradient(to bottom, #171717 80%, rgb(14, 14, 14, 1) 100%)'}`}}
                   >
                     <p style={{color: `${action === 2 ? '#20CC09' : 'white'}`}}>Statistics</p>
@@ -172,118 +190,7 @@ function UserPage() {
                   !editMode && <PreviewProfile setEditMode={setEditMode} />
                 )}
                 {action === 2 && (
-                  <div id="user-friends">
-                    <p>All friends - {friends?.length}</p>
-                    {friends && friends.length > 0 ? (
-                      friends.map((friend) => {
-                        return (
-                          <>
-                            <a href={`/users/${friend.id}`}>
-                              <div id="each-friend">
-                                <div>{friend.username}</div>
-                                <img
-                                  src={
-                                    friend.picUrl
-                                      ? friend.picUrl
-                                      : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
-                                  }
-                                  style={{ height: "150px", width: "150px" }}
-                                />
-                              </div>
-                            </a>
-                            <OpenModalButton
-                              className="profile-buttons"
-                              buttonText="Remove Friend"
-                              modalComponent={
-                                <RemoveFriendModal user={friend} realtime={false} channelName={undefined}/>
-                              }
-                            />
-                          </>
-                        );
-                      })
-                    ) : (
-                      <div>
-                        No friends yet... Get pairing to build your network!
-                      </div>
-                    )}
-                  </div>
-                )}
-                {action === 3 && (
-                  <div id="user-friends">
-                    <p>Pending - {sessionUser.totalPending}</p>
-                    {sentRequests && Object.keys(sentRequests).length > 0 ? (
-                      Object.keys(sentRequests).map((requestId) => {
-                        const user = sentRequests[+requestId];
-                        return (
-                          <>
-                            <a href={`/users/${user.id}`}>
-                              <div id="each-friend">
-                                <div>{user.username}</div>
-                                <img
-                                  src={
-                                    user.picUrl
-                                      ? user.picUrl
-                                      : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
-                                  }
-                                  style={{ height: "150px", width: "150px" }}
-                                />
-                              </div>
-                            </a>
-                            <p>Outgoing Request</p>
-                            <button
-                              onClick={() =>
-                                handleRequest(+requestId, "cancel")
-                              }
-                              style={{ color: "black" }}
-                            >
-                              Cancel
-                            </button>
-                          </>
-                        );
-                      })
-                    ) : (
-                      <div>You currently have no pending requests...</div>
-                    )}
-                    {receivedRequests &&
-                      Object.keys(receivedRequests).length > 0 &&
-                      Object.keys(receivedRequests).map((requestId) => {
-                        const user = receivedRequests[+requestId];
-                        return (
-                          <>
-                            <a href={`/users/${user.id}`}>
-                              <div id="each-friend">
-                                <div>{user.username}</div>
-                                <img
-                                  src={
-                                    user.picUrl
-                                      ? user.picUrl
-                                      : "https://img.freepik.com/premium-vector/user-profile-icon-flat-style-member-avatar-vector-illustration-isolated-background-human-permission-sign-business-concept_157943-15752.jpg?w=740"
-                                  }
-                                  style={{ height: "150px", width: "150px" }}
-                                />
-                              </div>
-                            </a>
-                            <p>Incoming Request</p>
-                            <button
-                              onClick={() =>
-                                handleRequest(+requestId, "accept")
-                              }
-                              style={{ color: "black" }}
-                            >
-                              Accept
-                            </button>
-                            <button
-                              onClick={() =>
-                                handleRequest(+requestId, "reject")
-                              }
-                              style={{ color: "black" }}
-                            >
-                              Reject
-                            </button>
-                          </>
-                        );
-                      })}
-                  </div>
+                  <Statistics />
                 )}
               </div>
             </div>
@@ -638,6 +545,19 @@ function UserPage() {
           <Footer />
         </>
       )}
+
+    <ToastContainer
+      position="bottom-left"
+      autoClose={3000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+      theme="light"
+      />
     </>
   );
 }
