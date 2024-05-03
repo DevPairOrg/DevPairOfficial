@@ -244,7 +244,7 @@ export const handleJudgeSubmission = async (
                 exitCode: result.exit_code,
             };
         }
-
+        console.log('WHAT IS THIS DESCRIPTION SHIT', judgeResults)
         return judgeResults;
     } else if (language === 'python') {
         for (const [index, test] of testCases.entries()) {
