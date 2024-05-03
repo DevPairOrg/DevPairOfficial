@@ -3,6 +3,7 @@ import requests
 import os
 from dotenv import load_dotenv
 load_dotenv()
+from pprint import pprint
 
 judge0_routes = Blueprint('judge0', __name__)
 rapid_api_key = os.getenv('RAPID_API_KEY')
@@ -120,8 +121,20 @@ def proxy():
             headers=headers,
             verify=True  # SSL verification
         )
-
-        print('MAKING A SUBMISSION 🥶🥶😳🥶🥶🥶🥶🥶🥶🥶😳🥶🥶')
-        return jsonify(response.json()), response.status_code
+         # Check for both 200 and 201 success codes
+        if response.status_code in (200, 201):
+            response_data = response.json()
+            print('MAKING A SUBMISSION 🥶🥶😳🥶🥶🥶🥶🥶🥶🥶😳🥶🥶')
+            pprint(response_data)
+            return jsonify(response_data), response.status_code
+        else:
+            # Log unexpected status codes with response body
+            print(f'Unexpected status code received: {response.status_code}', response.text)
+            return jsonify({'error': 'Unexpected response from the API', 'status': response.status_code, 'body': response.text}), response.status_code
     except requests.RequestException as e:
+        print('Request failed:', str(e))
         return jsonify({'error': f"Service unavailable: {e}"}), 503
+    except ValueError as e:
+        # Catch JSON decode errors
+        print('JSON decoding failed:', str(e))
+        return jsonify({'error': 'Failed to decode JSON from response'}), 503
