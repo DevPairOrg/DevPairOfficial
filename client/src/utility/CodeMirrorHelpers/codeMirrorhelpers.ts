@@ -60,7 +60,7 @@ export const createJSSubmissionOnLocal = async (
 ) => {
     const correctFunctionName = grabFunctionName(sourceCode, 'javascript');
     // const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
-    const url = 'https://judge0-ce.p.rapidapi.com/submissions/?base64_encoded=false&wait=true&fields=*';
+    // const url = 'https://judge0-ce.p.rapidapi.com/submissions/?base64_encoded=false&wait=true&fields=*';
     const options = {
         method: 'POST',
         headers: {
@@ -130,7 +130,7 @@ export const createJSSubmissionOnLocal = async (
         }),
     };
     try {
-        const response = await fetch(url, options as any);
+        const response = await fetch('/api/judge0/proxy', options as any);
         const result = await response.json();
         // console.log('RESULT', result);
         return result;
@@ -170,7 +170,7 @@ export const createPySubmissionOnLocal = async (
         // # Call the function with the arguments
         // print(${functionName}(**args))
         // const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
-        const url = 'https://judge0-ce.p.rapidapi.com/submissions/?base64_encoded=false&wait=true&fields=*';
+        // const url = 'https://judge0-ce.p.rapidapi.com/submissions/?base64_encoded=false&wait=true&fields=*';
         const options = {
             method: 'POST',
             headers: {
@@ -188,7 +188,7 @@ export const createPySubmissionOnLocal = async (
         };
 
         try {
-            const response = await fetch(url, options as any);
+            const response = await fetch('/api/judge0/proxy', options as any);
             const result = await response.json();
             return result;
         } catch (error) {
