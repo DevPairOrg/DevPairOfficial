@@ -60,12 +60,13 @@ export const createJSSubmissionOnLocal = async (
 ) => {
     const correctFunctionName = grabFunctionName(sourceCode, 'javascript');
     // const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
+    const url = 'https://judge0-ce.p.rapidapi.com/submissions/?base64_encoded=false&wait=true&fields=*';
     const options = {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
-            'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
+            'X-RapidAPI-Key': import.meta.env.VITE_X_AUTH_TOKEN,
+            'X-RapidAPI-Host': import.meta.env.VITE_X_AUTH_USER,
         },
         body: JSON.stringify({
             source_code: `
@@ -129,9 +130,9 @@ export const createJSSubmissionOnLocal = async (
         }),
     };
     try {
-        const response = await fetch('/api/judge0/proxy', options as any);
+        const response = await fetch(url, options as any);
         const result = await response.json();
-        console.log('RESULT', result);
+        // console.log('RESULT', result);
         return result;
     } catch (error) {
         console.error(error);
@@ -169,12 +170,13 @@ export const createPySubmissionOnLocal = async (
         // # Call the function with the arguments
         // print(${functionName}(**args))
         // const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
+        const url = 'https://judge0-ce.p.rapidapi.com/submissions/?base64_encoded=false&wait=true&fields=*';
         const options = {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
-                'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
+                'X-RapidAPI-Key': import.meta.env.VITE_X_AUTH_TOKEN,
+                'X-RapidAPI-Host': import.meta.env.VITE_X_AUTH_USER,
             },
             body: JSON.stringify({
                 additional_files: 'sys, inspect',
@@ -186,7 +188,7 @@ export const createPySubmissionOnLocal = async (
         };
 
         try {
-            const response = await fetch('/api/judge0/proxy', options as any);
+            const response = await fetch(url, options as any);
             const result = await response.json();
             return result;
         } catch (error) {
@@ -244,7 +246,7 @@ export const handleJudgeSubmission = async (
                 exitCode: result.exit_code,
             };
         }
-        console.log('WHAT IS THIS DESCRIPTION SHIT', judgeResults)
+        console.log('WHAT IS THIS DESCRIPTION SHIT', judgeResults);
         return judgeResults;
     } else if (language === 'python') {
         for (const [index, test] of testCases.entries()) {

@@ -113,7 +113,7 @@ def proxy():
     try:
         headers = {key: value for key, value in request.headers.items() if key != 'Authorization'}
 
-        response = requests.request(method=request.method, url=target_url, headers=headers, data=request.data)
+        response = requests.request(method=request.method, url=target_url, headers=headers, json=request.get_json())
          # Check for both 200 and 201 success codes
         if response.status_code in (200, 201):
             response_data = response.json()
