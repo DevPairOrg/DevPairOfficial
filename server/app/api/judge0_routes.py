@@ -126,11 +126,16 @@ def proxy():
             response_data = response.json()
             print('MAKING A SUBMISSION 🥶🥶😳🥶🥶🥶🥶🥶🥶🥶😳🥶🥶')
             pprint(response_data)
+            print('🙂🤩😶😑😚😋🙂 response.json() SUCCESS')
+            pprint(response.json())
             return jsonify(response_data), response.status_code
         else:
             # Log unexpected status codes with response body
-            print(f'Unexpected status code received: {response.status_code}', response.text)
-            return jsonify({'error': 'Unexpected response from the API', 'status': response.status_code, 'body': response.text}), response.status_code
+            print(f'Unexpected status code received: {response.status_code}', response)
+            print('🙂🤩😶😑😚😋🙂 response.json() FAILURE')
+            pprint(response.json())
+            return jsonify({'error': 'Unexpected response from the API', 'status': response.status_code, 'body': response}), response.status_code
+
     except requests.RequestException as e:
         print('Request failed:', str(e))
         return jsonify({'error': f"Service unavailable: {e}"}), 503
