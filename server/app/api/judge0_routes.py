@@ -108,19 +108,12 @@ def createSubmission():
 def proxy():
     target_url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*'
 
-    try:
-        headers = {
-            'Content-Type': 'application/json',
-            'X-Auth-Token': request.headers.get('X-Auth-Token'),
-            'X-Auth-User': request.headers.get('X-Auth-User')
-        }
 
-        response = requests.post(
-            target_url,
-            json=request.get_json(),  # Forwarding the JSON payload directly
-            headers=headers,
-            verify=True  # SSL verification
-        )
+
+    try:
+        headers = {key: value for key, value in request.headers.items() if key != 'Authorization'}
+
+        response = requests.request(method=request.method, url=target_url, headers=headers, data=request.data)
          # Check for both 200 and 201 success codes
         if response.status_code in (200, 201):
             response_data = response.json()
