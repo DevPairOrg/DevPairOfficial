@@ -1,7 +1,7 @@
 from gevent import monkey
 monkey.patch_all()
 import os
-from flask import Flask, render_template, request, session, redirect, send_from_directory, Response
+from flask import Flask, render_template, request, session, redirect, send_from_directory, Response, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
 from flask_wtf.csrf import CSRFProtect, generate_csrf
@@ -18,6 +18,8 @@ from .api.judge0_routes import judge0_routes
 from .seeds import seed_commands
 from .config import Config
 from .socket import socketio
+import requests
+
 
 # app = Flask(__name__, static_folder='../client/dist', static_url_path='/')
 app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), '../../client/dist'), static_url_path='/')
@@ -88,6 +90,7 @@ def inject_csrf_token(response):
             samesite='Strict' if os.environ.get('FLASK_ENV') == 'production' else None,
             httponly=True)
     return response
+
 
 
 @app.route("/api/docs")
