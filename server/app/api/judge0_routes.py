@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 import requests
 import os
 from dotenv import load_dotenv
@@ -101,3 +101,27 @@ def createSubmission():
 
     print('🤗☺😏😶🤗🙂🙂 RESPONSE', response.json())
     return jsonify(response.json())
+
+
+@judge0_routes.route('/proxy', methods=['POST'])
+def proxy():
+    target_url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*'
+
+    try:
+        headers = {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': request.headers.get('X-Auth-Token'),
+            'X-Auth-User': request.headers.get('X-Auth-User')
+        }
+
+        response = requests.post(
+            target_url,
+            json=request.get_json(),  # Forwarding the JSON payload directly
+            headers=headers,
+            verify=True  # SSL verification
+        )
+
+        print('MAKING A SUBMISSION 🥶🥶😳🥶🥶🥶🥶🥶🥶🥶😳🥶🥶')
+        return jsonify(response.json()), response.status_code
+    except requests.RequestException as e:
+        return jsonify({'error': f"Service unavailable: {e}"}), 503

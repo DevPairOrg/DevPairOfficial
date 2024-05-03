@@ -1,76 +1,74 @@
 // *INTERFACES
 export interface CaseParameters {
-  INPUT: string;
-  OUTPUT: string;
+    INPUT: string;
+    OUTPUT: string;
 }
 
 export interface TestResult {
-  stdin?: any;
-  expectedOutput?: any;
-  userOutput?: any;
-  assert?: any;
-  result?: any;
-  stdout?: any;
-  stderr?: any;
-  exitCode?: any;
+    stdin?: any;
+    expectedOutput?: any;
+    userOutput?: any;
+    assert?: any;
+    result?: any;
+    stdout?: any;
+    stderr?: any;
+    exitCode?: any;
 }
 
 export interface JudgeResults {
-  [key: string]: TestResult;
+    [key: string]: TestResult;
 }
 
 // *SWITCH IDE LANGUAGE
 export const handlePythonButton = (
-  setLanguage: React.Dispatch<React.SetStateAction<string>>,
-  setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
-  defaultPythonFn: string | undefined
+    setLanguage: React.Dispatch<React.SetStateAction<string>>,
+    setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
+    defaultPythonFn: string | undefined
 ) => {
-  setLanguage("python");
-  setValue(defaultPythonFn);
+    setLanguage('python');
+    setValue(defaultPythonFn);
 };
 
 export const handleJavascriptButton = (
-  setLanguage: React.Dispatch<React.SetStateAction<string>>,
-  setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
-  defaultJsFn: string | undefined
+    setLanguage: React.Dispatch<React.SetStateAction<string>>,
+    setValue: React.Dispatch<React.SetStateAction<string | undefined>>,
+    defaultJsFn: string | undefined
 ) => {
-  setLanguage("javascript");
-  setValue(defaultJsFn);
+    setLanguage('javascript');
+    setValue(defaultJsFn);
 };
 
 // JUDGE SUBMISSION HELPERS
 function grabFunctionName(sourceCode: string | undefined, language: string) {
-  if (!sourceCode) return;
+    if (!sourceCode) return;
 
-  // Extracting function name AS SEEN from source code
-  const regex =
-    language === "javascript" ? /function\s+(\w+)\s*\(/ : /def\s+(\w+)\s*\(/;
-  const match = sourceCode.match(regex);
+    // Extracting function name AS SEEN from source code
+    const regex = language === 'javascript' ? /function\s+(\w+)\s*\(/ : /def\s+(\w+)\s*\(/;
+    const match = sourceCode.match(regex);
 
-  if (match && match[1]) {
-    return match[1];
-  } else {
-    return null;
-  }
+    if (match && match[1]) {
+        return match[1];
+    } else {
+        return null;
+    }
 }
 
 export const createJSSubmissionOnLocal = async (
-  sourceCode: string | undefined,
-  stdin: string | undefined,
-  expectedOutput: string | undefined
+    sourceCode: string | undefined,
+    stdin: string | undefined,
+    expectedOutput: string | undefined
 ) => {
-  const correctFunctionName = grabFunctionName(sourceCode, "javascript");
-  const url =
-    "http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*";
-  const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-Auth-Token": import.meta.env.VITE_X_AUTH_TOKEN,
-      "X-Auth-User": import.meta.env.VITE_X_AUTH_USER,
-    },
-    body: JSON.stringify({
-      source_code: `
+    const correctFunctionName = grabFunctionName(sourceCode, 'javascript');
+    const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
+    const options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+            'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
+        },
+        body: JSON.stringify({
+            source_code: `
                 const input = require('fs').readFileSync(0, 'utf-8').trim();
                 const eachParam = input.split(';')
 
@@ -125,77 +123,76 @@ export const createJSSubmissionOnLocal = async (
                 ${sourceCode}
 
             `,
-      language_id: 63,
-      stdin: stdin,
-      expected_output: expectedOutput,
-    }),
-  };
-  try {
-    const response = await fetch(url, options as any);
-    const result = await response.json();
-    // console.log("RESULT", result)
-    return result;
-  } catch (error) {
-    console.error(error);
-  }
+            language_id: 63,
+            stdin: stdin,
+            expected_output: expectedOutput,
+        }),
+    };
+    try {
+        const response = await fetch('/api/judge0/proxy', options as any);
+        const result = await response.json();
+        console.log('RESULT', result);
+        return result;
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 // ! For Python: Must Include 'additional_files': sys
 // ! This is so the 'import sys' in the source code actually works correctly
 export const createPySubmissionOnLocal = async (
-  sourceCode: string | undefined,
-  stdin: string,
-  expectedOutput: string
+    sourceCode: string | undefined,
+    stdin: string,
+    expectedOutput: string
 ) => {
-  if (sourceCode) {
-    const functionName = grabFunctionName(sourceCode, "python");
-    // PYTHON SOURCE CODE BLOCK
-    // import inspect
+    if (sourceCode) {
+        const functionName = grabFunctionName(sourceCode, 'python');
+        // PYTHON SOURCE CODE BLOCK
+        // import inspect
 
-    // stdin = input().strip()
-    // parameters = stdin.split(";")
+        // stdin = input().strip()
+        // parameters = stdin.split(";")
 
-    // for param in parameters:
-    //   # This will execute the parameters as if they were python code
-    //   # For example, if the input is 'a=1', this will declare 'a=1'
-    //   exec(param.strip(), globals())
+        // for param in parameters:
+        //   # This will execute the parameters as if they were python code
+        //   # For example, if the input is 'a=1', this will declare 'a=1'
+        //   exec(param.strip(), globals())
 
-    // ${sourceCode}
+        // ${sourceCode}
 
-    // # saves the parameters of the function into a variable called 'params'
-    // params = inspect.signature(${functionName}).parameters
+        // # saves the parameters of the function into a variable called 'params'
+        // params = inspect.signature(${functionName}).parameters
 
-    // # Create a dictionary that maps parameter names to their values
-    // args = {name: globals()[name] for name in params.keys()}
+        // # Create a dictionary that maps parameter names to their values
+        // args = {name: globals()[name] for name in params.keys()}
 
-    // # Call the function with the arguments
-    // print(${functionName}(**args))
-    const url =
-      "http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*";
-    const options = {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Auth-Token": import.meta.env.VITE_X_AUTH_TOKEN,
-        "X-Auth-User": import.meta.env.VITE_X_AUTH_USER,
-      },
-      body: JSON.stringify({
-        additional_files: "sys, inspect",
-        source_code: `import sys\nimport inspect\nstdin = sys.stdin.readline().strip()\nparameters = stdin.split(";")\nfor param in parameters:\n    exec(param.strip(), globals())\n\n${sourceCode}\n\nparams = inspect.signature(${functionName}).parameters\n\nargs = {name: globals()[name] for name in params.keys()}\nprint(${functionName}(**args))\n`,
-        language_id: 71,
-        stdin: stdin,
-        expected_output: expectedOutput,
-      }),
-    };
+        // # Call the function with the arguments
+        // print(${functionName}(**args))
+        const url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*';
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+                'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
+            },
+            body: JSON.stringify({
+                additional_files: 'sys, inspect',
+                source_code: `import sys\nimport inspect\nstdin = sys.stdin.readline().strip()\nparameters = stdin.split(";")\nfor param in parameters:\n    exec(param.strip(), globals())\n\n${sourceCode}\n\nparams = inspect.signature(${functionName}).parameters\n\nargs = {name: globals()[name] for name in params.keys()}\nprint(${functionName}(**args))\n`,
+                language_id: 71,
+                stdin: stdin,
+                expected_output: expectedOutput,
+            }),
+        };
 
-    try {
-      const response = await fetch(url, options as any);
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error(error);
+        try {
+            const response = await fetch('/api/judge0/proxy', options as any);
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error(error);
+        }
     }
-  }
 };
 
 // ----------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -222,256 +219,237 @@ export const createPySubmissionOnLocal = async (
 
 //*  JUDGE0 SUBMISSION FETCH
 export const handleJudgeSubmission = async (
-  sourceCode: string | undefined,
-  language: string,
-  testCases: CaseParameters[] | undefined
+    sourceCode: string | undefined,
+    language: string,
+    testCases: CaseParameters[] | undefined
 ) => {
-  if (!testCases || !sourceCode) return;
+    if (!testCases || !sourceCode) return;
 
-  let judgeResults: JudgeResults = {
-    testCase1: {},
-    testCase2: {},
-    testCase3: {},
-  };
+    let judgeResults: JudgeResults = {
+        testCase1: {},
+        testCase2: {},
+        testCase3: {},
+    };
 
-  if (language === "javascript") {
-    for (const [index, test] of testCases.entries()) {
-      const result = await createJSSubmissionOnLocal(
-        sourceCode,
-        test.INPUT,
-        test.OUTPUT
-      );
+    if (language === 'javascript') {
+        for (const [index, test] of testCases.entries()) {
+            const result = await createJSSubmissionOnLocal(sourceCode, test.INPUT, test.OUTPUT);
 
-      judgeResults[`testCase${index + 1}`] = {
-        stdin: result.stdin,
-        expectedOutput: result.expected_output,
-        result: result.status.description,
-        stdout: result.stdout,
-        stderr: result.stderr,
-        exitCode: result.exit_code,
-      };
+            judgeResults[`testCase${index + 1}`] = {
+                stdin: result.stdin,
+                expectedOutput: result.expected_output,
+                result: result.status.description,
+                stdout: result.stdout,
+                stderr: result.stderr,
+                exitCode: result.exit_code,
+            };
+        }
+
+        return judgeResults;
+    } else if (language === 'python') {
+        for (const [index, test] of testCases.entries()) {
+            console.log('Submission for Python', test);
+            const result = await createPySubmissionOnLocal(sourceCode, test.INPUT, test.OUTPUT);
+            judgeResults[`testCase${index + 1}`] = {
+                stdin: result.stdin,
+                expectedOutput: result.expected_output,
+                result: result.status.description,
+                stdout: result.stdout,
+                stderr: result.stderr,
+                exitCode: result.exit_code,
+            };
+        }
+        return judgeResults;
     }
-
-    return judgeResults;
-  } else if (language === "python") {
-    for (const[index, test] of testCases.entries()) {
-      console.log("Submission for Python", test);
-      const result = await createPySubmissionOnLocal(
-        sourceCode,
-        test.INPUT,
-        test.OUTPUT
-      );
-      judgeResults[`testCase${index + 1}`] = ({
-        stdin: result.stdin,
-        expectedOutput: result.expected_output,
-        result: result.status.description,
-        stdout: result.stdout,
-        stderr: result.stderr,
-        exitCode: result.exit_code,
-      });
-    }
-    return judgeResults;
-  }
 };
 
 // POST JUDGE SUBMISSION HELPERS
 
-export function seperateLogsAndUserOutputFromStdout(
-  judgeResults: JudgeResults
-) {
-  for (let key in judgeResults) {
-    const testCase = judgeResults[key];
-    const stoudt = testCase.stdout;
-    const seperatedStoudt = stoudt.split("\n");
+export function seperateLogsAndUserOutputFromStdout(judgeResults: JudgeResults) {
+    for (let key in judgeResults) {
+        const testCase = judgeResults[key];
+        const stoudt = testCase.stdout;
+        const seperatedStoudt = stoudt.split('\n');
 
-    const stoudtLogs = seperatedStoudt.splice(0, seperatedStoudt.length - 2);
+        const stoudtLogs = seperatedStoudt.splice(0, seperatedStoudt.length - 2);
 
-    let userOutput; // parse userOutput only if its not undefined or null
+        let userOutput; // parse userOutput only if its not undefined or null
 
-    if(seperatedStoudt[seperatedStoudt.length - 2] === 'undefined' || seperatedStoudt[seperatedStoudt.length - 2] === 'null') {
-      userOutput = undefined
-    } else {
-      userOutput = JSON.parse(seperatedStoudt[seperatedStoudt.length - 2]);
+        if (
+            seperatedStoudt[seperatedStoudt.length - 2] === 'undefined' ||
+            seperatedStoudt[seperatedStoudt.length - 2] === 'null'
+        ) {
+            userOutput = undefined;
+        } else {
+            userOutput = JSON.parse(seperatedStoudt[seperatedStoudt.length - 2]);
+        }
+
+        testCase.stdout = stoudtLogs;
+        testCase.userOutput = userOutput;
     }
-
-    testCase.stdout = stoudtLogs;
-    testCase.userOutput = userOutput;
-  }
 }
 
 export function assertResults(judgeResults: JudgeResults) {
-  for (let key in judgeResults) {
-    const testCase = judgeResults[key];
+    for (let key in judgeResults) {
+        const testCase = judgeResults[key];
 
-    const expectedOutput = testCase.expectedOutput; // *still needs to be parsed with JSON.parse()
-    const userOutput = testCase.userOutput;
+        const expectedOutput = testCase.expectedOutput; // *still needs to be parsed with JSON.parse()
+        const userOutput = testCase.userOutput;
 
-    if (expectedOutput.includes("{") || expectedOutput.includes("}")) {
-      // strict compare 2 objects
-      const objectData = stringifyObjectData(expectedOutput);
-      if (objectData) {
-        const parsedData = JSON.parse(objectData);
-        testCase.assert = strictEqualObjects(userOutput, parsedData);
-      }
-    } else if (expectedOutput.includes("[") || expectedOutput.includes("]")) {
-      // strict compare 2 arrays
-      const parsedData = JSON.parse(expectedOutput);
-      testCase.assert = arraysAreEqual(userOutput, parsedData);
-    } else {
-      // string, boolean, and number types
-      const parsedData = JSON.parse(expectedOutput);
-      testCase.assert = userOutput === parsedData;
+        if (expectedOutput.includes('{') || expectedOutput.includes('}')) {
+            // strict compare 2 objects
+            const objectData = stringifyObjectData(expectedOutput);
+            if (objectData) {
+                const parsedData = JSON.parse(objectData);
+                testCase.assert = strictEqualObjects(userOutput, parsedData);
+            }
+        } else if (expectedOutput.includes('[') || expectedOutput.includes(']')) {
+            // strict compare 2 arrays
+            const parsedData = JSON.parse(expectedOutput);
+            testCase.assert = arraysAreEqual(userOutput, parsedData);
+        } else {
+            // string, boolean, and number types
+            const parsedData = JSON.parse(expectedOutput);
+            testCase.assert = userOutput === parsedData;
+        }
     }
-  }
 }
 
 function stringifyObjectData(objectString: string) {
-  // when test case paramaters are objects, or the expected output is an object, we can use this function to convert object string data to the correct stringified format
-  // to get our objects to work with JSON.parse()
-  objectString = objectString.trim();
+    // when test case paramaters are objects, or the expected output is an object, we can use this function to convert object string data to the correct stringified format
+    // to get our objects to work with JSON.parse()
+    objectString = objectString.trim();
 
-  if (
-    objectString[0] !== "{" ||
-    objectString[objectString.length - 1] !== "}"
-  ) {
-    console.error("Input is not a valid JSON-like object.");
-    return null;
-  }
-
-  objectString = objectString.substring(1, objectString.length - 1).trim();
-  const parts = objectString.split(",");
-
-  const fixedParts = parts.map((part) => {
-    const colonIndex = part.indexOf(":");
-
-    if (colonIndex > 0 && colonIndex < part.length - 1) {
-      const key = part.slice(0, colonIndex).trim();
-      const value = part.slice(colonIndex + 1).trim();
-
-      if (!key.startsWith('"') && !key.endsWith('"')) {
-        return `"${key}": ${value}`;
-      }
+    if (objectString[0] !== '{' || objectString[objectString.length - 1] !== '}') {
+        console.error('Input is not a valid JSON-like object.');
+        return null;
     }
 
-    return part.trim();
-  });
+    objectString = objectString.substring(1, objectString.length - 1).trim();
+    const parts = objectString.split(',');
 
-  return `{${fixedParts.join(",")}}`;
+    const fixedParts = parts.map((part) => {
+        const colonIndex = part.indexOf(':');
+
+        if (colonIndex > 0 && colonIndex < part.length - 1) {
+            const key = part.slice(0, colonIndex).trim();
+            const value = part.slice(colonIndex + 1).trim();
+
+            if (!key.startsWith('"') && !key.endsWith('"')) {
+                return `"${key}": ${value}`;
+            }
+        }
+
+        return part.trim();
+    });
+
+    return `{${fixedParts.join(',')}}`;
 }
 
 function arraysAreEqual(arr1: any, arr2: any) {
-  if (arr1.length !== arr2.length) {
-    return false;
-  }
-
-  for (let i = 0; i < arr1.length; i++) {
-    const element1 = arr1[i];
-    const element2 = arr2[i];
-
-    if (Array.isArray(element1) && Array.isArray(element2)) {
-      if (!arraysAreEqual(element1, element2)) {
+    if (arr1.length !== arr2.length) {
         return false;
-      }
-    } else if (typeof element1 === "object" && typeof element2 === "object") {
-      if (!objectsAreEqual(element1, element2)) {
-        return false;
-      }
-    } else {
-      if (element1 !== element2) {
-        return false;
-      }
     }
-  }
 
-  return true;
+    for (let i = 0; i < arr1.length; i++) {
+        const element1 = arr1[i];
+        const element2 = arr2[i];
+
+        if (Array.isArray(element1) && Array.isArray(element2)) {
+            if (!arraysAreEqual(element1, element2)) {
+                return false;
+            }
+        } else if (typeof element1 === 'object' && typeof element2 === 'object') {
+            if (!objectsAreEqual(element1, element2)) {
+                return false;
+            }
+        } else {
+            if (element1 !== element2) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 function objectsAreEqual(obj1: any, obj2: any) {
-  const keys1 = Object.keys(obj1);
-  const keys2 = Object.keys(obj2);
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
 
-  if (keys1.length !== keys2.length) {
-    return false;
-  }
-
-  for (const key of keys1) {
-    const val1 = obj1[key];
-    const val2 = obj2[key];
-
-    if (typeof val1 === "object" && typeof val2 === "object") {
-      if (!objectsAreEqual(val1, val2)) {
+    if (keys1.length !== keys2.length) {
         return false;
-      }
-    } else {
-      if (val1 !== val2) {
-        return false;
-      }
     }
-  }
 
-  return true;
+    for (const key of keys1) {
+        const val1 = obj1[key];
+        const val2 = obj2[key];
+
+        if (typeof val1 === 'object' && typeof val2 === 'object') {
+            if (!objectsAreEqual(val1, val2)) {
+                return false;
+            }
+        } else {
+            if (val1 !== val2) {
+                return false;
+            }
+        }
+    }
+
+    return true;
 }
 
 function strictEqualObjects(obj1: any, obj2: any) {
-  if (!(obj1 instanceof Object) || !(obj2 instanceof Object)) {
-    return obj1 === obj2;
-  }
-
-  if (Array.isArray(obj1) && Array.isArray(obj2)) {
-    if (obj1.length !== obj2.length) {
-      return false;
+    if (!(obj1 instanceof Object) || !(obj2 instanceof Object)) {
+        return obj1 === obj2;
     }
-    for (let i = 0; i < obj1.length; i++) {
-      if (!strictEqualObjects(obj1[i], obj2[i])) {
+
+    if (Array.isArray(obj1) && Array.isArray(obj2)) {
+        if (obj1.length !== obj2.length) {
+            return false;
+        }
+        for (let i = 0; i < obj1.length; i++) {
+            if (!strictEqualObjects(obj1[i], obj2[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (keys1.length !== keys2.length) {
         return false;
-      }
     }
+
+    for (const key of keys1) {
+        if (!obj2.hasOwnProperty(key) || !strictEqualObjects(obj1[key], obj2[key])) {
+            return false;
+        }
+    }
+
     return true;
-  }
-
-  const keys1 = Object.keys(obj1);
-  const keys2 = Object.keys(obj2);
-
-  if (keys1.length !== keys2.length) {
-    return false;
-  }
-
-  for (const key of keys1) {
-    if (
-      !obj2.hasOwnProperty(key) ||
-      !strictEqualObjects(obj1[key], obj2[key])
-    ) {
-      return false;
-    }
-  }
-
-  return true;
 }
-
 
 // Adding DSA Problem To User Model
 
 export const allTestCasesPassed = (userResults: JudgeResults | null): boolean => {
-    if(!userResults) return false
+    if (!userResults) return false;
 
-    return (
-        userResults.testCase1.assert &&
-        userResults.testCase2.assert &&
-        userResults.testCase3.assert
-    );
+    return userResults.testCase1.assert && userResults.testCase2.assert && userResults.testCase3.assert;
 };
 
-
 export const addDSAProblemToUserSolved = async (userId: string | undefined, prompt: string | undefined) => {
-    if(!userId || !prompt) return
+    if (!userId || !prompt) return;
 
     const response = await fetch('/api/gemini/add', {
-        method: "POST",
-        body: JSON.stringify({userId, prompt}),
-        headers: { "Content-Type": "application/json"}
-    })
+        method: 'POST',
+        body: JSON.stringify({ userId, prompt }),
+        headers: { 'Content-Type': 'application/json' },
+    });
 
-    if(!response.ok) {
-        console.error("Something Went Wrong inside /api/gemini/add from addDSAProblemToUserSolved fetch call")
+    if (!response.ok) {
+        console.error('Something Went Wrong inside /api/gemini/add from addDSAProblemToUserSolved fetch call');
     }
-}
+};
