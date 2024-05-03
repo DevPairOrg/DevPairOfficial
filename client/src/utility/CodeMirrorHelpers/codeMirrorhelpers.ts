@@ -65,8 +65,8 @@ export const createJSSubmissionOnLocal = async (
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-RapidAPI-Key': import.meta.env.VITE_X_AUTH_TOKEN,
-            'X-RapidAPI-Host': import.meta.env.VITE_X_AUTH_USER,
+            'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+            'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
         },
         body: JSON.stringify({
             source_code: `
@@ -175,8 +175,8 @@ export const createPySubmissionOnLocal = async (
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-RapidAPI-Key': import.meta.env.VITE_X_AUTH_TOKEN,
-                'X-RapidAPI-Host': import.meta.env.VITE_X_AUTH_USER,
+                'X-Auth-Token': import.meta.env.VITE_X_AUTH_TOKEN,
+                'X-Auth-User': import.meta.env.VITE_X_AUTH_USER,
             },
             body: JSON.stringify({
                 additional_files: 'sys, inspect',
