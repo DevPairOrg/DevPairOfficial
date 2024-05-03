@@ -19,6 +19,7 @@ interface pairedContentState {
         isActive: boolean;
         generatedProblem: parsedData | null;
     };
+    hasJoined: boolean
 }
 
 // Define the initial state using that type
@@ -38,6 +39,7 @@ const initialState: pairedContentState = {
         isActive: false,
         generatedProblem: null,
     },
+    hasJoined: false
 };
 
 const pairedContentSlice = createSlice({
@@ -84,11 +86,14 @@ const pairedContentSlice = createSlice({
             state.agora.media.localCameraTrack = null;
             state.agora.media.localMicrophoneTrack = null;
         },
+        setJoinedReducer: (state, action: PayloadAction<boolean>) => {
+            state.hasJoined = action.payload
+        },
     },
 });
 
 // Export actions
-export const { toggleScreenShare, generateAndSetGeminiProblem, resetGeminiState, setLocalCamMic, clearLocalCamMic, toggleRemoteScreenShare, toggleLocalScreenShare } =
+export const { toggleScreenShare, generateAndSetGeminiProblem, resetGeminiState, setLocalCamMic, clearLocalCamMic, toggleRemoteScreenShare, toggleLocalScreenShare, setJoinedReducer } =
     pairedContentSlice.actions;
 
 // Export reducer
