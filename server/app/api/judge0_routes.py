@@ -106,7 +106,7 @@ def createSubmission():
 
 @judge0_routes.route('/proxy', methods=['POST'])
 def proxy():
-    target_url = 'http://146.190.61.177:2358/submissions/?base64_encoded=false&wait=true&fields=*'
+    target_url = 'http://64.23.166.81:2358/submissions/?base64_encoded=false&wait=true&fields=*'
 
 
 
